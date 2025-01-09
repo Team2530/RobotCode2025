@@ -1,25 +1,34 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.*;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
 
 public class SwerveModule {
     private final TalonFX driveMotor;
-    private final CANSparkMax steerMotor;
+    // https://v6.docs.ctr-electronics.com/en/latest/docs/api-reference/api-usage/configuration.html
+    private final TalonFXConfigurator driveConfigurator;
+    private final MotorOutputConfigs driveConfig;
+    private final SparkMax steerMotor;
+    private final SparkMaxConfig steerConfig;
 
     // private final RelativeEncoder driveMotorEncoder;
     private final RelativeEncoder steerMotorEncoder;
@@ -44,13 +53,22 @@ public class SwerveModule {
             boolean isAbsoluteEncoderReversed, boolean motorReversed) {
         // driveMotor = new CANSparkMax(driveCanID, MotorType.kBrushless);
         driveMotor = new TalonFX(driveCanID);
-        driveMotor.setNeutralMode(NeutralModeValue.Brake);
+        driveConfigurator = driveMotor.getConfigurator();
+        driveConfig = new MotorOutputConfigs();
+        driveConfig.Inverted = motorReversed ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        driveConfig.NeutralMode = NeutralModeValue.Brake;
+        driveConfigurator.apply(driveConfig);
 
-        driveMotor.setInverted(motorReversed);
         // driveMotor.setIdleMode(IdleMode.kBrake);
-        steerMotor = new CANSparkMax(steerCanID, MotorType.kBrushless);
-        steerMotor.setIdleMode(IdleMode.kBrake);
-        steerMotor.setInverted(false);
+        steerMotor = new SparkMax(steerCanID, MotorType.kBrushless);
+        steerConfig = new SparkMaxConfig();
+        steerConfig
+                .idleMode(IdleMode.kBrake)
+                .inverted(false);
+        steerConfig.encoder
+                .positionConversionFactor(SwerveModuleConstants.STEER_ROTATION_TO_RADIANS)
+                .velocityConversionFactor(SwerveModuleConstants.STEER_RADIANS_PER_MINUTE);
+        steerMotor.configure(steerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         this.motor_inv = motorReversed;
         // driveMotorEncoder = driveMotor.get();
@@ -71,9 +89,6 @@ public class SwerveModule {
         // driveMotorEncoder.setVelocityConversionFactor(SwerveModuleConstants.DRIVE_METERS_PER_MINUTE);
         // TalonFXConfiguration talon_cfg = new TalonFXConfiguration();
         // driveMotor.getConfigurator().apply(cfg);
-
-        steerMotorEncoder.setPositionConversionFactor(SwerveModuleConstants.STEER_ROTATION_TO_RADIANS);
-        steerMotorEncoder.setVelocityConversionFactor(SwerveModuleConstants.STEER_RADIANS_PER_MINUTE);
 
         steerPID = new PIDController(SwerveModuleConstants.MODULE_KP, 0, SwerveModuleConstants.MODULE_KD);
         steerPID.enableContinuousInput(-Math.PI, Math.PI);
@@ -113,7 +128,7 @@ public class SwerveModule {
     }
 
     public double getAbsoluteEncoderPosition() {
-        double angle = Units.rotationsToRadians(absoluteEncoder.getPosition().getValue());// * (Math.PI /
+        double angle = Units.rotationsToRadians(absoluteEncoder.getPosition().getValueAsDouble());// * (Math.PI /
         // 180.d);
         angle -= motorOffsetRadians;
         return angle * (isAbsoluteEncoderReversed ? -1.0 : 1.0);
@@ -135,7 +150,7 @@ public class SwerveModule {
     }
 
     public void setModuleStateRaw(SwerveModuleState state) {
-        state = SwerveModuleState.optimize(state, new Rotation2d(getSteerPosition()));
+        state.optimize(new Rotation2d(getSteerPosition()));
         double drive_command = state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY;
         // SmartDashboard.putNumber("Module " + Integer.toString(this.thisModuleNumber) + " Drive", drive_command);
         driveMotor.set(drive_command * (motor_inv ? -1.0 : 1.0));
