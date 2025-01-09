@@ -886,7 +886,7 @@ public class LimelightHelpers {
         setLimelightNTDoubleArray(limelightName, "crop", entries);
     }
 
-    public static void SetRobotOrientation(String limelightName, double yaw, double yawRate, 
+    public static void setRobotOrientation(String limelightName, double yaw, double yawRate, 
         double pitch, double pitchRate, 
         double roll, double rollRate) {
 
@@ -900,7 +900,7 @@ public class LimelightHelpers {
         setLimelightNTDoubleArray(limelightName, "robot_orientation_set", entries);
     }
 
-    public static void SetFiducialIDFiltersOverride(String limelightName, int[] validIDs) {
+    public static void setFiducialIDFiltersOverride(String limelightName, int[] validIDs) {
         double[] validIDsDouble = new double[validIDs.length];
         for (int i = 0; i < validIDs.length; i++) {
             validIDsDouble[i] = validIDs[i];

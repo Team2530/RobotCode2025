@@ -412,25 +412,34 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void updateMegaTagOdometry() {
         boolean doRejectUpdate = false;
-        LimelightHelpers.SetRobotOrientation("limelight", odometry.getEstimatedPosition().getRotation().getDegrees(), 0,
+
+        LimelightHelpers.setRobotOrientation(Constants.LimelightConstants.limelightCoralLeftName, odometry.getEstimatedPosition().getRotation().getDegrees(), 0,
                 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        LimelightHelpers.setRobotOrientation(Constants.LimelightConstants.limelightCoralRightName, odometry.getEstimatedPosition().getRotation().getDegrees(), 0,
+            0, 0, 0, 0);
+        
+        LimelightHelpers.PoseEstimate coralLeftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(Constants.LimelightConstants.limelightCoralLeftName);
+        LimelightHelpers.PoseEstimate coralRightMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(Constants.LimelightConstants.limelightCoralRightName);
         if (Math.abs(navX.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore
                                             // vision updates
         {
             doRejectUpdate = true;
         }
 
-        if (mt2.tagCount <= 0) {
+        if ((coralLeftMT2.tagCount <= 0)&&(coralRightMT2.tagCount <= 0)) {
             doRejectUpdate = true;
         }
+        
         if (!doRejectUpdate) {
             // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(2,2,2.0*PoseConstants.kVisionStdDevTheta));
             odometry.setVisionMeasurementStdDevs(VecBuilder.fill(2, 2, 9999999));
 
             odometry.addVisionMeasurement(
-                    mt2.pose,
-                    mt2.timestampSeconds);
+                coralLeftMT2.pose,
+                coralLeftMT2.timestampSeconds);
+            odometry.addVisionMeasurement(
+                coralRightMT2.pose,
+                coralRightMT2.timestampSeconds);
         }
     }
 

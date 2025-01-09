@@ -51,6 +51,30 @@ public final class Constants {
     public static final double robotLengthMeters = Units.inchesToMeters(25.0);
   }
 
+  public static class LimelightConstants {
+    public static final String limelightCoralLeftName = "limelight-coralLeft"; //left hand side of the swinging coral name
+    public static final String limelightCoralRightName = "limelight-coralRight";
+
+    public static final Transform3d robotToCameraCoralLeftPos = new Transform3d( //update these numbers to where the limelights are relative to the robot
+        new Translation3d(0, 0, 0.),
+        new Rotation3d(0.0, Units.degreesToRadians(0), Units.degreesToRadians(0)));
+    public static final Transform3d robotToCameraCoralRightPos = new Transform3d( //update these numbers to where the limelights are relative to the robot
+        new Translation3d(0, 0, 0.),
+        new Rotation3d(0.0, Units.degreesToRadians(0), Units.degreesToRadians(0)));
+
+  }
+
+  public static class AprilTags {
+    // Blue alliance left or single tags
+    public static final String[] BLUE_ALLIANCE_LEFT_OR_SINGLE_APRILTAGS = { "2", "8", "6", "14", "15", "16" };
+    // Blue alliance right tags
+    public static final String[] BLUE_ALLIANCE_RIGHT_APRILTAGS = { "1", "7" };
+    // Red alliance left or single tags
+    public static final String[] RED_ALLIANCE_LEFT_OR_SINLGE_APRILTAGS = { "10", "4", "5", "11", "12", "13" };
+    // Blue alliance right tags
+    public static final String[] RED_ALLIANCE_RIGHT_APRILTAGS = { "9", "3" };
+  }
+
   public static final class FieldConstants {
     public static final double GRAVITY = 9.81;
     public static final double SPEAKER_HEIGHT = 2.05; // Meters
