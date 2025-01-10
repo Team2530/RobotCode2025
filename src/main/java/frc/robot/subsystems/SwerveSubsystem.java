@@ -2,17 +2,15 @@ package frc.robot.subsystems;
 
 import java.util.List;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.studica.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.path.PathPoint;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -21,26 +19,22 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
-import frc.robot.LimelightHelpers.PoseEstimate;
 
 public class SwerveSubsystem extends SubsystemBase {
     SwerveModule frontLeft = new SwerveModule(SwerveModuleConstants.FL_STEER_ID, SwerveModuleConstants.FL_DRIVE_ID,
@@ -86,7 +80,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private RotationStyle rotationStyle = RotationStyle.Driver;
 
-    public final AHRS navX = new AHRS(SPI.Port.kMXP);
+    public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI);
     private double navxSim;
 
     private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
@@ -113,12 +107,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // --------- Path Planner Init ---------- \\
 
-        AutoBuilder.configureHolonomic(
+        AutoBuilder.configure(
                 this::getPose, // Robot pose supplier
                 this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setChassisSpeedsAUTO, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                PathPlannerConstants.HOLONOMIC_FOLLOWER_CONFIG,
+                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
+                PathPlannerConstants.ROBOT_CONFIG,
                 () -> {
                     // Boolean supplier that controls when the path will be mirrored for the red
                     // alliance
@@ -330,22 +325,16 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Command followPathCommand(String pathName) {
-        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-
-        return new FollowPathHolonomic(
+        try {
+            PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+            
+            return new FollowPathCommand(
                 path,
                 this::getPose, // Robot pose supplier
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setChassisSpeedsAUTO, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
-                                                 // Constants class
-                        PathPlannerConstants.TRANSLATION_PID, // Translation PID constants
-                        PathPlannerConstants.ROTATION_PID, // Rotation PID constants
-                        DriveConstants.MAX_MODULE_VELOCITY, // Max module speed, in m/s
-                        DriveConstants.DRIVE_BASE_RADIUS, // Drive base radius in meters. Distance from robot center to
-                                                          // furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
+                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
+                PathPlannerConstants.ROBOT_CONFIG,
                 () -> {
                     // Boolean supplier that controls when the path will be mirrored for the red
                     // alliance
@@ -359,12 +348,15 @@ public class SwerveSubsystem extends SubsystemBase {
                     return false;
                 },
                 this // Reference to this subsystem to set requirements
-        );
+            );
+        } catch (Exception exception) {
+            return Commands.none();
+        }
     }
 
-    public PathPlannerPath generateOTFPath(Translation2d... pathPoints) {
+    public PathPlannerPath generateOTFPath(PathPoint... pathPoints) {
         // Create the path using the bezier points created above
-        PathPlannerPath path = new PathPlannerPath(
+        PathPlannerPath path = PathPlannerPath.fromPathPoints(
                 List.of(pathPoints),
                 new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI), // The constraints for this path. If using a
                                                                          // differential drivetrain, the angular

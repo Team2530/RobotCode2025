@@ -1,22 +1,21 @@
 package frc.robot.subsystems;
 
-import javax.print.attribute.SetOfIntegerSyntax;
-
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkLimitSwitch;
+import com.revrobotics.spark.SparkLimitSwitch;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -32,9 +31,9 @@ import frc.robot.Robot;
 public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     // NOTE: Elevator motor one has both the encoder used for positioning, and the
     // limit switch used for zeroing
-    private final CANSparkFlex elevatorMotorOne = new CANSparkFlex(Constants.Elevator.elevatorOnePort,
+    private final SparkFlex elevatorMotorOne = new SparkFlex(Constants.Elevator.elevatorOnePort,
             MotorType.kBrushless);
-    private final CANSparkFlex elevatorMotorTwo = new CANSparkFlex(Constants.Elevator.elevatorTwoPort,
+    private final SparkFlex elevatorMotorTwo = new SparkFlex(Constants.Elevator.elevatorTwoPort,
             MotorType.kBrushless);
     private final ElevatorFeedforward feedForward = new ElevatorFeedforward(
             Constants.Elevator.Feedforward.Ks,
@@ -43,6 +42,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             Constants.Elevator.Feedforward.Ka
 
     );
+
+    private final SparkMaxConfig elevatorConfigOne = new SparkMaxConfig();
+    private final SparkMaxConfig elevatorConfigTwo = new SparkMaxConfig();
 
     /*
      * DCMotor gearbox,
@@ -67,8 +69,11 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             Constants.Elevator.PhysicalParameters.driveRadiusMeters,
             0.0,
             Constants.Elevator.PhysicalParameters.elevatorHeightMeters,
-            true, 0.0,
-            VecBuilder.fill(0.001));
+            true,
+            0.0,
+            0.001,
+            0.001
+    );
 
     private DoubleLogEntry elevatorTargetP = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/target/position");
     private DoubleLogEntry elevatorTargetV = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/target/velocity");
@@ -102,25 +107,31 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         this.getController().setTolerance(Units.inchesToMeters(0.5));
 
-        elevatorMotorOne.setIdleMode(CANSparkFlex.IdleMode.kBrake);
-        elevatorMotorTwo.setIdleMode(CANSparkFlex.IdleMode.kBrake);
+        elevatorConfigOne
+            .idleMode(IdleMode.kBrake)
+            .inverted(Constants.Elevator.elevatorOneInverted);
+        elevatorConfigOne.encoder
+            .positionConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter)
+            .velocityConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter);
+        elevatorConfigOne.limitSwitch.reverseLimitSwitchType(Constants.Elevator.bottomLimitMode);
 
-        elevatorMotorOne.getEncoder().setPositionConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter);
-        elevatorMotorOne.getEncoder().setVelocityConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter);
+        elevatorConfigTwo
+            .idleMode(IdleMode.kBrake)
+            .inverted(Constants.Elevator.elevatorTwoInverted);
+        elevatorConfigTwo.encoder
+            .positionConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter)
+            .velocityConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter);
 
-        elevatorMotorTwo.getEncoder().setPositionConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter);
-        elevatorMotorTwo.getEncoder().setVelocityConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter);
-
+        elevatorMotorOne.configure(elevatorConfigOne, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        elevatorMotorTwo.configure(elevatorConfigTwo, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        
         elevatorEncoderOne = elevatorMotorOne.getEncoder();
         elevatorEncoderTwo = elevatorMotorTwo.getEncoder();
-
-        elevatorMotorOne.setInverted(Constants.Elevator.elevatorOneInverted);
-        elevatorMotorTwo.setInverted(Constants.Elevator.elevatorTwoInverted);
 
         elevatorMotorOne.getEncoder().setPosition(0);
         elevatorMotorTwo.getEncoder().setPosition(0);
 
-        bottomLimit = elevatorMotorOne.getReverseLimitSwitch(Constants.Elevator.bottomLimitMode);
+        bottomLimit = elevatorMotorOne.getReverseLimitSwitch();
 
         this.enable();
 
