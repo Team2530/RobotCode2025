@@ -225,6 +225,9 @@ public final class Constants {
         Units.degreesToRadians(480),
         Units.degreesToRadians(720)
       );
+
+      public static final double FACING_LEFT_ADJUST = -0.5;
+      public static final double FACING_RIGHT_ADJUST = 0.5;
     }
   }
 

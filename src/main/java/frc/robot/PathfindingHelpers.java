@@ -17,33 +17,37 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PathPlannerConstants;
+import frc.robot.Constants.PathPlannerConstants.Pathfinding;
 
 public class PathfindingHelpers {
     // TODO: change to 2025 layout when released of whenever
     private final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
 
-    public enum ReefPresets {
-        ALPHA(18, 7),
-        BRAVO(18, 7),
-        CHARLIE(17, 8),
-        DELTA(17, 8),
-        ECHO(22, 9),
-        FOXTROT(22, 9),
-        GOLF(21, 10),
-        HOTEL(21, 10),
-        INDIA(20, 11),
-        JULIETTE(20, 11),
-        KILO(19, 6),
-        LIMA(19, 6);
+    public static enum ReefPresets {        
+        ALPHA(18, 7, Pathfinding.FACING_LEFT_ADJUST),
+        BRAVO(18, 7, Pathfinding.FACING_RIGHT_ADJUST),
+        CHARLIE(17, 8, Pathfinding.FACING_LEFT_ADJUST),
+        DELTA(17, 8, Pathfinding.FACING_RIGHT_ADJUST),
+        ECHO(22, 9, Pathfinding.FACING_LEFT_ADJUST),
+        FOXTROT(22, 9, Pathfinding.FACING_RIGHT_ADJUST),
+        GOLF(21, 10, Pathfinding.FACING_LEFT_ADJUST),
+        HOTEL(21, 10, Pathfinding.FACING_RIGHT_ADJUST),
+        INDIA(20, 11, Pathfinding.FACING_LEFT_ADJUST),
+        JULIETTE(20, 11, Pathfinding.FACING_RIGHT_ADJUST),
+        KILO(19, 6, Pathfinding.FACING_LEFT_ADJUST),
+        LIMA(19, 6, Pathfinding.FACING_RIGHT_ADJUST);
         
         private int targetApriltag; 
+        private double parallelAdjustment;
 
-        private ReefPresets (int blueSide, int redSide) {
+        private ReefPresets (int blueSide, int redSide, double parallelAdjustment) {
             if (FieldConstants.getAlliance() == Alliance.Blue) {
                 targetApriltag = blueSide;
             } else {
                 targetApriltag = redSide;
             }
+
+            this.parallelAdjustment = parallelAdjustment;
         }
     }
 
@@ -52,13 +56,23 @@ public class PathfindingHelpers {
 
         if (apriltag.isPresent()) {
             Pose2d apriltagPose = apriltag.get().toPose2d();
+            Rotation2d apriltagDirection = apriltagPose.getRotation();
 
-            // offset by x in meters, in direction the apriltag is facing
+            // get position by offsetting from the apriltag pose by x in meters, in direction the apriltag is facing
+            // then adjust x in meters parallel to the face for left / right pole
             Pose2d targetPose = apriltagPose.plus( 
                 new Transform2d(
-                    new Translation2d(0.5, apriltagPose.getRotation()),
+                    new Translation2d(0.5, apriltagDirection),
                     new Rotation2d()
                 )    
+            ).plus(
+                new Transform2d(
+                    new Translation2d(
+                        target.parallelAdjustment,
+                        apriltagDirection.plus(new Rotation2d(90))
+                    ),
+                    new Rotation2d()
+                )
             );
             
             return AutoBuilder.pathfindToPose(
