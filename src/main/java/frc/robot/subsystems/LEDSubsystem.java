@@ -10,6 +10,8 @@ public class LEDSubsystem extends SubsystemBase {
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
 
+    private int tick = 0;
+
     public LEDSubsystem() {
         led = new AddressableLED(8);
         ledBuffer = new AddressableLEDBuffer(40);
@@ -19,7 +21,11 @@ public class LEDSubsystem extends SubsystemBase {
     }
     @Override
     public void periodic() {
-        rainbow((int) (Timer.getFPGATimestamp()));
+        rainbow(tick);
+
+        tick+=1;
+
+        push();
     }
 
     /* Periodic Funcitons */
