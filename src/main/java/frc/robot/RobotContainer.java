@@ -48,6 +48,8 @@ public class RobotContainer {
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
+    private final LEDSubsystem leds = new LEDSubsystem();
+
     private final ElevatorSubsystem elevator = new ElevatorSubsystem();
 
     /*
