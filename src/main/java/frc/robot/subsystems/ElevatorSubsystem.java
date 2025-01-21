@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.Elevator;
 
 public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     // NOTE: Elevator motor one has both the encoder used for positioning, and the
@@ -35,13 +36,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             MotorType.kBrushless);
     private final SparkFlex elevatorMotorTwo = new SparkFlex(Constants.Elevator.elevatorTwoPort,
             MotorType.kBrushless);
-    private final ElevatorFeedforward feedForward = new ElevatorFeedforward(
-            Constants.Elevator.Feedforward.Ks,
-            Constants.Elevator.Feedforward.Kg,
-            Constants.Elevator.Feedforward.Kv,
-            Constants.Elevator.Feedforward.Ka
-
-    );
+    private final ElevatorFeedforward feedForward = Elevator.feedForward;
 
     private final SparkMaxConfig elevatorConfigOne = new SparkMaxConfig();
     private final SparkMaxConfig elevatorConfigTwo = new SparkMaxConfig();

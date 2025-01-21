@@ -10,6 +10,8 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -152,6 +154,70 @@ public final class Constants {
     public static final boolean LOG_INTO_FILE_ENABLED = true;
   }
 
+  // TODO: ##################### PLACEHOLDERS #####################
+  public static class Climber {
+    public static final int MOTOR_PORT = 20;
+    public static final ProfiledPIDController PID = new ProfiledPIDController(
+      1,
+      0.0,
+      0.0, 
+      null
+    );
+  }
+
+  // TODO: ##################### PLACEHOLDERS #####################
+  public static class Coral {
+    public static class Pivot {
+      public static final int MOTOR_PORT = 14;
+      public static final ProfiledPIDController PID = new ProfiledPIDController(
+        1,
+        0.0,
+        0.0,
+        null
+      );
+    }
+
+    public static class Roll {
+      public static final int MOTOR_PORT = 15;
+      public static final ProfiledPIDController PID = new ProfiledPIDController(
+        1,
+        0.0,
+        0.0,
+        null
+      );
+    }
+    public static class Pitch {
+      public static final int MOTOR_PORT = 16;
+      public static final ProfiledPIDController PID = new ProfiledPIDController(
+        1,
+        0.0,
+        0.0,
+        null
+      );
+    }
+
+    public static class Intake {
+      public static final int MOTOR_PORT = 17;
+    }
+  }
+  
+  // TODO: ##################### PLACEHOLDERS #####################
+  public static class Algae {
+    public static final class Pivot {
+      public static final int MOTOR_PORT = 18;
+      public static final ProfiledPIDController PID = new ProfiledPIDController(
+        1,
+        0.0,
+        0.0,
+        null
+      );
+    }
+
+    public static final class Intake {
+      public static final int MOTOR_PORT = 19;
+    }
+  }
+
   public static class Elevator {
     public static final int elevatorOnePort = 10;
     public static final int elevatorTwoPort = 11;
@@ -175,12 +241,19 @@ public final class Constants {
     // TODO: For the first testing, set these all to zero for safety reasons
     // Remind me to pad the top and bottom of the elevator with poodles to make sure
     // we don't damage it.
-    public static class Feedforward {
+    public static class FeedforwardConstants {
       public static double Ks = 0.0;
       public static double Kv = 4.0;
       public static double Ka = 0.03;
       public static double Kg = 0.1;
     }
+
+    public static ElevatorFeedforward feedForward = new ElevatorFeedforward(
+      FeedforwardConstants.Ks,
+      FeedforwardConstants.Kg,
+      FeedforwardConstants.Kv,
+      FeedforwardConstants.Ka
+    );
 
     public static class PhysicalParameters {
       public static double gearReduction = 9.0 / 2.0;
