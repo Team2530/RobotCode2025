@@ -1,233 +1,117 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkLimitSwitch;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import frc.robot.Constants;
-import frc.robot.Robot;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Elevator;
 
-public class ElevatorSubsystem extends ProfiledPIDSubsystem {
-    // NOTE: Elevator motor one has both the encoder used for positioning, and the
-    // limit switch used for zeroing
-    private final SparkFlex elevatorMotorOne = new SparkFlex(Constants.Elevator.elevatorOnePort,
-            MotorType.kBrushless);
-    private final SparkFlex elevatorMotorTwo = new SparkFlex(Constants.Elevator.elevatorTwoPort,
-            MotorType.kBrushless);
-    private final ElevatorFeedforward feedForward = Elevator.feedForward;
+public class ElevatorSubsystem extends SubsystemBase {
 
-    private final SparkMaxConfig elevatorConfigOne = new SparkMaxConfig();
-    private final SparkMaxConfig elevatorConfigTwo = new SparkMaxConfig();
+    private final SparkMax leaderMotor = new SparkMax(Elevator.Leader.MOTOR_PORT, MotorType.kBrushless);
+    private final SparkMax followerMotor = new SparkMax(Elevator.Follower.MOTOR_PORT, MotorType.kBrushless);
 
-    /*
-     * DCMotor gearbox,
-     * double gearing,
-     * double carriageMassKg,
-     * double drumRadiusMeters,
-     * double minHeightMeters,
-     * double maxHeightMeters,
-     * boolean simulateGravity,
-     * double startingHeightMeters,
-     * Matrix<N1, N1> measurementStdDevs
-     */
-    private boolean isZeroed = false;
-    private final RelativeEncoder elevatorEncoderOne;
-    private final RelativeEncoder elevatorEncoderTwo;
-    private final SparkLimitSwitch bottomLimit;
+    private final SparkMaxConfig leaderConfig = new SparkMaxConfig();
+    private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
-    private final ElevatorSim simulation = new ElevatorSim(
-            Constants.Elevator.PhysicalParameters.simMotor,
-            Constants.Elevator.PhysicalParameters.gearReduction,
-            Constants.Elevator.PhysicalParameters.carriageMassKg,
-            Constants.Elevator.PhysicalParameters.driveRadiusMeters,
-            0.0,
-            Constants.Elevator.PhysicalParameters.elevatorHeightMeters,
-            true,
-            0.0,
-            0.001,
-            0.001
+    private final RelativeEncoder leaderEncoder = leaderMotor.getEncoder();
+    private final RelativeEncoder followerEncoder = followerMotor.getEncoder();
+
+    private final SparkLimitSwitch bottomLimit = leaderMotor.getReverseLimitSwitch();
+
+
+    private final ElevatorFeedforward feedForward = Elevator.FEEDFORWARD;
+    private final ProfiledPIDController elevatorPID = new ProfiledPIDController(
+        Elevator.PID.kP,
+        Elevator.PID.kI,
+        Elevator.PID.kD,
+        new TrapezoidProfile.Constraints(
+            Elevator.PID.MAX_VELOCITY, 
+            Elevator.PID.MAX_ACCELERATION
+        )
     );
 
-    private DoubleLogEntry elevatorTargetP = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/target/position");
-    private DoubleLogEntry elevatorTargetV = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/target/velocity");
-    private DoubleLogEntry elevatorP = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/state/position");
-    private DoubleLogEntry elevatorV = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/state/velocity");
-    private DoubleLogEntry elevatorOneOutput = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/output1");
-    private DoubleLogEntry elevatorTwoOutput = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/output2");
-    private DoubleLogEntry elevatorOneCurrent = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/current1");
-    private DoubleLogEntry elevatorTwoCurrent = new DoubleLogEntry(DataLogManager.getLog(), "Elevator/current2");
-
-    private Mechanism2d mechanism2D = new Mechanism2d(Constants.RobotConstants.robotLengthMeters,
-            Constants.Elevator.PhysicalParameters.elevatorBottomFromFloorMeters
-                    + Constants.Elevator.PhysicalParameters.elevatorHeightMeters
-                    + Constants.Elevator.PhysicalParameters.elevatorCarriageHeightMeters / 2.0);
-    private MechanismRoot2d rootMechanism = mechanism2D.getRoot("climber",
-            Constants.RobotConstants.robotLengthMeters / 2.0
-                    + Constants.Elevator.PhysicalParameters.elevatorForwardsFromRobotCenterMeters,
-            Constants.Elevator.PhysicalParameters.elevatorBottomFromFloorMeters);
-    private MechanismLigament2d elevatorMechanism;
-
     public ElevatorSubsystem() {
-        super(
-                new ProfiledPIDController(
-                        Constants.Elevator.PID.kP,
-                        Constants.Elevator.PID.kI,
-                        Constants.Elevator.PID.kD,
-                        new TrapezoidProfile.Constraints(
-                                Constants.Elevator.PID.MAX_VELOCITY,
-                                Constants.Elevator.PID.MAX_ACCELERATION)),
-                0.0);
-
-        this.getController().setTolerance(Units.inchesToMeters(0.5));
-
-        elevatorConfigOne
+        leaderConfig
             .idleMode(IdleMode.kBrake)
-            .inverted(Constants.Elevator.elevatorOneInverted);
-        elevatorConfigOne.encoder
-            .positionConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter)
-            .velocityConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter);
-        elevatorConfigOne.limitSwitch.reverseLimitSwitchType(Constants.Elevator.bottomLimitMode);
-
-        elevatorConfigTwo
+            .inverted(Elevator.Leader.INVERTED);  
+        leaderConfig.encoder
+            .positionConversionFactor(1 / Elevator.MOTOR_REVOLUTIONS_PER_METER)
+            .velocityConversionFactor(1 / Elevator.MOTOR_REVOLUTIONS_PER_METER);
+            
+        followerConfig
             .idleMode(IdleMode.kBrake)
-            .inverted(Constants.Elevator.elevatorTwoInverted);
-        elevatorConfigTwo.encoder
-            .positionConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter)
-            .velocityConversionFactor(1.0 / Constants.Elevator.motorTurnsPerMeter);
+            .inverted(Elevator.Follower.INVERTED);
+        followerConfig.encoder
+            .positionConversionFactor(1 / Elevator.MOTOR_REVOLUTIONS_PER_METER)
+            .velocityConversionFactor(1 / Elevator.MOTOR_REVOLUTIONS_PER_METER);
 
-        elevatorMotorOne.configure(elevatorConfigOne, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        elevatorMotorTwo.configure(elevatorConfigTwo, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        
-        elevatorEncoderOne = elevatorMotorOne.getEncoder();
-        elevatorEncoderTwo = elevatorMotorTwo.getEncoder();
+        leaderMotor.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        followerMotor.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        elevatorMotorOne.getEncoder().setPosition(0);
-        elevatorMotorTwo.getEncoder().setPosition(0);
-
-        bottomLimit = elevatorMotorOne.getReverseLimitSwitch();
-
-        this.enable();
-
-        this.elevatorMechanism = rootMechanism.append(new MechanismLigament2d("elevator", 0.0, 90));
+        leaderEncoder.setPosition(0);
+        followerEncoder.setPosition(0);
     }
 
-    public void setPosition(double positionMeters) {
-        setGoal(MathUtil.clamp(positionMeters, 0.0, Constants.Elevator.PhysicalParameters.elevatorHeightMeters));
-    }
 
-    public double getPosition() {
-        return getMeasurement();
-    }
+    private boolean isZeroed = false;
 
-    public double getGoalPosition() {
-        return this.getController().getGoal().position;
-    }
-
-    double lastVelocity = 0.0;
-    double lastTime = 0.0;
-
-    @Override
-    public void useOutput(double output, TrapezoidProfile.State setpoint) {
-        double dv = setpoint.velocity - lastVelocity;
-        double dt = Timer.getFPGATimestamp() - lastTime;
-        lastTime = Timer.getFPGATimestamp();
-
-        lastVelocity = setpoint.velocity;
-
-        double ff = feedForward.calculate(setpoint.velocity, dv / dt);
-
-        if (isZeroed || Robot.isSimulation()) {
-            // Controller output voltage
-            double op = ff + output;
-
-            elevatorMotorOne.setVoltage(op);
-            elevatorMotorTwo.setVoltage(op);
-
-            elevatorTargetP.append(setpoint.position);
-            elevatorTargetV.append(setpoint.velocity);
-
-            SmartDashboard.putNumber("Elevator/Current Position", getMeasurement());
-            SmartDashboard.putNumber("Elevator/Current Velocity", elevatorEncoderOne.getVelocity());
-
-            SmartDashboard.putNumber("Elevator/Target Position", setpoint.position);
-            SmartDashboard.putNumber("Elevator/Target Velocity", setpoint.velocity);
-
-            if (Robot.isSimulation()) {
-                simulation.setInputVoltage(MathUtil.clamp((output + ff), -12.0, 12.0));
-            }
-        } else {
-            // Move down a little bit to zero
-            elevatorMotorOne.set(-0.05);
-            elevatorMotorTwo.set(-0.05);
-        }
-    }
-
-    @Override
-    public double getMeasurement() {
-        return Robot.isSimulation() ? simulation.getPositionMeters() : elevatorEncoderOne.getPosition();
-    }
+    private double lastVelocity = 0.0;
+    private double lastTime = 0.0;
 
     @Override
     public void periodic() {
-        // TODO Auto-generated method stub
-
-        if ((bottomLimit.isPressed()) && (!isZeroed)) {
-            elevatorEncoderOne.setPosition(0.0);
-            setGoal(0.0);
+        // check if needs to be zeroed and is at zero
+        if (!isZeroed && bottomLimit.isPressed()) {
+            leaderEncoder.setPosition(0);
             isZeroed = true;
         }
 
-        super.periodic();
+        // check if initial zero had been run
+        if (isZeroed) {
+            TrapezoidProfile.State setpoint = elevatorPID.getSetpoint();
+            double deltaVelocity = setpoint.velocity - lastVelocity;
+            double deltaTime = Timer.getFPGATimestamp() - lastTime;
 
-        elevatorP.append(getMeasurement());
-        elevatorV.append(elevatorEncoderOne.getVelocity());
-        elevatorOneOutput.append(elevatorMotorOne.getAppliedOutput());
-        elevatorTwoOutput.append(elevatorMotorTwo.getAppliedOutput());
-        elevatorOneCurrent.append(elevatorMotorOne.getOutputCurrent());
-        elevatorTwoCurrent.append(elevatorMotorTwo.getOutputCurrent());
-        this.elevatorMechanism
-                .setLength(getMeasurement() + Constants.Elevator.PhysicalParameters.elevatorCarriageHeightMeters / 2.0);
+            lastTime = Timer.getFPGATimestamp();
+            lastVelocity = setpoint.velocity;
 
-        // SmartDashboard.putNumber("Current Elevator Position", getMeasurement());
-        // SmartDashboard.putNumber("Goal Elevator Position",
-        // this.getController().getGoal().position);
-        SmartDashboard.putBoolean("Elevator Bottom Limit", bottomLimit.isPressed());
-        SmartDashboard.putData("Elevator Mechanism", mechanism2D);
+            double output = feedForward.calculate(setpoint.velocity, deltaVelocity / deltaTime)
+                + elevatorPID.calculate(leaderEncoder.getPosition());
+
+            leaderMotor.setVoltage(output);
+            followerMotor.setVoltage(output);
+        } else {
+            // slowly move down to zero
+            leaderMotor.set(-0.05);
+            followerMotor.set(-0.05);
+        }
     }
 
-    @Override
-    public void simulationPeriodic() {
-        // TODO Auto-generated method stub
-        super.simulationPeriodic();
+    public void setPosition(double position) {
+        elevatorPID.setGoal(MathUtil.clamp(position, 0.0, Elevator.PhysicalParameters.elevatorHeightMeters));
+    }
 
-        simulation.update(0.020);
+    public double getPosition() {
+        return leaderEncoder.getPosition();
+    }
 
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(simulation.getCurrentDrawAmps()));
+    public double getGoalPosition() {
+        return elevatorPID.getGoal().position;
     }
 
     public boolean isInPosition() {
-        return this.getController().atGoal();
+        return elevatorPID.atGoal();
     }
 }
