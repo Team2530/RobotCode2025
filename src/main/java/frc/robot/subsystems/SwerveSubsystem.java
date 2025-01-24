@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
@@ -138,6 +139,24 @@ public class SwerveSubsystem extends SubsystemBase {
         chassisRotX = new DoubleLogEntry(DataLogManager.getLog(), "Chassis/rot_speed/x");
         chassisRotY = new DoubleLogEntry(DataLogManager.getLog(), "Chassis/rot_speed/y");
         chassisRotZ = new DoubleLogEntry(DataLogManager.getLog(), "Chassis/rot_speed/z");
+    }
+
+    private SysIdRoutine routine = new SysIdRoutine(
+        new SysIdRoutine.Config(),
+        new SysIdRoutine.Mechanism((voltage) -> {
+            frontLeft.sysidDrive(voltage);
+            frontRight.sysidDrive(voltage);
+            backLeft.sysidDrive(voltage);
+            backRight.sysidDrive(voltage);
+        }, null, this)
+    );
+
+    public Command sysidQuasistatic(SysIdRoutine.Direction direction) {
+        return routine.quasistatic(direction);
+    }
+
+    public Command sysidDynamic(SysIdRoutine.Direction direction) {
+        return routine.dynamic(direction);
     }
 
     @Override

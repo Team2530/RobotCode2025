@@ -8,6 +8,7 @@ import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.commands.ElevatorCommand.ElevatorPresets;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
 
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -124,28 +126,14 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
-        operatorXbox.a()
-                .onTrue(elevatorToStow);
-        operatorXbox.x()
-                .onTrue(elevatorToMiddle);
-        operatorXbox.y()
-                .onTrue(elevatorToTop);
+        operatorXbox.y().whileTrue(swerveDriveSubsystem.sysidQuasistatic(SysIdRoutine.Direction.kForward));
+        operatorXbox.a().whileTrue(swerveDriveSubsystem.sysidQuasistatic(SysIdRoutine.Direction.kReverse));
+        operatorXbox.b().whileTrue(swerveDriveSubsystem.sysidDynamic(SysIdRoutine.Direction.kForward));
+        operatorXbox.x().whileTrue(swerveDriveSubsystem.sysidDynamic(SysIdRoutine.Direction.kReverse));
 
-        operatorXbox.b().whileTrue(new ElevatorFollowCommand(elevator, new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return (operatorXbox.getLeftY() * -0.5 + 0.5)
-                        * Constants.Elevator.PhysicalParameters.elevatorHeightMeters;
-            }
-        }));
+        operatorXbox.povUp().debounce(0.02).onTrue(Commands.runOnce(SignalLogger::start));
 
-        operatorXbox.povUp().debounce(0.02).onTrue(new InstantCommand(() -> {
-            elevator.setPosition(elevator.getGoalPosition() + 0.1);
-        }));
-
-        operatorXbox.povDown().debounce(0.02).onTrue(new InstantCommand(() -> {
-            elevator.setPosition(elevator.getGoalPosition() - 0.1);
-        }));
+        operatorXbox.povDown().debounce(0.02).onTrue(Commands.runOnce(SignalLogger::stop));
     }
 
     /**
