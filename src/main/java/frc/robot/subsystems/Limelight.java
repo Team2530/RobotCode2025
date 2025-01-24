@@ -63,43 +63,63 @@ public class Limelight extends SubsystemBase {
     public void smartCrop() {
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
 
-        if (lastPoseEstimate != poseEstimate.timestampSeconds) {
+        if (lastPoseEstimate != poseEstimate.timestampSeconds){
             counter = ++counter % 50;
-            if(counter > 45){ // For every 5 frames, out of 50, check the entire screen for apriltags
+            if(counter > 40){ // For every 5 frames, out of 50, check the entire screen for apriltags
                 restoreCrop(); // 45 will be cropped onto whichever limelights they find
                 return;
             }
-            lastPoseEstimate = poseEstimate.timestampSeconds;
-            RawFiducial[] targets = LimelightHelpers.getRawFiducials(name);
-            boolean useCrop = true;
-            Translation2d[] targetTranslations = new Translation2d[targets.length];
+            lastPoseEstimate = poseEstimate.timestampSeconds; //making sure we're only running this process on new frames
+            RawFiducial[] targets = LimelightHelpers.getRawFiducials(name); //get our targets
+            boolean useCrop = true; //we are currently using it, more changes will be implemented
+            Translation2d[] targetTranslations = new Translation2d[targets.length]; 
             double area = 0;
 
             for (int i = 0; i < targetTranslations.length; ++i) {
-                targetTranslations[i] = new Translation2d(targets[i].txnc, targets[i].tync);
-                area = Math.max(area, targets[i].ta);
+                targetTranslations[i] = new Translation2d(targets[i].txnc, targets[i].tync); 
+                area = Math.max(area, targets[i].ta); //Finding the largest area of the targets
             }
 
             double xc = 0, yc = 0;
 
-            for (int i = 0; i < targetTranslations.length; ++i) {
-                xc += targetTranslations[i].getX();
-                yc += targetTranslations[i].getY();
+            for (int i = 0; i < targetTranslations.length; ++i) { // Add to the width, depending on the locations of the other targets
+                xc += targetTranslations[i].getX(); //If one is at (2, 1), the width of our box increases on each size by 2, and the height by 1
+                yc += targetTranslations[i].getY(); //xc & xy increase per target
             }
 
-            xc /= targetTranslations.length;
-            yc /= targetTranslations.length;
+            xc /= targetTranslations.length; //Then, average depending on the number of targets
+            yc /= targetTranslations.length; // (2,1), (.05, .25), (-1, 2) -> xc =.35, yc= .75
 
-            xc = xc / (limelightType.HFOV / 2);
+            xc = xc / (limelightType.HFOV / 2); // scales it to FOV
             yc = yc / (limelightType.VFOV / 2);
 
-            double borderx = 0, bordery = 0;
+            double borderx = 0, bordery = 0; 
 
             if (targetTranslations.length > 1) { // for more than one tag
-                borderx = (area + 0.75) * 0.22 * targetTranslations.length + .2;
+                borderx = (area + 0.75) * 0.22 * targetTranslations.length + .2; // relatively randomly generated border
                 bordery = (area + 0.5) * 0.22 * targetTranslations.length;
             } 
             //todo optimize
+
+            else {
+                if (area > 0.75) {  //Remember that "area" only refers to the area of the largest apriltag
+                    borderx = 0.75; 
+                    bordery = 0.75;
+                } 
+                else if (area > .015){ 
+                    borderx = 2; 
+                    bordery = 0.25;
+                }
+                else if (area > .005){
+                    borderx = 1.5;
+                    bordery = 1.5;
+                }
+                else { 
+                    borderx = 0.75;
+                    bordery = 0.25;
+                }
+            }
+
             /*else {
                 if (area < 0.015) {
                     borderx = 0.5;
@@ -115,10 +135,13 @@ public class Limelight extends SubsystemBase {
                 }
             }
             */
-            borderx = 1;
-            bordery = .25;
+            //borderx = 1;
+            //bordery = .25;
+
+
             if (useCrop) {
                 LimelightHelpers.setCropWindow(name, xc - borderx, xc + borderx, yc - bordery, yc + bordery);
+                // Finds the center of the targets, tries to build a big enough box from there
             }
         }
     }

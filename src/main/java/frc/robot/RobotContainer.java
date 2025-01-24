@@ -8,6 +8,11 @@ import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.commands.ElevatorCommand.ElevatorPresets;
 
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Limelight.LimelightType;
+import frc.robot.util.LimelightContainer;
+
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
 
@@ -31,6 +36,13 @@ import edu.wpi.first.wpilibj2.command.button.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+    private static final Limelight LL_A = new Limelight(LimelightType.LL3, "limelight-a", true, true);
+    private static final Limelight LL_B = new Limelight(LimelightType.LL3, "limelight-b", true, true);
+
+    public static final LimelightContainer LLContainer = new LimelightContainer(LL_A, LL_B);
+
+
 
     private final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
