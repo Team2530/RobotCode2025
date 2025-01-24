@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.CoralSubsystem;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Elevator;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class CoralElevator extends SubsystemBase {
 
     private final SparkMax leaderMotor = new SparkMax(Elevator.Leader.MOTOR_PORT, MotorType.kBrushless);
     private final SparkMax followerMotor = new SparkMax(Elevator.Follower.MOTOR_PORT, MotorType.kBrushless);
@@ -42,7 +42,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         )
     );
 
-    public ElevatorSubsystem() {
+    public CoralElevator() {
         leaderConfig
             .idleMode(IdleMode.kBrake)
             .inverted(Elevator.Leader.INVERTED);  
@@ -99,16 +99,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    public void setPosition(double position) {
+    public void setGoalPosition(double position) {
         elevatorPID.setGoal(MathUtil.clamp(position, 0.0, Elevator.PhysicalParameters.elevatorHeightMeters));
+    }
+    
+    public double getGoalPosition() {
+        return elevatorPID.getGoal().position;
     }
 
     public double getPosition() {
         return leaderEncoder.getPosition();
-    }
-
-    public double getGoalPosition() {
-        return elevatorPID.getGoal().position;
     }
 
     public boolean isInPosition() {

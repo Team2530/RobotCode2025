@@ -12,6 +12,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -169,6 +170,10 @@ public final class Constants {
   public static class Coral {
     public static class Pivot {
       public static final int MOTOR_PORT = 14;
+      public static final int ENCODER_PORT = 28;
+
+      public static final double MAXIMUM_ANGLE = 80;
+
       public static final ProfiledPIDController PID = new ProfiledPIDController(
         1,
         0.0,
@@ -188,6 +193,9 @@ public final class Constants {
     }
     public static class Pitch {
       public static final int MOTOR_PORT = 16;
+
+      public static final double MAXIMUM_ANGLE = 45;
+
       public static final ProfiledPIDController PID = new ProfiledPIDController(
         1,
         0.0,
@@ -198,37 +206,51 @@ public final class Constants {
 
     public static class Intake {
       public static final int MOTOR_PORT = 17;
+
+      public static final double POSITIVE_RATE_LIMIT = 5.0;
+      public static final double NEGATIVE_RATE_LIMIT = 5.0;
     }
   }
   
   // TODO: ##################### PLACEHOLDERS #####################
-  public static class Algae {
+  public static final class Algae {
     public static final class Pivot {
       public static final int MOTOR_PORT = 18;
+      public static final int ENCODER_PORT = 27;
+
       public static final ProfiledPIDController PID = new ProfiledPIDController(
         1,
         0.0,
         0.0,
         null
       );
+
+      public static final double RETRACTED_LIMIT_DEGREES = 10.0;
+      public static final double EXTENDED_LIMIT_DEGREES = 90.0;
     }
 
     public static final class Intake {
       public static final int MOTOR_PORT = 19;
+
+      public static final double POSITIVE_RATE_LIMIT = 5.0;
+      public static final double NEGATIVE_RATE_LIMIT = -5.0;
     }
   }
 
-  public static class Elevator {
-    public static final int elevatorOnePort = 10;
-    public static final int elevatorTwoPort = 11;
+  public static final class Elevator {
+    public static final class Leader {
+      public static final int MOTOR_PORT = 10;
+      public static final boolean INVERTED = true;
+    }
 
-    public static boolean elevatorOneInverted = true;
-    public static boolean elevatorTwoInverted = false;
+    public static final class Follower {
+      public static final int MOTOR_PORT = 11;
+      public static final boolean INVERTED = false;
+    }
 
     public static Type bottomLimitMode = Type.kNormallyOpen;
 
-
-    public static double motorTurnsPerMeter = 39.44;
+    public static double MOTOR_REVOLUTIONS_PER_METER = 39.44;
 
     public static class PID {
       public static double kP = 20.0; // 9.0;
@@ -248,7 +270,7 @@ public final class Constants {
       public static double Kg = 0.1;
     }
 
-    public static ElevatorFeedforward feedForward = new ElevatorFeedforward(
+    public static ElevatorFeedforward FEEDFORWARD = new ElevatorFeedforward(
       FeedforwardConstants.Ks,
       FeedforwardConstants.Kg,
       FeedforwardConstants.Kv,
