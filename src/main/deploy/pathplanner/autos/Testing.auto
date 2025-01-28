@@ -9,18 +9,6 @@
           "data": {
             "pathName": "New Path"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "route 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "route 2"
-          }
         }
       ]
     }
