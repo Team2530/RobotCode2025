@@ -246,6 +246,7 @@ public final class Constants {
 
     public static final class Intake {
       public static final int MOTOR_PORT = 19;
+      public static final int BEAMBREAK_PORT = 0;
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
       public static final double NEGATIVE_RATE_LIMIT = -5.0;

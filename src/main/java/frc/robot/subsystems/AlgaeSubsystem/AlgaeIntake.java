@@ -5,11 +5,14 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Algae;
 
 public class AlgaeIntake extends SubsystemBase {
     private final SparkMax intakeMotor = new SparkMax(Algae.Intake.MOTOR_PORT, MotorType.kBrushless);
+
+    private final DigitalInput intakeBeambreak = new DigitalInput(Algae.Intake.BEAMBREAK_PORT);
 
     private final SlewRateLimiter intakeProfile = new SlewRateLimiter(
         Algae.Intake.POSITIVE_RATE_LIMIT,
@@ -21,9 +24,14 @@ public class AlgaeIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double output = intakeProfile.calculate(outputPercentage);
+        // if no algae
+        if (intakeBeambreak.get()) {
+            double output = intakeProfile.calculate(outputPercentage);
+            intakeMotor.set(output);
+        } else {
+            intakeMotor.set(0.05);
+        }
 
-        intakeMotor.set(output);
     }
 
     public void setOutputPercentage(double outputPercentage) {

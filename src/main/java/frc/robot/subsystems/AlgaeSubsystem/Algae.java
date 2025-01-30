@@ -8,20 +8,30 @@ public class Algae extends SubsystemBase{
     private final AlgaeIntake intake;
 
     public enum AlgaePresets {
-        STOW(10, 0),
-        FOO(80, 1);
-
+        STOW(10),
+        FOO(80);
 
         double armAngle;
-        double intakePercentage;
 
-        private AlgaePresets(double armAngle, double intakePercentage) {
+        private AlgaePresets(double armAngle) {
             this.armAngle = armAngle;
-            this.intakePercentage = intakePercentage;
         }
     }
 
+    public enum AlgaeIntakePresets {
+        INTAKING(1),
+        PURGE(-1),
+        STOP(0);
+
+        double outputPercentage;
+
+        AlgaeIntakePresets(double outputPercentage) {
+            this.outputPercentage = outputPercentage;
+        } 
+    }
+
     private AlgaePresets currentPreset = AlgaePresets.STOW;
+    private AlgaeIntakePresets currentIntakePreset = AlgaeIntakePresets.STOP;
 
     public Algae(AlgaeArm arm, AlgaeIntake intake) {
         this.arm = arm;
@@ -31,9 +41,14 @@ public class Algae extends SubsystemBase{
     public void setAlgaePreset(AlgaePresets preset) {
         if (preset != currentPreset) {
             arm.setGoalDegrees(preset.armAngle);
-            intake.setOutputPercentage(preset.intakePercentage);
-
             currentPreset = preset;
+        }
+    }
+
+    public void setAlgaeIntakePreset(AlgaeIntakePresets preset) {
+        if (preset != currentIntakePreset) {
+            intake.setOutputPercentage(preset.outputPercentage);
+            currentIntakePreset = preset;
         }
     }
 }
