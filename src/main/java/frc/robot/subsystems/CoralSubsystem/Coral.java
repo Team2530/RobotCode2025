@@ -29,7 +29,20 @@ public class Coral extends SubsystemBase {
         }
     }
 
+    public enum MirrorPresets {
+        RIGHT(false),
+        LEFT(true),
+        STARBOARD(false),
+        PORT(true);
+
+        boolean isMirrored;
+        MirrorPresets(boolean isMirrored) {
+            this.isMirrored = isMirrored;
+        }
+    } 
+
     private CoralPresets currentPreset = CoralPresets.STOW;
+    MirrorPresets mirrorSetting = MirrorPresets.RIGHT;
 
     public Coral(CoralArm arm, CoralIntake intake, CoralElevator elevator) {
         this.arm = arm;
@@ -40,11 +53,26 @@ public class Coral extends SubsystemBase {
     public void setCoralPreset(CoralPresets preset) {
         if (preset != currentPreset) {
             elevator.setGoalPosition(preset.elevatorHeight);
-            arm.setPivotGoalDegrees(preset.pivotAngle);
+            arm.setPivotGoalDegrees(
+                preset.pivotAngle 
+                * (mirrorSetting.isMirrored ? -1 : 1)
+            );
             arm.setRollGoalDegrees(preset.rollAngle);
             arm.setPitchGoalDegrees(preset.pitchAngle);
 
             currentPreset = preset;
         }
+    }
+
+    public void mirrorArm() {
+        if (mirrorSetting.isMirrored) {
+            mirrorSetting = MirrorPresets.RIGHT;
+        } else {
+            mirrorSetting = MirrorPresets.LEFT;
+        }
+    }
+
+    public void mirorArm(MirrorPresets preset) {
+        mirrorSetting = preset;
     }
 }
