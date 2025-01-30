@@ -4,10 +4,9 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -19,11 +18,11 @@ import frc.robot.Constants.Elevator;
 
 public class CoralElevator extends SubsystemBase {
 
-    private final SparkMax leaderMotor = new SparkMax(Elevator.Leader.MOTOR_PORT, MotorType.kBrushless);
-    private final SparkMax followerMotor = new SparkMax(Elevator.Follower.MOTOR_PORT, MotorType.kBrushless);
+    private final SparkFlex leaderMotor = new SparkFlex(Elevator.Leader.MOTOR_PORT, MotorType.kBrushless);
+    private final SparkFlex followerMotor = new SparkFlex(Elevator.Follower.MOTOR_PORT, MotorType.kBrushless);
 
-    private final SparkMaxConfig leaderConfig = new SparkMaxConfig();
-    private final SparkMaxConfig followerConfig = new SparkMaxConfig();
+    private final SparkFlexConfig leaderConfig = new SparkFlexConfig();
+    private final SparkFlexConfig followerConfig = new SparkFlexConfig();
 
     private final RelativeEncoder leaderEncoder = leaderMotor.getEncoder();
     private final RelativeEncoder followerEncoder = followerMotor.getEncoder();

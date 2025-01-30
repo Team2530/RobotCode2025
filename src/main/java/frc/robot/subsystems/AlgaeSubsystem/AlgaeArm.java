@@ -1,6 +1,7 @@
 package frc.robot.subsystems.AlgaeSubsystem;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -14,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Algae;
 
 public class AlgaeArm extends SubsystemBase{
-    public final SparkMax pivotMotor = new SparkMax(Algae.Pivot.MOTOR_PORT, MotorType.kBrushless);
+    public final SparkFlex pivotMotor = new SparkFlex(Algae.Pivot.MOTOR_PORT, MotorType.kBrushless);
     public final SparkMaxConfig pivotConfig = new SparkMaxConfig();
     public final CANcoder pivotEncoder = new CANcoder(Algae.Pivot.ENCODER_PORT);
 
