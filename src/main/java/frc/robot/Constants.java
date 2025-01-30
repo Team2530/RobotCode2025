@@ -42,8 +42,8 @@ public final class Constants {
     public static final double robotLengthMeters = Units.inchesToMeters(25.0);
     
       // TODO: ############## REPLACE PLACEHOLDERS ##############
-      public static final double TOTAL_MASS_KG = 10;
-      public static final double MOMENT_OF_INERTIA = 1;
+      public static final double TOTAL_MASS_KG = 60;
+      public static final double MOMENT_OF_INERTIA = 5;
   }
 
   public static final class FieldConstants {
