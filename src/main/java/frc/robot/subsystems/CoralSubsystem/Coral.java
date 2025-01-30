@@ -36,13 +36,25 @@ public class Coral extends SubsystemBase {
         PORT(true);
 
         boolean isMirrored;
-        MirrorPresets(boolean isMirrored) {
+        private MirrorPresets(boolean isMirrored) {
             this.isMirrored = isMirrored;
         }
     } 
 
+    public enum CoralIntakePresets {
+        INTAKING(1),
+        PURGE(-1),
+        STOP(0);
+
+        double intakePercentage;
+        private CoralIntakePresets(double intakePercentage) {
+            this.intakePercentage = intakePercentage;
+        }
+    }
+
     private CoralPresets currentPreset = CoralPresets.STOW;
-    MirrorPresets mirrorSetting = MirrorPresets.RIGHT;
+    private MirrorPresets mirrorSetting = MirrorPresets.RIGHT;
+    private CoralIntakePresets currentIntakePreset = CoralIntakePresets.STOP;
 
     public Coral(CoralArm arm, CoralIntake intake, CoralElevator elevator) {
         this.arm = arm;
@@ -72,7 +84,14 @@ public class Coral extends SubsystemBase {
         }
     }
 
-    public void mirorArm(MirrorPresets preset) {
+    public void mirrorArm(MirrorPresets preset) {
         mirrorSetting = preset;
+    }
+
+    public void setCoralIntakePreset(CoralIntakePresets preset) {
+        if (preset != currentIntakePreset) {
+            intake.setOutputPercentage(preset.intakePercentage);
+            currentIntakePreset = preset;
+        }
     }
 }
