@@ -28,8 +28,6 @@ public class CoralElevator extends SubsystemBase {
     private final RelativeEncoder leaderEncoder = leaderMotor.getEncoder();
     private final RelativeEncoder followerEncoder = followerMotor.getEncoder();
 
-    private final SparkLimitSwitch bottomLimit = leaderMotor.getReverseLimitSwitch();
-
 
     private final ElevatorFeedforward feedForward = Elevator.FEEDFORWARD;
     private final ProfiledPIDController elevatorPID = new ProfiledPIDController(
@@ -73,7 +71,8 @@ public class CoralElevator extends SubsystemBase {
     @Override
     public void periodic() {
         // check if needs to be zeroed and is at zero
-        if (!isZeroed && bottomLimit.isPressed()) {
+                                // TODO: ######################### PLACEHOLDERS AGAIN #########################
+        if (!isZeroed && (leaderMotor.getOutputCurrent() > 2 || followerMotor.getOutputCurrent() > 2)) {
             leaderEncoder.setPosition(0);
             isZeroed = true;
         }
@@ -113,5 +112,9 @@ public class CoralElevator extends SubsystemBase {
 
     public boolean isInPosition() {
         return elevatorPID.atGoal();
+    }
+
+    public void zeroElevator() {
+        isZeroed = false;
     }
 }
