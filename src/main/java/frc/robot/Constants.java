@@ -175,6 +175,7 @@ public final class Constants {
       public static final int ENCODER_PORT = 28;
 
       public static final double MAXIMUM_ANGLE = 80;
+      public static final double FRAME_BORDER_ANGLE = 20;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
         1,
@@ -232,6 +233,11 @@ public final class Constants {
         0.0,
         0.0,
         null
+      );
+      public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
+        1,
+        1,
+        1
       );
 
       public static final double RETRACTED_LIMIT_DEGREES = 10.0;

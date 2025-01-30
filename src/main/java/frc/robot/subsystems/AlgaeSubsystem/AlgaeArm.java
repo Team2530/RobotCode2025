@@ -10,7 +10,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Algae;
 
@@ -20,6 +22,7 @@ public class AlgaeArm extends SubsystemBase{
     public final CANcoder pivotEncoder = new CANcoder(Algae.Pivot.ENCODER_PORT);
 
     public final ProfiledPIDController pivotPID = Algae.Pivot.PID;
+    public final ArmFeedforward pivotFeedforward = Algae.Pivot.FEEDFORWARD;
 
     public AlgaeArm() {
         pivotConfig.idleMode(IdleMode.kBrake);
@@ -28,7 +31,10 @@ public class AlgaeArm extends SubsystemBase{
 
     @Override
     public void periodic() {
-        double output = pivotPID.calculate(pivotEncoder.getAbsolutePosition().getValueAsDouble());
+        double output = pivotPID.calculate(
+            pivotEncoder.getAbsolutePosition().getValueAsDouble()
+            + pivotFeedforward.calculate(Units.degreesToRadians(this.getGoalDegrees()), 0.0)
+        );
 
         pivotMotor.set(output);
     }
