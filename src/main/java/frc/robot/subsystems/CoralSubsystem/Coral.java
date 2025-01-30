@@ -42,7 +42,7 @@ public class Coral extends SubsystemBase {
             elevator.setGoalPosition(preset.elevatorHeight);
             arm.setPivotGoalDegrees(preset.pivotAngle);
             arm.setRollGoalDegrees(preset.rollAngle);
-            arm.setPitchGoalDegress(preset.pitchAngle);
+            arm.setPitchGoalDegrees(preset.pitchAngle);
 
             currentPreset = preset;
         }
