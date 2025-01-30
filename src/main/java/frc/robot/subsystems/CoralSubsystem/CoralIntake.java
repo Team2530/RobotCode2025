@@ -1,5 +1,8 @@
 package frc.robot.subsystems.CoralSubsystem;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -13,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Coral;
 
 public class CoralIntake extends SubsystemBase {
-    private final SparkMax intakeMotor = new SparkMax(Coral.Intake.MOTOR_PORT, MotorType.kBrushless);
-    private final SparkMaxConfig intakeConfig = new SparkMaxConfig();
+    private final TalonFX intakeMotor = new TalonFX(Coral.Intake.MOTOR_PORT);
+
 
     private final SlewRateLimiter intakeProfile = new SlewRateLimiter(
         Coral.Intake.POSITIVE_RATE_LIMIT,
@@ -23,8 +26,7 @@ public class CoralIntake extends SubsystemBase {
     );
 
     public CoralIntake() {
-        intakeConfig.idleMode(IdleMode.kBrake);
-        intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        intakeMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     private double outputPercentage = 0.0;
