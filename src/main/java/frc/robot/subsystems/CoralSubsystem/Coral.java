@@ -14,7 +14,9 @@ public class Coral extends SubsystemBase {
         LEVEL_3(3.0, 20.0, 0.0, 0.0),
         LEVEL_4(4.0, 20.0, 0.0, 0.0),
         INTAKE(1.0, 110.0, 0.0, 0.0),
-        STOW(1.0, 0.0, 0.0, 0.0);
+        STOW(1.0, 0.0, 0.0, 0.0),
+
+        CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
 
         double elevatorHeight;
         double pivotAngle;
@@ -44,7 +46,9 @@ public class Coral extends SubsystemBase {
     public enum CoralIntakePresets {
         INTAKING(1),
         PURGE(-1),
-        STOP(0);
+        STOP(0),
+
+        CUSTOM(Double.NaN);
 
         double intakePercentage;
         private CoralIntakePresets(double intakePercentage) {
@@ -63,7 +67,9 @@ public class Coral extends SubsystemBase {
     }
 
     public void setCoralPreset(CoralPresets preset) {
-        if (preset != currentPreset) {
+        if (preset == CoralPresets.CUSTOM) {
+            // uhhh i don't now how to throw an exception and i don't feel like figuring it out
+        } else if (preset != currentPreset) {
             elevator.setGoalPosition(preset.elevatorHeight);
             arm.setPivotGoalDegrees(
                 preset.pivotAngle 
@@ -74,6 +80,35 @@ public class Coral extends SubsystemBase {
 
             currentPreset = preset;
         }
+    }
+
+    public void setCustomPosition(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle) {
+        currentPreset = CoralPresets.CUSTOM;
+
+        elevator.setGoalPosition(elevatorHeight);
+        arm.setPivotGoalDegrees(pivotAngle);
+        arm.setRollGoalDegrees(rollAngle);
+        arm.setPitchGoalDegrees(pitchAngle);
+    }
+
+    public void setCustomElevatorPosition(double elevatorHeight) {
+        currentPreset = CoralPresets.CUSTOM;
+        elevator.setGoalPosition(elevatorHeight);
+    }
+
+    public void setCustomPivotPosition(double pivotAngle) {
+        currentPreset = CoralPresets.CUSTOM;
+        arm.setPivotGoalDegrees(pivotAngle);
+    }
+
+    public void setCustomRollPosition(double rollAngle) {
+        currentPreset = CoralPresets.CUSTOM;
+        arm.setRollGoalDegrees(rollAngle);
+    }
+
+    public void setCustomPitchPosition(double pitchAngle) {
+        currentPreset = CoralPresets.CUSTOM;
+        arm.setPitchGoalDegrees(pitchAngle);
     }
 
     public void mirrorArm() {
@@ -94,4 +129,10 @@ public class Coral extends SubsystemBase {
             currentIntakePreset = preset;
         }
     }
+
+    public void setCustomIntakePercent(double percentage) {
+        currentIntakePreset = CoralIntakePresets.CUSTOM;
+        intake.setOutputPercentage(percentage);
+    }
 }
+ 
