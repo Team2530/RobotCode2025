@@ -192,6 +192,7 @@ public final class Constants {
       public static double elevatorCarriageHeightMeters = Units.inchesToMeters(6.0);
       public static double elevatorForwardsFromRobotCenterMeters = Units.inchesToMeters(25.0 / 2);
       public static DCMotor simMotor = DCMotor.getNeoVortex(2);
+      // TODO: create maxvelocity and maxacceleration
     }
   }
 
