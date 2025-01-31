@@ -1,5 +1,9 @@
 package frc.robot.subsystems.CoralSubsystem;
 
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Coral extends SubsystemBase {
@@ -7,6 +11,15 @@ public class Coral extends SubsystemBase {
     private final CoralArm arm;
     private final CoralIntake intake;
     private final CoralElevator elevator;
+
+    private final Mechanism2d coralMechanism = new Mechanism2d(2,3);
+    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 1.5, 0);
+    private final MechanismLigament2d elevatorMechanism = rootMechanism.append(
+        new MechanismLigament2d("Elevator", 1, 0)
+    );
+    private final MechanismLigament2d pivotMechanism = elevatorMechanism.append(
+        new MechanismLigament2d("Coral", 1, 0)
+    );
 
     public enum CoralPresets {
         LEVEL_1(1.0, 20.0, 0.0, 0.0),
@@ -54,6 +67,15 @@ public class Coral extends SubsystemBase {
         private CoralIntakePresets(double intakePercentage) {
             this.intakePercentage = intakePercentage;
         }
+    }
+
+    @Override
+    public void periodic() {
+        // i have no idea what any of the getPositions output
+        elevatorMechanism.setLength(elevator.getPosition());
+        pivotMechanism.setAngle(arm.getPivotPositionDegrees());
+
+        SmartDashboard.putData("Coral Mechanism", coralMechanism);
     }
 
     private CoralPresets currentPreset = CoralPresets.STOW;
