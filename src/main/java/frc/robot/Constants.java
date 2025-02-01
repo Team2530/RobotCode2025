@@ -5,6 +5,9 @@
 package frc.robot;
 
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -15,6 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -42,13 +46,12 @@ public final class Constants {
     public static final double robotLengthMeters = Units.inchesToMeters(25.0);
     
       // TODO: ############## REPLACE PLACEHOLDERS ##############
-      public static final double TOTAL_MASS_KG = 60;
+      public static final double TOTAL_MASS_KG = 80;
       public static final double MOMENT_OF_INERTIA = 5;
   }
 
   public static final class FieldConstants {
     public static final double GRAVITY = 9.81;
-    public static final double SPEAKER_HEIGHT = 2.05; // Meters
 
     public static Alliance getAlliance() {
       if (DriverStation.getAlliance().isPresent()) {
@@ -116,8 +119,7 @@ public final class Constants {
   }
 
   public static class DriveConstants {
-    // TODO: Make sure that this is correct - this is from the SDS website but needs
-    // empirical verification
+    // TODO: Make sure that this is correct - this is from the SDS website but needs empirical verification
     public static final double MAX_MODULE_VELOCITY = 5.21;
     public static final double MAX_ROBOT_VELOCITY = 5.21;
     public static final double MAX_ROBOT_RAD_VELOCITY = 12.0; // Approx. Measured rads/sec
@@ -192,7 +194,9 @@ public final class Constants {
       public static double elevatorCarriageHeightMeters = Units.inchesToMeters(6.0);
       public static double elevatorForwardsFromRobotCenterMeters = Units.inchesToMeters(25.0 / 2);
       public static DCMotor simMotor = DCMotor.getNeoVortex(2);
-      // TODO: create maxvelocity and maxacceleration
+      // TODO: ############## REPLACE PLACEHOLDERS UNDER ##############
+      public static double maxVelocityMetersPerSecond = 10;
+      public static double maxAccelerationMetersPerSecondSquared = 5;
     }
   }
 
