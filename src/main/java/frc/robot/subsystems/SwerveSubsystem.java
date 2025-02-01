@@ -187,13 +187,13 @@ public class SwerveSubsystem extends SubsystemBase {
         // TODO: Test
         // WARNING: REMOVE IF USING TAG FOLLOW!!!
         // updateVisionOdometry();
-/* 
+ 
         if (DriverStation.isTeleopEnabled()) {
             updateMegaTagOdometry();
         } else {
             updateVisionOdometry();
         }
-*/
+
         odometry.update(getRotation2d(), getModulePositions());
         // if (DriverStation.getAlliance().isPresent()) {
         // switch (DriverStation.getAlliance().get()) {
