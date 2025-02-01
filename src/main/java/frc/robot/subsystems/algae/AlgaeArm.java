@@ -1,4 +1,4 @@
-package frc.robot.subsystems.algae;
+package frc.robot.subsystems.Algae;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.spark.SparkFlex;

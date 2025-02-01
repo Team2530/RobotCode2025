@@ -1,8 +1,8 @@
-package frc.robot.subsystems.algae;
+package frc.robot.subsystems.Algae;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Algae extends SubsystemBase {
+public class AlgaeSubsystem extends SubsystemBase {
     
     private final AlgaeArm arm;
     private final AlgaeIntake intake;
@@ -13,7 +13,7 @@ public class Algae extends SubsystemBase {
     /**
      * Creates a new Algae subsystem
      */
-    public Algae(AlgaeArm arm, AlgaeIntake intake) {
+    public AlgaeSubsystem(AlgaeArm arm, AlgaeIntake intake) {
         this.arm = arm;
         this.intake = intake;
     }

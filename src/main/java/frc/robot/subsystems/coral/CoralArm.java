@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coral;
+package frc.robot.subsystems.Coral;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.AbsoluteEncoder;

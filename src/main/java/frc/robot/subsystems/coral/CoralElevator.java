@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coral;
+package frc.robot.subsystems.Coral;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
