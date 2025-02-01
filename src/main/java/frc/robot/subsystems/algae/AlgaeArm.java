@@ -1,4 +1,4 @@
-package frc.robot.subsystems.AlgaeSubsystem;
+package frc.robot.subsystems.algae;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.spark.SparkFlex;
@@ -16,13 +16,18 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Algae;
 
-public class AlgaeArm extends SubsystemBase{
-    public final SparkFlex pivotMotor = new SparkFlex(Algae.Pivot.MOTOR_PORT, MotorType.kBrushless);
-    public final SparkMaxConfig pivotConfig = new SparkMaxConfig();
-    public final CANcoder pivotEncoder = new CANcoder(Algae.Pivot.ENCODER_PORT);
+import static frc.robot.Constants.Algae.Pivot.MOTOR_PORT;
+import static frc.robot.Constants.Algae.Pivot.ENCODER_PORT;
+import static frc.robot.Constants.Algae.Pivot.PID;
+import static frc.robot.Constants.Algae.Pivot.FEEDFORWARD;
 
-    public final ProfiledPIDController pivotPID = Algae.Pivot.PID;
-    public final ArmFeedforward pivotFeedforward = Algae.Pivot.FEEDFORWARD;
+public class AlgaeArm extends SubsystemBase {
+    public final SparkFlex pivotMotor = new SparkFlex(MOTOR_PORT, MotorType.kBrushless);
+    public final SparkMaxConfig pivotConfig = new SparkMaxConfig();
+    public final CANcoder pivotEncoder = new CANcoder(ENCODER_PORT);
+
+    public final ProfiledPIDController pivotPID = PID;
+    public final ArmFeedforward pivotFeedforward = FEEDFORWARD;
 
     public AlgaeArm() {
         pivotConfig.idleMode(IdleMode.kBrake);

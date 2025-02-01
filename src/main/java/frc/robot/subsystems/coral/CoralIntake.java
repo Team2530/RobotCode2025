@@ -1,4 +1,4 @@
-package frc.robot.subsystems.CoralSubsystem;
+package frc.robot.subsystems.coral;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;

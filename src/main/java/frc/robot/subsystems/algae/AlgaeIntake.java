@@ -1,4 +1,4 @@
-package frc.robot.subsystems.AlgaeSubsystem;
+package frc.robot.subsystems.algae;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
