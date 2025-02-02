@@ -22,19 +22,19 @@ public class CoralSubsystem extends SubsystemBase {
     );
 
     public enum CoralPresets {
-        LEVEL_1(1.0, 20.0, 0.0, 0.0),
-        LEVEL_2(2.0, 20.0, 0.0, 0.0),
-        LEVEL_3(3.0, 20.0, 0.0, 0.0),
-        LEVEL_4(4.0, 20.0, 0.0, 0.0),
-        INTAKE(1.0, 110.0, 0.0, 0.0),
-        STOW(1.0, 0.0, 0.0, 0.0),
+        LEVEL_1(1.0, 20.0, 0.0, 0.0), // TODO: Figure out level 1, TBD
+        LEVEL_2(0.237, 19.032, -90, 105.968),
+        LEVEL_3(0.640, 19.032, -90, 105.968),
+        LEVEL_4(1.342, 23.238, -90, 111.762),
+        INTAKE(0.0, 9.559, -90, 50.44),
+        STOW(0.0, 0.0, 0.0, 0.0),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
 
-        double elevatorHeight;
-        double pivotAngle;
-        double rollAngle;
-        double pitchAngle;
+        double elevatorHeight; // Elevator height (relative to bottom of elevator/fully retracted)
+        double pivotAngle; // Looking at the robot from the FRONT (algae intake side), positive to the right, and negative to the left (positive=CW)
+        double rollAngle; // Wrist 1 angle, degrees from pointing at the bumpers on the CORAL ARM side of the robot. positive=CCW
+        double pitchAngle; // Wrist 2 angle, degrees from pointing straight up (max: 115deg)
 
         private CoralPresets(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle) {
             this.elevatorHeight = elevatorHeight;
