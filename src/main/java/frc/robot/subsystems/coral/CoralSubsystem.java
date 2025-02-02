@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Coral;
+package frc.robot.subsystems.coral;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;

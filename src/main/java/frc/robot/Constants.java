@@ -175,8 +175,9 @@ public final class Constants {
       public static final int ENCODER_PORT = 28;
 
       public static final double MAXIMUM_ANGLE = 80;
-      public static final double FRAME_BORDER_ANGLE = 20;
+      public static final double FRAME_BORDER_ANGLE = 30;
 
+      // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
         1,
         0.0,
@@ -184,12 +185,20 @@ public final class Constants {
         null
       );
 
+      // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
-        1,
-        1,
-        1,
-        1
+        0.0,
+        1.04,// V
+        1.62,// V*s/rad
+        0.05// V*s^2/rad
       );
+      public static class PhysicalConstants {
+        public static final DCMotor MOTOR = DCMotor.getNeoVortex(1);
+        public static final double NET_REDUCTION = 96.0;
+        public static final double MASS_KG = 4.8;
+        public static final double ARM_LEN_M = 0.51;
+        public static final double MOI = 0.2875548495; // Kg*m^2
+      }
     }
 
     public static class Roll {
@@ -200,11 +209,19 @@ public final class Constants {
         0.0,
         null
       );
+      public static final double MAXIMUM_ANGLE = 90;
+      public static class PhysicalConstants {
+        public static DCMotor MOTOR = DCMotor.getNeo550(1);
+        public static final double NET_REDUCTION = 45.0;
+        public static final double MASS_KG = 2.85; // Includes a coral
+        public static final double ARM_LEN_M = 0.083;
+        public static final double MOI = 0.0403605447; // Kg*m^2
+      }
     }
     public static class Pitch {
       public static final int MOTOR_PORT = 16;
 
-      public static final double MAXIMUM_ANGLE = 45;
+      public static final double MAXIMUM_ANGLE = 115;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
         1,
@@ -212,6 +229,14 @@ public final class Constants {
         0.0,
         null
       );
+
+      public static class PhysicalConstants {
+        public static DCMotor MOTOR = DCMotor.getNeo550(1);
+        public static final double NET_REDUCTION = 92.85714286; // Yeah this is cursed
+        public static final double MASS_KG = 2.16; // Includes a coral
+        public static final double ARM_LEN_M = 0.101;
+        public static final double MOI = 0.0200055915; // Kg*m^2
+      }
     }
 
     public static class Intake {
@@ -219,6 +244,9 @@ public final class Constants {
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
       public static final double NEGATIVE_RATE_LIMIT = 5.0;
+
+      public static final double IN_OUT_CURRENT_LIMIT = 40.0; // Stator limit
+      public static final double HOLD_CURRENT_LIMIT = 5.0; // Stator, TODO: Test this!
     }
   }
   
@@ -242,11 +270,19 @@ public final class Constants {
 
       public static final double RETRACTED_LIMIT_DEGREES = 10.0;
       public static final double EXTENDED_LIMIT_DEGREES = 90.0;
+
+      public static class PhysicalConstants {
+        public static DCMotor MOTOR = DCMotor.getNeoVortex(1);
+        public static final double NET_REDUCTION = 42.66666667; // Yeah this is cursed
+        public static final double MASS_KG = 3.18;
+        public static final double ARM_LEN_M = 0.2349863728;
+        public static final double MOI = 0.1114866914; // Kg*m^2
+      }
     }
 
     public static final class Intake {
       public static final int MOTOR_PORT = 19;
-      public static final int BEAMBREAK_PORT = 0;
+      public static final int BEAMBREAK_PORT = 0; // NOTE: Beambreak will *probably* be a rockwell proximity sensor wired into the SPARK max
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
       public static final double NEGATIVE_RATE_LIMIT = -5.0;
@@ -264,26 +300,24 @@ public final class Constants {
       public static final boolean INVERTED = false;
     }
 
-    public static Type bottomLimitMode = Type.kNormallyOpen;
+    public static double MOTOR_REVOLUTIONS_PER_METER = 32.81;
 
-    public static double MOTOR_REVOLUTIONS_PER_METER = 39.44;
-
+    // TODO: Tune! Use FWERB for now
     public static class PID {
-      public static double kP = 20.0; // 9.0;
+      public static double kP = 20.0;
       public static double kI = 0.0;
-      public static double kD = 0.5; // 4.0;
-      public static double MAX_VELOCITY = 2.8;
-      public static double MAX_ACCELERATION = 18.0;
+      public static double kD = 0.5;
+      public static double MAX_VELOCITY = 3.20;
+      // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if the elevator can make or exceed this
+      public static double MAX_ACCELERATION = 20.0;
     }
 
-    // TODO: For the first testing, set these all to zero for safety reasons
-    // Remind me to pad the top and bottom of the elevator with poodles to make sure
-    // we don't damage it.
+    // TODO: PAD THE ELEVATOR!!!!!!!
     public static class FeedforwardConstants {
       public static double Ks = 0.0;
-      public static double Kv = 4.0;
-      public static double Ka = 0.03;
-      public static double Kg = 0.1;
+      public static double Kv = 3.5;
+      public static double Ka = 0.08;
+      public static double Kg = 0.75; // TODO: Check this!!!
     }
 
     public static ElevatorFeedforward FEEDFORWARD = new ElevatorFeedforward(
@@ -294,14 +328,16 @@ public final class Constants {
     );
 
     public static class PhysicalParameters {
-      public static double gearReduction = 9.0 / 2.0;
-      public static double driveRadiusMeters = 0.0182;
-      public static double carriageMassKg = 1.5;
-      public static double elevatorHeightMeters = Units.inchesToMeters(50.0);
-      public static double elevatorBottomFromFloorMeters = Units.inchesToMeters(12.0);
-      public static double elevatorCarriageHeightMeters = Units.inchesToMeters(6.0);
-      public static double elevatorForwardsFromRobotCenterMeters = Units.inchesToMeters(25.0 / 2);
-      public static DCMotor simMotor = DCMotor.getNeoVortex(2);
+      public static double gearReduction = 5.0 / 2.0;
+      public static double driveRadiusMeters = 0.0121;
+      public static double carriageMassKg = 8.77; // NOTE: This includes the weight "reduction" due to CF spring counterbalance!
+      public static double elevatorTravelMeters = Units.inchesToMeters(59.5);
+      public static double elevatorBottomFromFloorMeters = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
+      public static double elevatorCarriageHeightMeters = Units.inchesToMeters(8.0); // Bottom to top of stage 2
+      public static double coralArmPivotVerticalOffset = Units.inchesToMeters(6.0); // From bottom of stage 2 to coral arm pivot axis
+      public static double coralArmPivotHorizontalOffset = Units.inchesToMeters(7.5); // From bottom of stage 2 to coral arm pivot axis
+      public static double elevatorForwardsFromRobotCenterMeters = Units.inchesToMeters(1); // To mid-plane of elevator
+      public static DCMotor MOTOR = DCMotor.getNeoVortex(2);
     }
   }
 

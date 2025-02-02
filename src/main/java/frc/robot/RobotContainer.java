@@ -6,10 +6,13 @@ package frc.robot;
 
 import frc.robot.Constants.*;
 import frc.robot.commands.*;
-import frc.robot.commands.ElevatorCommand.ElevatorPresets;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.coral.CoralArm;
+import frc.robot.subsystems.coral.CoralElevator;
+import frc.robot.subsystems.coral.CoralIntake;
+import frc.robot.subsystems.coral.CoralSubsystem;
 
 import java.util.function.DoubleSupplier;
 
@@ -48,7 +51,10 @@ public class RobotContainer {
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+    private final CoralArm coralArm = new CoralArm();
+    private final CoralIntake coralIntake = new CoralIntake();
+    private final CoralElevator coralElevator = new CoralElevator();
+    private final CoralSubsystem coralSub = new CoralSubsystem(coralArm, coralIntake, coralElevator);
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -100,15 +106,6 @@ public class RobotContainer {
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
     }
 
-    // Command shootAction =
-    // Command alignAction = ; // Self-deadlines
-    // Command spoolAction =
-    // Command intakeAction = ;
-
-    private ElevatorCommand elevatorToTop = new ElevatorCommand(elevator, ElevatorPresets.TOP, 0.0);
-    private ElevatorCommand elevatorToMiddle = new ElevatorCommand(elevator, ElevatorPresets.MIDDLE, 0.0);
-    private ElevatorCommand elevatorToStow = new ElevatorCommand(elevator, ElevatorPresets.STOW, 0.0);
-
     /**
      * Use this method to define your trigger->command mappings. Triggers can be
      * created via the
@@ -124,28 +121,28 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
-        operatorXbox.a()
-                .onTrue(elevatorToStow);
-        operatorXbox.x()
-                .onTrue(elevatorToMiddle);
-        operatorXbox.y()
-                .onTrue(elevatorToTop);
+        // operatorXbox.a()
+        //         .onTrue(elevatorToStow);
+        // operatorXbox.x()
+        //         .onTrue(elevatorToMiddle);
+        // operatorXbox.y()
+        //         .onTrue(elevatorToTop);
 
-        operatorXbox.b().whileTrue(new ElevatorFollowCommand(elevator, new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return (operatorXbox.getLeftY() * -0.5 + 0.5)
-                        * Constants.Elevator.PhysicalParameters.elevatorHeightMeters;
-            }
-        }));
+        // operatorXbox.b().whileTrue(new ElevatorFollowCommand(elevator, new DoubleSupplier() {
+        //     @Override
+        //     public double getAsDouble() {
+        //         return (operatorXbox.getLeftY() * -0.5 + 0.5)
+        //                 * Constants.Elevator.PhysicalParameters.elevatorTravelMeters;
+        //     }
+        // }));
 
-        operatorXbox.povUp().debounce(0.02).onTrue(new InstantCommand(() -> {
-            elevator.setPosition(elevator.getGoalPosition() + 0.1);
-        }));
+        // operatorXbox.povUp().debounce(0.02).onTrue(new InstantCommand(() -> {
+        //     elevator.setPosition(elevator.getGoalPosition() + 0.1);
+        // }));
 
-        operatorXbox.povDown().debounce(0.02).onTrue(new InstantCommand(() -> {
-            elevator.setPosition(elevator.getGoalPosition() - 0.1);
-        }));
+        // operatorXbox.povDown().debounce(0.02).onTrue(new InstantCommand(() -> {
+        //     elevator.setPosition(elevator.getGoalPosition() - 0.1);
+        // }));
     }
 
     /**

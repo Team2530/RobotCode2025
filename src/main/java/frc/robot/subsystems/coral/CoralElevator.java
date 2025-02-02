@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Coral;
+package frc.robot.subsystems.coral;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -98,7 +98,7 @@ public class CoralElevator extends SubsystemBase {
     }
 
     public void setGoalPosition(double position) {
-        elevatorPID.setGoal(MathUtil.clamp(position, 0.0, Elevator.PhysicalParameters.elevatorHeightMeters));
+        elevatorPID.setGoal(MathUtil.clamp(position, 0.0, Elevator.PhysicalParameters.elevatorTravelMeters));
     }
     
     public double getGoalPosition() {
