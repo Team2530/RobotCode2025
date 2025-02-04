@@ -10,6 +10,9 @@ import frc.robot.commands.ElevatorCommand.ElevatorPresets;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
+import frc.robot.util.Reef;
+import frc.robot.util.Reef.ReefBranch;
 
 import java.util.function.DoubleSupplier;
 
@@ -31,6 +34,8 @@ import edu.wpi.first.wpilibj2.command.button.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+    int i = 0;
 
     private final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
@@ -54,6 +59,7 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        Reef.putToShuffleboard();
         // Configure the trigger bindings
         configureBindings();
 
@@ -124,6 +130,17 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+        driverXbox.a().onTrue(new InstantCommand(() -> {
+            swerveDriveSubsystem.setDriveStyle(DriveStyle.DriveAssist);
+        })).onFalse(new InstantCommand(() -> {
+            swerveDriveSubsystem.setDriveStyle(DriveStyle.FieldOriented);
+        }));
+
+        driverXbox.b().onTrue(new InstantCommand(() -> {
+            swerveDriveSubsystem.setTargetPose(Reef.getBranchPose2d(ReefBranch.values()[++i % 12]));
+            Reef.pushPoseToShuffleboard("Target Pose", Reef.getBranchPose2d(ReefBranch.values()[i % 12]));
+        }));
+
         operatorXbox.a()
                 .onTrue(elevatorToStow);
         operatorXbox.x()

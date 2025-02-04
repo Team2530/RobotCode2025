@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -35,6 +37,7 @@ import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
+import frc.robot.util.Reef;
 
 public class SwerveSubsystem extends SubsystemBase {
     SwerveModule frontLeft = new SwerveModule(SwerveModuleConstants.FL_STEER_ID, SwerveModuleConstants.FL_DRIVE_ID,
@@ -64,6 +67,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private DoubleLogEntry chassisRotY;
     private DoubleLogEntry chassisRotZ;
 
+    StructPublisher<Pose2d> robotPose = NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
+
     PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
     int[] pdh_channels = {
             18, 19,
@@ -72,13 +77,15 @@ public class SwerveSubsystem extends SubsystemBase {
             2, 3
     };
 
-    public enum RotationStyle {
-        Driver,
-        AutoSpeaker,
-        AutoShuttle
+    public enum DriveStyle {
+        FieldOriented,
+        RobotOriented,
+        DriveAssist;
     }
 
-    private RotationStyle rotationStyle = RotationStyle.Driver;
+    private DriveStyle driveStyle = DriveStyle.FieldOriented;
+
+    private Pose2d targetPose = null;
 
     public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI);
     private double navxSim;
@@ -161,27 +168,12 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         odometry.update(getRotation2d(), getModulePositions());
-        // if (DriverStation.getAlliance().isPresent()) {
-        // switch (DriverStation.getAlliance().get()) {
-        // case Red:
-        // field.setRobotPose(new Pose2d(new Translation2d(16.5 - getPose().getX(),
-        // getPose().getY()),
-        // getPose().getRotation()));
-        // break;
-
-        // case Blue:
-        // field.setRobotPose(getPose());
-        // break;
-        // }
-        // } else {
-        // // If no alliance provided, just go with blue
         field.setRobotPose(getPose());
-        // }
 
         SmartDashboard.putData("Field", field);
 
-        SmartDashboard.putString("Robot Pose",
-                getPose().toString());
+        robotPose.set(getPose());
+
         // double swerveCurrent = 0;
         // for (int chan : pdh_channels)
         // swerveCurrent += pdh.getCurrent(chan);
@@ -211,6 +203,7 @@ public class SwerveSubsystem extends SubsystemBase {
         if (Robot.isSimulation()) {
             navxSim = Units.degreesToRadians(deg);
         }
+
         // navX.reset();
         // navX.setAngleAdjustment(deg);
 
@@ -229,7 +222,7 @@ public class SwerveSubsystem extends SubsystemBase {
         setHeading(Units.radiansToDegrees(pose.getRotation().times(-1.0).getRadians()
                 + (FieldConstants.getAlliance() == Alliance.Red ? Math.PI : 0.0)));
 
-        SmartDashboard.putNumber("HEading reset to", getHeading());
+        SmartDashboard.putNumber("Heading reset to", getHeading());
         SmartDashboard.putBoolean("HASBEENREET", true);
         odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
     }
@@ -310,12 +303,20 @@ public class SwerveSubsystem extends SubsystemBase {
         navxSim += 0.02 * lastChassisSpeeds.omegaRadiansPerSecond;
     }
 
-    public RotationStyle getRotationStyle() {
-        return rotationStyle;
+    public DriveStyle getDriveStyle() {
+        return driveStyle;
     }
 
-    public void setRotationStyle(RotationStyle style) {
-        rotationStyle = style;
+    public void setDriveStyle(DriveStyle style) {
+        driveStyle = style;
+    }
+
+    public void setTargetPose(Pose2d pose) {
+        targetPose = pose;
+    }
+
+    public Pose2d getTargetPose() {
+        return targetPose;
     }
 
     // ---------- Path Planner Methods ---------- \\

@@ -10,13 +10,18 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants.Elevator.Feedforward;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -126,6 +131,11 @@ public final class Constants {
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.75);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.75);
+    public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.520);
+
+    public static final PIDController TRANSLATION_ASSIST = new PIDController(6, 0, 0.01);
+    public static final PIDController ROTATION_ASSIST = new PIDController(0.5, 0, 0.001);
+
     // TODO: Set this for FWERB V2
     public static final Rotation2d NAVX_ANGLE_OFFSET = Rotation2d.fromDegrees(-90);
     // TODO: I'm not going to touch this... but it seems important!
@@ -194,6 +204,38 @@ public final class Constants {
     }
   }
 
+  public static class WristConstants {
+    public static final int THETA_ID = 12;
+    public static final int PHI_ID = 13;
+    public static final int INTAKE_ID = 14;
+    public static final int PHI_ENCODER_ID = 5;
+
+    //TODO: TUNE PID CONTROLLER!
+    public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(
+      0.2, 
+      0, 
+      0, 
+      new Constraints(3, 1));
+
+      public static final ProfiledPIDController PHI_CONTROLLER = new ProfiledPIDController(
+      0.2, 
+      0, 
+      0, 
+      new Constraints(3, 1));
+
+    public static final double WRIST_TOLERANCE = Units.degreesToRadians(1);
+    
+  }
+
+  public static final class ArmConstants {
+    //TODO: These are just approximate, please double check my ReCalc
+    public static final ArmFeedforward ARM_FEEDFORWARD = new ArmFeedforward(0.83, 1.52, 0.06);
+
+    public static final ProfiledPIDController ARM_CONTROLLER = new ProfiledPIDController(0.1, 0, 0, new Constraints(1, Math.PI / 1));
+    
+  }
+
+
   public static final class PathPlannerConstants {
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(5, 0, 0.2);
     public static final PIDConstants ROTATION_PID = new PIDConstants(5, 0, 0.2);
@@ -213,7 +255,8 @@ public final class Constants {
         DCMotor.getKrakenX60(1),
         DriveConstants.MAX_MODULE_CURRENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
         4
-      )
+      ),
+      DriveConstants.KINEMATICS.getModules()
     );
   }
 

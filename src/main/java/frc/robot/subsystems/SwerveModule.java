@@ -109,12 +109,12 @@ public class SwerveModule {
             return driveEncSim;
         // return driveMotorEncoder.getPosition();
         // TODO: Do the conversion in the motor
-        return driveMotor.getPosition().getValueAsDouble()* SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
+        return driveMotor.getPosition().getValueAsDouble();
     }
 
     public double getDriveVelocity() {
         // return driveMotorEncoder.getVelocity();
-        return driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
+        return driveMotor.getVelocity().getValueAsDouble();
     }
 
     public double getSteerPosition() {
