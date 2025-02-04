@@ -106,7 +106,7 @@ public class CoralArm extends SubsystemBase{
 
     // similarly, this ranges from -180 to 180
     public void setRollGoalDegrees(double goal) {
-        rollGoal = goal;
+        rollGoal = MathUtil.clamp(goal, Coral.Roll.MAXIMUM_ANGLE * -1, Coral.Roll.MAXIMUM_ANGLE);
         // if outside of frame border
         if (Math.abs(this.getPivotPositionDegrees()) > Coral.Pivot.FRAME_BORDER_ANGLE) {
             // start moving to goal
@@ -115,7 +115,7 @@ public class CoralArm extends SubsystemBase{
     }
 
     public void setPitchGoalDegrees(double goal) {
-        pitchGoal = MathUtil.clamp(goal, Coral.Pitch.MAXIMUM_ANGLE, -1 * Coral.Pitch.MAXIMUM_ANGLE);
+        pitchGoal = MathUtil.clamp(goal, Coral.Pitch.MAXIMUM_ANGLE * -1, Coral.Pitch.MAXIMUM_ANGLE);
         // if outside the frame border
         if (Math.abs(this.getPivotPositionDegrees()) > Coral.Pivot.FRAME_BORDER_ANGLE) {
             // start moving to goal
