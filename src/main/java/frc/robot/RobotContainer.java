@@ -6,22 +6,19 @@ package frc.robot;
 
 import frc.robot.Constants.*;
 import frc.robot.commands.*;
+import frc.robot.commands.algae.ShootAlgaeCommand;
+import frc.robot.commands.coral.ActivateCoralIntakeCommand;
+import frc.robot.commands.coral.CoralWristFollowCommand;
+import frc.robot.commands.coral.PurgeCoralIntakeCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.algae.AlgaeArm;
-import frc.robot.subsystems.algae.AlgaeIntake;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
-import frc.robot.subsystems.coral.CoralArm;
-import frc.robot.subsystems.coral.CoralElevator;
-import frc.robot.subsystems.coral.CoralIntake;
 import frc.robot.subsystems.coral.CoralSubsystem;
-import frc.robot.subsystems.coral.CoralSubsystem.CoralIntakePresets;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -137,7 +134,7 @@ public class RobotContainer {
             public boolean getAsBoolean() {
                 return Math.sqrt(Math.pow(operatorXbox.getRightX(),2) + Math.pow(operatorXbox.getRightY(),2)) > 0.25; 
             }
-        }).whileTrue(new WristFollowCommand(coralSubsystem, operatorXbox));
+        }).whileTrue(new CoralWristFollowCommand(coralSubsystem, operatorXbox));
         // score / intake coral
         operatorXbox.rightBumper().whileTrue(new ActivateCoralIntakeCommand(coralSubsystem));
         // purge coral
@@ -176,9 +173,9 @@ public class RobotContainer {
         driverXbox.leftBumper().and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
-                return false;
+                return algaeSubsystem.isHolding();
             }
-        }).onTrue(new In);
+        }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
     }
 
     /**
