@@ -104,6 +104,18 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
+    public double getPivotGoalDegrees() {
+        return arm.getPivotGoalDegrees();
+    }
+
+    public double getRollGoalDegrees() {
+        return arm.getRollGoalDegrees();
+    }
+
+    public double getPitchGoalDegrees() {
+        return arm.getPitchGoalDegrees();
+    }
+
     public void setCustomPosition(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle) {
         currentPreset = CoralPresets.CUSTOM;
 
@@ -113,22 +125,22 @@ public class CoralSubsystem extends SubsystemBase {
         arm.setPitchGoalDegrees(pitchAngle);
     }
 
-    public void setCustomElevatorPosition(double elevatorHeight) {
+    public void setCustomElevatorMeters(double elevatorHeight) {
         currentPreset = CoralPresets.CUSTOM;
         elevator.setGoalPosition(elevatorHeight);
     }
 
-    public void setCustomPivotPosition(double pivotAngle) {
+    public void setCustomPivotDegrees(double pivotAngle) {
         currentPreset = CoralPresets.CUSTOM;
         arm.setPivotGoalDegrees(pivotAngle);
     }
 
-    public void setCustomRollPosition(double rollAngle) {
+    public void setCustomRollDegrees(double rollAngle) {
         currentPreset = CoralPresets.CUSTOM;
         arm.setRollGoalDegrees(rollAngle);
     }
 
-    public void setCustomPitchPosition(double pitchAngle) {
+    public void setCustomPitchDegrees(double pitchAngle) {
         currentPreset = CoralPresets.CUSTOM;
         arm.setPitchGoalDegrees(pitchAngle);
     }
