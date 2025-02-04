@@ -29,7 +29,8 @@ public class AlgaeIntake extends SubsystemBase {
             double output = intakeProfile.calculate(outputPercentage);
             intakeMotor.set(output);
         } else {
-            intakeMotor.set(0.05);
+            // hold
+            intakeMotor.set(Math.min(0.05, outputPercentage));
         }
 
     }
@@ -40,5 +41,9 @@ public class AlgaeIntake extends SubsystemBase {
 
     public double getOutputPercentage() {
         return outputPercentage;
+    }
+
+    public boolean isHolding() {
+        return intakeBeambreak.get();
     }
 }

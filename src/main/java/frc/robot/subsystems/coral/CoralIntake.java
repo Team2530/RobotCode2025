@@ -54,4 +54,8 @@ public class CoralIntake extends SubsystemBase {
     public double getOutputPercentage() {
         return outputPercentage;
     }
+
+    public boolean isHolding() {
+        return intakeBeambreak.getValue().value == 0;
+    }
 }

@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CoralSubsystem extends SubsystemBase {
 
-    private final CoralArm arm;
-    private final CoralIntake intake;
-    private final CoralElevator elevator;
+    private final CoralArm arm = new CoralArm();
+    private final CoralIntake intake = new CoralIntake();
+    private final CoralElevator elevator = new CoralElevator();
 
     private final Mechanism2d coralMechanism = new Mechanism2d(2,3);
     private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 1.5, 0);
@@ -57,8 +57,9 @@ public class CoralSubsystem extends SubsystemBase {
     } 
 
     public enum CoralIntakePresets {
-        INTAKING(1),
+        INTAKE(1),
         PURGE(-1),
+        SCORE(-1),
         STOP(0),
 
         CUSTOM(Double.NaN);
@@ -81,12 +82,6 @@ public class CoralSubsystem extends SubsystemBase {
     private CoralPresets currentPreset = CoralPresets.STOW;
     private MirrorPresets mirrorSetting = MirrorPresets.RIGHT;
     private CoralIntakePresets currentIntakePreset = CoralIntakePresets.STOP;
-
-    public CoralSubsystem(CoralArm arm, CoralIntake intake, CoralElevator elevator) {
-        this.arm = arm;
-        this.intake = intake;
-        this.elevator = elevator;
-    }
 
     public void setCoralPreset(CoralPresets preset) {
         if (preset == CoralPresets.CUSTOM) {
@@ -114,6 +109,10 @@ public class CoralSubsystem extends SubsystemBase {
 
     public double getPitchGoalDegrees() {
         return arm.getPitchGoalDegrees();
+    }
+
+    public boolean isHolding() {
+        return intake.isHolding();
     }
 
     public void setCustomPosition(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle) {

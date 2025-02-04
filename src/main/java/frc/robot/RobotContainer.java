@@ -9,11 +9,18 @@ import frc.robot.commands.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.algae.AlgaeArm;
+import frc.robot.subsystems.algae.AlgaeIntake;
+import frc.robot.subsystems.algae.AlgaeSubsystem;
+import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralArm;
 import frc.robot.subsystems.coral.CoralElevator;
 import frc.robot.subsystems.coral.CoralIntake;
 import frc.robot.subsystems.coral.CoralSubsystem;
+import frc.robot.subsystems.coral.CoralSubsystem.CoralIntakePresets;
+import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -51,10 +58,14 @@ public class RobotContainer {
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    private final CoralArm coralArm = new CoralArm();
-    private final CoralIntake coralIntake = new CoralIntake();
-    private final CoralElevator coralElevator = new CoralElevator();
-    private final CoralSubsystem coralSub = new CoralSubsystem(coralArm, coralIntake, coralElevator);
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem();
+    private CoralPresets currentCoralPreset = CoralPresets.STOW;
+
+    private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
+
+    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+
+
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -65,40 +76,6 @@ public class RobotContainer {
 
         DataLogManager.logNetworkTables(true);
         DataLogManager.start();
-
-        // NamedCommands.registerCommand("NoNote", new (
-        // new WaitForCommand(1.0),
-        // new WaitUntilCommand(new BooleanSupplier() {
-        // @Override
-        // public boolean getAsBoolean() {
-        // return !intake.containsNote().getAsBoolean();
-        // }
-        // })
-        // ));
-
-        /*
-         * NamedCommands.registerCommand("Shoot Close", new SequentialCommandGroup(
-         * new InstantCommand(() -> {arm.setArmPreset(Presets.SHOOT_HIGH);}),
-         * new WaitCommand(2),
-         * new AlignNoteCommand(intake, shooter),
-         * new PrepNoteCommand(shooter, intake),
-         * new PrepShooterCommand(intake, shooter, 0.8),
-         * new ShootCommand(shooter, intake)
-         * ));
-         * NamedCommands.registerCommand("Pickup", new SequentialCommandGroup(
-         * new InstantCommand(() -> {arm.setArmPreset(Presets.INTAKE);}),
-         * new IntakeCommand(intake)));
-         */
-        // Test Auto Week 0
-        // return new SequentialCommandGroup(
-        // new InstantCommand(() -> {arm.setArmPreset(Presets.SHOOT_HIGH);}),
-        // new WaitCommand(2),
-        // new AlignNoteCommand(intake, shooter),
-        // new PrepNoteCommand(shooter, intake),
-        // new PrepShooterCommand(intake, shooter, 0.8),
-        // new InstantCommand(() -> System.out.println("HELLLLLOOO")),
-        // new ShootCommand(shooter, intake)
-        // );
 
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -121,28 +98,87 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
-        // operatorXbox.a()
-        //         .onTrue(elevatorToStow);
-        // operatorXbox.x()
-        //         .onTrue(elevatorToMiddle);
-        // operatorXbox.y()
-        //         .onTrue(elevatorToTop);
+        /*
+         * operator
+        */
+        // low algae
+        operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
+            algaeSubsystem.setAlgaePreset(AlgaePresets.FLOOR);
+        }));
+        // high algae
+        operatorXbox.rightBumper().onTrue(new InstantCommand(() -> {
+            algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
+        }));
 
-        // operatorXbox.b().whileTrue(new ElevatorFollowCommand(elevator, new DoubleSupplier() {
-        //     @Override
-        //     public double getAsDouble() {
-        //         return (operatorXbox.getLeftY() * -0.5 + 0.5)
-        //                 * Constants.Elevator.PhysicalParameters.elevatorTravelMeters;
-        //     }
-        // }));
+        // L1 
+        operatorXbox.a().onTrue(new InstantCommand(() -> {
+            currentCoralPreset = CoralPresets.LEVEL_1;
+        }));
+        // L2
+        operatorXbox.x().onTrue(new InstantCommand(() -> {
+            currentCoralPreset = CoralPresets.LEVEL_2;
+        }));
+        // L3
+        operatorXbox.y().onTrue(new InstantCommand(() -> {
+            currentCoralPreset = CoralPresets.LEVEL_3;
+        }));
+        // L4
+        operatorXbox.b().onTrue(new InstantCommand(() -> {
+            currentCoralPreset = CoralPresets.LEVEL_4;
+        }));
+        // go to preset position
+        operatorXbox.rightTrigger().onTrue(new InstantCommand(() -> {
+            coralSubsystem.setCoralPreset(currentCoralPreset);
+        }));
+        // wrist adjustment
+        operatorXbox.rightStick().and(new BooleanSupplier() {
+            // deadzone
+            @Override
+            public boolean getAsBoolean() {
+                return Math.sqrt(Math.pow(operatorXbox.getRightX(),2) + Math.pow(operatorXbox.getRightY(),2)) > 0.25; 
+            }
+        }).whileTrue(new WristFollowCommand(coralSubsystem, operatorXbox));
+        // score / intake coral
+        operatorXbox.rightBumper().whileTrue(new ActivateCoralIntakeCommand(coralSubsystem));
+        // purge coral
+        operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));
+        /*
+         * driver
+        */
+        // stop the climber
+        driverXbox.x().onTrue(new InstantCommand(() -> {
+            climberSubsystem.setOutput(0);
+        }));
+        // move the climber
+        driverXbox.y().and(new BooleanSupplier() {
+            private boolean deployed = true;
+            @Override
+            public boolean getAsBoolean() {
+                deployed = !(deployed);
+                return deployed;
+            }
+        }).onFalse(new InstantCommand(() -> {
+            climberSubsystem.setOutput(1);
+        })).onTrue(new InstantCommand(() -> {
+            climberSubsystem.setOutput(-1);
+        }));
+        // something something maintainence
+        driverXbox.button(6).onTrue(new SequentialCommandGroup(null));
+        // set field orientation
+        driverXbox.button(7).onTrue(new InstantCommand(() -> {
+            swerveDriveSubsystem.setHeading(0);
+        }));
 
-        // operatorXbox.povUp().debounce(0.02).onTrue(new InstantCommand(() -> {
-        //     elevator.setPosition(elevator.getGoalPosition() + 0.1);
-        // }));
-
-        // operatorXbox.povDown().debounce(0.02).onTrue(new InstantCommand(() -> {
-        //     elevator.setPosition(elevator.getGoalPosition() - 0.1);
-        // }));
+        /* 
+         * coop
+        */
+        // algae floor / shoot
+        driverXbox.leftBumper().and(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return false;
+            }
+        }).onTrue(new In);
     }
 
     /**
