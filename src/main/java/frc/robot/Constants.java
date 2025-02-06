@@ -196,8 +196,9 @@ public final class Constants {
         public static final DCMotor MOTOR = DCMotor.getNeoVortex(1);
         public static final double NET_REDUCTION = 96.0;
         public static final double MASS_KG = 4.8;
-        public static final double ARM_LEN_M = 0.51;
+        public static final double ARM_LENGTH_METERS = 0.51;
         public static final double MOI = 0.2875548495; // Kg*m^2
+        public static final double GEARING = 1; // TODO: this is the only placholder
       }
     }
 
@@ -210,12 +211,14 @@ public final class Constants {
         null
       );
       public static final double MAXIMUM_ANGLE = 90;
+
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
         public static final double NET_REDUCTION = 45.0;
         public static final double MASS_KG = 2.85; // Includes a coral
-        public static final double ARM_LEN_M = 0.083;
+        public static final double ARM_LENGTH_METERS = 0.083;
         public static final double MOI = 0.0403605447; // Kg*m^2
+        public static final double GEARING = 1; // TODO: this is the only placholder
       }
     }
     public static class Pitch {
@@ -234,8 +237,9 @@ public final class Constants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
         public static final double NET_REDUCTION = 92.85714286; // Yeah this is cursed
         public static final double MASS_KG = 2.16; // Includes a coral
-        public static final double ARM_LEN_M = 0.101;
+        public static final double ARM_LENGTH_METERS = 0.101;
         public static final double MOI = 0.0200055915; // Kg*m^2
+        public static final double GEARING = 1; // TODO: this is the only placeholder
       }
     }
 
@@ -247,6 +251,12 @@ public final class Constants {
 
       public static final double IN_OUT_CURRENT_LIMIT = 40.0; // Stator limit
       public static final double HOLD_CURRENT_LIMIT = 5.0; // Stator, TODO: Test this!
+      // TODO: ################### PLACHOLDERS ###################
+      public static final class PhysicalConstants {
+        public static final DCMotor MOTOR = DCMotor.getFalcon500(1);
+        public static final double MOI = 0.1; // J*KG / M^2
+        public static final double GEARING = 1;
+      }
     }
   }
   
@@ -289,6 +299,7 @@ public final class Constants {
     }
   }
 
+  // See https://cad.onshape.com/documents/fa9a0365dfdf7e376f93f1b4/w/36bfb0cc9de95ef5933791e3/e/700ba3cf920578fe61d3ec24
   public static final class Elevator {
     public static final class Leader {
       public static final int MOTOR_PORT = 10;
@@ -328,16 +339,19 @@ public final class Constants {
     );
 
     public static class PhysicalParameters {
-      public static double gearReduction = 5.0 / 2.0;
-      public static double driveRadiusMeters = 0.0121;
-      public static double carriageMassKg = 8.77; // NOTE: This includes the weight "reduction" due to CF spring counterbalance!
-      public static double elevatorTravelMeters = Units.inchesToMeters(59.5);
-      public static double elevatorBottomFromFloorMeters = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
-      public static double elevatorCarriageHeightMeters = Units.inchesToMeters(8.0); // Bottom to top of stage 2
-      public static double coralArmPivotVerticalOffset = Units.inchesToMeters(6.0); // From bottom of stage 2 to coral arm pivot axis
-      public static double coralArmPivotHorizontalOffset = Units.inchesToMeters(7.5); // From bottom of stage 2 to coral arm pivot axis
-      public static double elevatorForwardsFromRobotCenterMeters = Units.inchesToMeters(1); // To mid-plane of elevator
-      public static DCMotor MOTOR = DCMotor.getNeoVortex(2);
+      public static final double GEARING = 5.0 / 2.0;
+      public static final double DRIVE_RADIUS_METERS = 0.0121;
+      public static final double CARRIAGE_MASS_KG = 8.77; // NOTE: This includes the weight "reduction" due to CF spring counterbalance!
+
+      public static final double MAX_TRAVEL = Units.inchesToMeters(59.5);
+      public static final double BOTTOM_TO_FLOOR = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
+      public static final double CARRIAGE_HEIGHT = Units.inchesToMeters(8.0); // Bottom to top of stage 2
+      
+      public static final double CORAL_PIVOT_VERTICAL_OFFSET = Units.inchesToMeters(6.0); // From bottom of stage 2 to coral arm pivot axis
+      public static final double CORAL_PIVOT_HORIZONTAL_OFFSET = Units.inchesToMeters(7.5); // From bottom of stage 2 to coral arm pivot axis
+      public static final double ELEVATOR_FORWARDS_OFFSET = Units.inchesToMeters(1); // To mid-plane of elevator
+
+      public static final DCMotor MOTOR = DCMotor.getNeoVortex(2);
     }
   }
 

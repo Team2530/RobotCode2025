@@ -1,7 +1,11 @@
 package frc.robot.subsystems.coral;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.sim.SparkFlexSim;
+import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -15,22 +19,66 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ControlAffinePlantInversionFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.Coral;
 
 public class CoralArm extends SubsystemBase{
     private final SparkFlex pivotMotor = new SparkFlex(Coral.Pivot.MOTOR_PORT, MotorType.kBrushless);
     private final SparkMax rollMotor = new SparkMax(Coral.Roll.MOTOR_PORT, MotorType.kBrushless);
     private final SparkMax pitchMotor = new SparkMax(Coral.Pitch.MOTOR_PORT, MotorType.kBrushless);
+    // sim motors
+    private final SparkFlexSim simPivotMotor = new SparkFlexSim(pivotMotor, Coral.Pivot.PhysicalConstants.MOTOR);
+    private final SparkMaxSim simRollMotor = new SparkMaxSim(rollMotor, Coral.Roll.PhysicalConstants.MOTOR);
+    private final SparkMaxSim simPitchMotor = new SparkMaxSim(pitchMotor, Coral.Pitch.PhysicalConstants.MOTOR);
 
     private final CANcoder pivotEncoder = new CANcoder(Coral.Pivot.ENCODER_PORT);
     private final AbsoluteEncoder rollEncoder = rollMotor.getAbsoluteEncoder();
     private final AbsoluteEncoder pitchEncoder = pitchMotor.getAbsoluteEncoder();
+    // sim encoders
+    private final CANcoderSimState simPivotEncoder = pivotEncoder.getSimState();
+    private final SparkAbsoluteEncoderSim simRollEncoder = new SparkAbsoluteEncoderSim(rollMotor);
+    private final SparkAbsoluteEncoderSim simPitchEncoder = new SparkAbsoluteEncoderSim(pitchMotor);
+
+    // physics simulations
+    private final SingleJointedArmSim simPivotPhysics = new SingleJointedArmSim(
+        Coral.Pivot.PhysicalConstants.MOTOR,
+        Coral.Pivot.PhysicalConstants.GEARING,
+        Coral.Pivot.PhysicalConstants.MOI,
+        Coral.Pivot.PhysicalConstants.ARM_LENGTH_METERS,
+        Units.degreesToRadians(Coral.Pivot.MAXIMUM_ANGLE * -1),
+        Units.degreesToRadians(Coral.Pivot.MAXIMUM_ANGLE),
+        true,
+        0
+    );
+    private final SingleJointedArmSim simRollPhysics = new SingleJointedArmSim(
+        Coral.Roll.PhysicalConstants.MOTOR,
+        Coral.Roll.PhysicalConstants.GEARING,
+        Coral.Roll.PhysicalConstants.MOI,
+        Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS,
+        Units.degreesToRadians(Coral.Roll.MAXIMUM_ANGLE * -1),
+        Units.degreesToRadians(Coral.Roll.MAXIMUM_ANGLE),
+        false,
+        0
+    );
+    private final SingleJointedArmSim simPitchPhysics = new SingleJointedArmSim(
+        Coral.Pitch.PhysicalConstants.MOTOR,
+        Coral.Pitch.PhysicalConstants.GEARING,
+        Coral.Pitch.PhysicalConstants.MOI,
+        Coral.Pitch.PhysicalConstants.ARM_LENGTH_METERS,
+        Units.degreesToRadians(Coral.Pitch.MAXIMUM_ANGLE * -1),
+        Units.degreesToRadians(Coral.Pitch.MAXIMUM_ANGLE),
+        false,
+        0
+    );
 
     private final SparkMaxConfig pivotConfig = new SparkMaxConfig();
     private final SparkMaxConfig rollConfig = new SparkMaxConfig();
     private final SparkMaxConfig pitchConfig = new SparkMaxConfig();
-
 
     private final ProfiledPIDController pivotPID = Coral.Pivot.PID;
     private final ArmFeedforward pivotFeedforward = Coral.Pivot.FEEDFORWARD;
@@ -80,7 +128,36 @@ public class CoralArm extends SubsystemBase{
         );
         rollMotor.set(rollPID.calculate(rollEncoder.getPosition()));
         pitchMotor.set(pitchPID.calculate(pitchEncoder.getPosition()));
-    } 
+    }
+    
+    @Override
+    public void simulationPeriodic() {
+        // update physics
+        simPivotPhysics.setInput(simPivotMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
+        simRollPhysics.setInput(simRollMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
+        simPitchPhysics.setInput(simPitchMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
+
+        simPivotPhysics.update(0.02);
+        simRollPhysics.update(0.02);
+        simPitchPhysics.update(0.02);
+
+        // update sim objects
+        simPivotMotor.iterate(
+            Units.radiansPerSecondToRotationsPerMinute(simPivotPhysics.getVelocityRadPerSec()),
+            RoboRioSim.getVInVoltage(),
+            0.02
+        );
+        simRollMotor.iterate(
+            Units.radiansPerSecondToRotationsPerMinute(simRollPhysics.getVelocityRadPerSec()),
+            RoboRioSim.getVInVoltage(),
+            0.02
+        );
+        simPitchMotor.iterate(
+            Units.radiansPerSecondToRotationsPerMinute(simPitchPhysics.getVelocityRadPerSec()),
+            RoboRioSim.getVInVoltage(),
+            0.02
+        );
+    }
 
     // this should be relative to straight upwards.
     // i.e. 0 should be straight vertical,
@@ -136,15 +213,21 @@ public class CoralArm extends SubsystemBase{
     }
 
     public double getPivotPositionDegrees() {
-        return pivotEncoder.getAbsolutePosition().getValueAsDouble();
+        return Robot.isReal() 
+            ? pivotEncoder.getAbsolutePosition().getValueAsDouble()
+            : Units.radiansToDegrees(simPivotPhysics.getAngleRads());
     }
 
     public double getRollPositionDegrees() {
-        return rollEncoder.getPosition();
+        return Robot.isReal()
+            ? rollEncoder.getPosition()
+            : simRollEncoder.getPosition();
     }
 
     public double getPitchPositionDegrees() {
-        return pitchEncoder.getPosition();
+        return Robot.isReal() 
+            ? pitchEncoder.getPosition()
+            : simPitchEncoder.getPosition();
     }
 
 }
