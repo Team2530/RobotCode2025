@@ -34,7 +34,7 @@ public class ElevatorCommand extends Command {
     @Override
     public void initialize() {
         double tgt = target.position_m + offset;
-        elevatorSub.setGoal(MathUtil.clamp(tgt, 0, Constants.Elevator.PhysicalParameters.elevatorHeightMeters));
+        elevatorSub.ppc.setGoal(MathUtil.clamp(tgt, 0, Constants.Elevator.PhysicalParameters.elevatorHeightMeters));
         SmartDashboard.putString("Elevator Command", target.toString());
     }
 

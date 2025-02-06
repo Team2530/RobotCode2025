@@ -193,6 +193,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // TODO Auto-generated method stub
+        super.periodic();
 
         if ((bottomLimit.isPressed()) && (!isZeroed)) {
             elevatorEncoderOne.setPosition(0.0);
