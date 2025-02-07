@@ -1,7 +1,6 @@
 package frc.robot.subsystems.coral;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkFlexSim;
@@ -16,11 +15,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ControlAffinePlantInversionFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,7 +36,6 @@ public class CoralArm extends SubsystemBase{
     private final AbsoluteEncoder rollEncoder = rollMotor.getAbsoluteEncoder();
     private final AbsoluteEncoder pitchEncoder = pitchMotor.getAbsoluteEncoder();
     // sim encoders
-    private final CANcoderSimState simPivotEncoder = pivotEncoder.getSimState();
     private final SparkAbsoluteEncoderSim simRollEncoder = new SparkAbsoluteEncoderSim(rollMotor);
     private final SparkAbsoluteEncoderSim simPitchEncoder = new SparkAbsoluteEncoderSim(pitchMotor);
 

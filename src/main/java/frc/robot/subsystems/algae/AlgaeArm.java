@@ -1,10 +1,8 @@
 package frc.robot.subsystems.algae;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;

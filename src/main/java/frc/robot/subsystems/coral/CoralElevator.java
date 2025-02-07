@@ -34,7 +34,6 @@ public class CoralElevator extends SubsystemBase {
     private final RelativeEncoder followerEncoder = followerMotor.getEncoder();
     // sim encoders
     private final SparkRelativeEncoderSim simLeaderEncoder = new SparkRelativeEncoderSim(leaderMotor);
-    private final SparkRelativeEncoderSim simFollowerEncoder = new SparkRelativeEncoderSim(followerMotor);
 
     // physics simulations
     private final ElevatorSim simElevator = new ElevatorSim(
