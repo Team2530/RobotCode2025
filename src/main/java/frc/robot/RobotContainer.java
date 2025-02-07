@@ -7,9 +7,10 @@ package frc.robot;
 import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.commands.algae.ShootAlgaeCommand;
-import frc.robot.commands.coral.ActivateCoralIntakeCommand;
 import frc.robot.commands.coral.CoralWristFollowCommand;
+import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
+import frc.robot.commands.coral.ScoreCoralCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
@@ -136,7 +137,18 @@ public class RobotContainer {
             }
         }).whileTrue(new CoralWristFollowCommand(coralSubsystem, operatorXbox));
         // score / intake coral
-        operatorXbox.rightBumper().whileTrue(new ActivateCoralIntakeCommand(coralSubsystem));
+        operatorXbox.rightBumper().and(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return coralSubsystem.isHolding();
+            }
+        }).whileTrue(new ScoreCoralCommand(coralSubsystem));
+        operatorXbox.rightBumper().and(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return !coralSubsystem.isHolding();
+            }
+        }).whileTrue(new IntakeCoralCommand(coralSubsystem));
         // purge coral
         operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));
         /*
@@ -159,7 +171,7 @@ public class RobotContainer {
         })).onTrue(new InstantCommand(() -> {
             climberSubsystem.setOutput(-1);
         }));
-        // something something maintainence
+        // TODO: something something maintainence
         driverXbox.button(6).onTrue(new SequentialCommandGroup(null));
         // set field orientation
         driverXbox.button(7).onTrue(new InstantCommand(() -> {
