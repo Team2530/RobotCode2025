@@ -1,16 +1,32 @@
 package frc.robot.subsystems.algae;
 
+import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Algae;
 
 public class AlgaeIntake extends SubsystemBase {
     private final SparkMax intakeMotor = new SparkMax(Algae.Intake.MOTOR_PORT, MotorType.kBrushless);
+    // sim motor
+    private final SparkMaxSim simIntakeMotor = new SparkMaxSim(intakeMotor, Algae.Intake.PhysicalConstants.MOTOR);
+
+    // physics simulation
+    private final FlywheelSim simIntakePhysics = new FlywheelSim(
+        LinearSystemId.createFlywheelSystem(
+            Algae.Intake.PhysicalConstants.MOTOR,
+            Algae.Intake.PhysicalConstants.MOI,
+            Algae.Intake.PhysicalConstants.GEARING
+        ),
+        Algae.Intake.PhysicalConstants.MOTOR
+    );
 
     private final DigitalInput intakeBeambreak = new DigitalInput(Algae.Intake.BEAMBREAK_PORT);
 
@@ -32,7 +48,20 @@ public class AlgaeIntake extends SubsystemBase {
             // hold
             intakeMotor.set(Math.min(0.05, outputPercentage));
         }
+    }
+    
+    @Override
+    public void simulationPeriodic() {
+        // update physics
+        simIntakePhysics.setInput(simIntakeMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
+        simIntakePhysics.update(0.02);
 
+        // update sim objects
+        simIntakeMotor.iterate(
+            simIntakePhysics.getAngularVelocityRPM(),
+            RoboRioSim.getVInVoltage(),
+            0.02
+        );
     }
 
     public void setOutputPercentage(double outputPercentage) {

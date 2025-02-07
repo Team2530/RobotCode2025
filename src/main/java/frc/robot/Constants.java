@@ -282,10 +282,11 @@ public final class Constants {
       public static final double EXTENDED_LIMIT_DEGREES = 90.0;
 
       public static class PhysicalConstants {
-        public static DCMotor MOTOR = DCMotor.getNeoVortex(1);
+        public static final DCMotor MOTOR = DCMotor.getNeoVortex(1);
+        public static final double GEARING = 1; // TODO: this is the only placeholder
         public static final double NET_REDUCTION = 42.66666667; // Yeah this is cursed
         public static final double MASS_KG = 3.18;
-        public static final double ARM_LEN_M = 0.2349863728;
+        public static final double ARM_LENGTH_METERS = 0.2349863728;
         public static final double MOI = 0.1114866914; // Kg*m^2
       }
     }
@@ -296,6 +297,12 @@ public final class Constants {
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
       public static final double NEGATIVE_RATE_LIMIT = -5.0;
+
+      public static final class PhysicalConstants {
+        public static final DCMotor MOTOR = DCMotor.getNeo550(1);
+        public static final double MOI = 0.1; // J*KG / M^2
+        public static final double GEARING = 1;
+      }
     }
   }
 
