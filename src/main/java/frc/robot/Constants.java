@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -161,7 +162,7 @@ public final class Constants {
       1,
       0.0,
       0.0, 
-      null
+      new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
     );
   }
 
@@ -179,7 +180,7 @@ public final class Constants {
         1,
         0.0,
         0.0,
-        null
+        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
       );
 
       // Updated with THEORETICAL values
@@ -205,7 +206,7 @@ public final class Constants {
         1,
         0.0,
         0.0,
-        null
+        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
       );
       public static final double MAXIMUM_ANGLE = 90;
 
@@ -227,7 +228,7 @@ public final class Constants {
         1,
         0.0,
         0.0,
-        null
+        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
       );
 
       public static class PhysicalConstants {
@@ -267,7 +268,7 @@ public final class Constants {
         1,
         0.0,
         0.0,
-        null
+        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
       );
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
         1,
@@ -377,8 +378,12 @@ public final class Constants {
         SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
         DCMotor.getKrakenX60(1),
         DriveConstants.MAX_MODULE_CURRENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
-        4
-      )
+        1
+      ),
+      new Translation2d(-0.5, 0.5),
+      new Translation2d(0.5, 0.5),
+      new Translation2d(-0.5, -0.5),
+      new Translation2d(0.5, -0.5)
     );
   }
 

@@ -172,7 +172,11 @@ public class RobotContainer {
             climberSubsystem.setOutput(-1);
         }));
         // TODO: something something maintainence
-        driverXbox.button(6).onTrue(new SequentialCommandGroup(null));
+        driverXbox.button(6).onTrue(new SequentialCommandGroup(
+            new InstantCommand(() -> {
+                System.out.print("swaaws");
+            })
+        ));
         // set field orientation
         driverXbox.button(7).onTrue(new InstantCommand(() -> {
             swerveDriveSubsystem.setHeading(0);

@@ -10,6 +10,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.Coral;
 
 public class CoralIntake extends SubsystemBase {
@@ -75,6 +76,8 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public boolean isHolding() {
-        return intakeMotor.getReverseLimit().getValue().value == 0;
+        return Robot.isReal()
+            ? intakeMotor.getReverseLimit().getValue().value == 0
+            : false;
     }
 }
