@@ -20,27 +20,14 @@ import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ControllerConstants;
-import frc.robot.commands.DriveCommand;
-import frc.robot.commands.ElevatorCommand;
-import frc.robot.commands.ElevatorCommand.ElevatorPresets;
-import frc.robot.commands.ElevatorFollowCommand;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
+import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -92,18 +79,7 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
-        NamedCommands.registerCommand("Testing", elevatorToTop);
     }
-
-    // Command shootAction =
-    // Command alignAction = ; // Self-deadlines
-    // Command spoolAction =
-    // Command intakeAction = ;
-    
-    private ElevatorCommand elevatorToTop = new ElevatorCommand(elevator, ElevatorPresets.TOP, 0.0);
-    private ElevatorCommand elevatorToMiddle = new ElevatorCommand(elevator, ElevatorPresets.MIDDLE, 0.0);
-    private ElevatorCommand elevatorToStow = new ElevatorCommand(elevator, ElevatorPresets.STOW, 0.0);
-
 
     /**
      * Use this method to define your trigger->command mappings. Triggers can be
