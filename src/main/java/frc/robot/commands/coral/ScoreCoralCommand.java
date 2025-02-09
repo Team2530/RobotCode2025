@@ -1,16 +1,19 @@
 package frc.robot.commands.coral;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralIntakePresets;
 
-public class ScoreCoralCommand extends Command{
+public class ScoreCoralCommand extends Command {
 
     private final CoralSubsystem subsystem;
-   
+    private double coralExitTime = 0;
+
     public ScoreCoralCommand(CoralSubsystem subsystem) {
         this.subsystem = subsystem;
-        addRequirements(subsystem);
+        // addRequirements(subsystem);
     }
 
     @Override
@@ -25,7 +28,11 @@ public class ScoreCoralCommand extends Command{
 
     @Override
     public boolean isFinished() {
-        return !subsystem.isHolding();
+        if (!subsystem.isHolding() && coralExitTime == 0) {
+            coralExitTime = Timer.getFPGATimestamp();
+        }
+        return !subsystem.isHolding()
+                && ((Timer.getFPGATimestamp() - coralExitTime) > Constants.Coral.Intake.SCORE_EXTRA_SECONDS);
     }
 
 }

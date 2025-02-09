@@ -1,5 +1,8 @@
 package frc.robot.subsystems.coral;
 
+// import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -12,14 +15,12 @@ public class CoralSubsystem extends SubsystemBase {
     private final CoralIntake intake = new CoralIntake();
     private final CoralElevator elevator = new CoralElevator();
 
-    private final Mechanism2d coralMechanism = new Mechanism2d(2,3);
+    private final Mechanism2d coralMechanism = new Mechanism2d(2, 3);
     private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 1.5, 0);
     private final MechanismLigament2d elevatorMechanism = rootMechanism.append(
-        new MechanismLigament2d("Elevator", 1, 0)
-    );
+            new MechanismLigament2d("Elevator", 1, 0));
     private final MechanismLigament2d pivotMechanism = elevatorMechanism.append(
-        new MechanismLigament2d("Coral", 1, 0)
-    );
+            new MechanismLigament2d("Coral", 1, 0));
 
     public enum CoralPresets {
         LEVEL_1(1.0, 20.0, 0.0, 0.0), // TODO: Figure out level 1, TBD
@@ -31,17 +32,23 @@ public class CoralSubsystem extends SubsystemBase {
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
 
-        double elevatorHeight; // Elevator height (relative to bottom of elevator/fully retracted)
-        double pivotAngle; // Looking at the robot from the FRONT (algae intake side), positive to the right, and negative to the left (positive=CW)
-        double rollAngle; // Wrist 1 angle, degrees from pointing at the bumpers on the CORAL ARM side of the robot. positive=CCW
-        double pitchAngle; // Wrist 2 angle, degrees from pointing straight up (max: 115deg)
+        double elevatorHeightM; // Elevator height (relative to bottom of elevator/fully retracted)
+        double pivotAngleDeg; // Looking at the robot from the FRONT (algae intake side), positive to the
+                              // right, and negative to the left (positive=CW)
+        double rollAngleDeg; // Wrist 1 angle, degrees from pointing at the bumpers on the CORAL ARM side of
+                             // the robot. positive=CCW
+        double pitchAngleDeg; // Wrist 2 angle, degrees from pointing straight up (max: 115deg)
 
         private CoralPresets(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle) {
-            this.elevatorHeight = elevatorHeight;
-            this.pivotAngle = pivotAngle;
-            this.rollAngle = rollAngle;
-            this.pitchAngle = pitchAngle;
+            this.elevatorHeightM = elevatorHeight;
+            this.pivotAngleDeg = pivotAngle;
+            this.rollAngleDeg = rollAngle;
+            this.pitchAngleDeg = pitchAngle;
         }
+    }
+
+    public CoralSubsystem() {
+        // Epilogue.bind(this);
     }
 
     public enum MirrorPresets {
@@ -51,13 +58,15 @@ public class CoralSubsystem extends SubsystemBase {
         PORT(true);
 
         boolean isMirrored;
+
         private MirrorPresets(boolean isMirrored) {
             this.isMirrored = isMirrored;
         }
-    } 
+    }
 
     public enum CoralIntakePresets {
         INTAKE(1),
+        HOLD(0.1),
         PURGE(-1),
         SCORE(-1),
         STOP(0),
@@ -65,6 +74,7 @@ public class CoralSubsystem extends SubsystemBase {
         CUSTOM(Double.NaN);
 
         double intakePercentage;
+
         private CoralIntakePresets(double intakePercentage) {
             this.intakePercentage = intakePercentage;
         }
@@ -83,20 +93,61 @@ public class CoralSubsystem extends SubsystemBase {
     private MirrorPresets mirrorSetting = MirrorPresets.RIGHT;
     private CoralIntakePresets currentIntakePreset = CoralIntakePresets.STOP;
 
-    public void setCoralPreset(CoralPresets preset) {
+    public void setCoralPresetDIRECT(CoralPresets preset) {
         if (preset == CoralPresets.CUSTOM) {
-            // uhhh i don't now how to throw an exception and i don't feel like figuring it out
+            // uhhh i don't now how to throw an exception and i don't feel like figuring it
+            // out
         } else if (preset != currentPreset) {
-            elevator.setGoalPosition(preset.elevatorHeight);
+            elevator.setGoalPosition(preset.elevatorHeightM);
             arm.setPivotGoalDegrees(
-                preset.pivotAngle 
-                * (mirrorSetting.isMirrored ? -1 : 1)
-            );
-            arm.setRollGoalDegrees(preset.rollAngle);
-            arm.setPitchGoalDegrees(preset.pitchAngle);
+                    preset.pivotAngleDeg
+                            * (mirrorSetting.isMirrored ? -1 : 1));
+            arm.setRollGoalDegrees(preset.rollAngleDeg);
+            arm.setPitchGoalDegrees(preset.pitchAngleDeg);
 
             currentPreset = preset;
         }
+    }
+
+    public void setCoralPresetElevator(CoralPresets preset) {
+        elevator.setGoalPosition(preset.elevatorHeightM);
+        currentPreset = preset;
+    }
+
+    public boolean isElevatorInPosition() {
+        return elevator.isInPosition();
+    }
+
+    public void setCoralPresetPivot(CoralPresets preset) {
+        arm.setPivotGoalDegrees(
+                preset.pivotAngleDeg
+                        * (mirrorSetting.isMirrored ? -1 : 1));
+        currentPreset = preset;
+    }
+
+    public boolean isPivotInPosition() {
+        return arm.isPivotInPosition();
+    }
+
+    public void setCoralPresetPitch(CoralPresets preset) {
+        arm.setPitchGoalDegrees(
+                preset.pitchAngleDeg);
+        currentPreset = preset;
+    }
+
+    public boolean isPitchInPosition() {
+        return arm.isPitchInPosition();
+    }
+
+    public void setCoralPresetRoll(CoralPresets preset) {
+        arm.setRollGoalDegrees(
+                preset.rollAngleDeg
+                        * (mirrorSetting.isMirrored ? -1 : 1));
+        currentPreset = preset;
+    }
+
+    public boolean isRollInPosition() {
+        return arm.isRollInPosition();
     }
 
     public double getPivotGoalDegrees() {
@@ -167,5 +218,8 @@ public class CoralSubsystem extends SubsystemBase {
         currentIntakePreset = CoralIntakePresets.CUSTOM;
         intake.setOutputPercentage(percentage);
     }
+
+    public double getPivotPositionDegrees() {
+        return arm.getPivotPositionDegrees();
+    }
 }
- 

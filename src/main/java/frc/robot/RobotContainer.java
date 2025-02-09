@@ -11,6 +11,12 @@ import frc.robot.commands.coral.CoralWristFollowCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
 import frc.robot.commands.coral.ScoreCoralCommand;
+import frc.robot.commands.coral.motion.MoveElevator;
+import frc.robot.commands.coral.motion.MovePitch;
+import frc.robot.commands.coral.motion.MovePivot;
+import frc.robot.commands.coral.motion.MoveRoll;
+import frc.robot.commands.coral.motion.StowArm;
+import frc.robot.commands.coral.motion.WaitPivotClearance;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
@@ -20,9 +26,11 @@ import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -57,13 +65,10 @@ public class RobotContainer {
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
     private final CoralSubsystem coralSubsystem = new CoralSubsystem();
-    private CoralPresets currentCoralPreset = CoralPresets.STOW;
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-
-
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -79,6 +84,41 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
+    }
+
+    private CoralPresets selectedScoringPreset = CoralPresets.STOW;
+    private CoralPresets lockedPreset = CoralPresets.STOW;
+
+    private void lockCoralArmPreset(CoralPresets preset) {
+        lockedPreset = preset;
+        SmartDashboard.putString("Locked Coral Preset", preset.toString());
+    }
+
+    private Supplier<CoralPresets> currentLockedPresetSupplier = new Supplier<CoralSubsystem.CoralPresets>() {
+        public CoralPresets get() {
+            return lockedPreset;
+        };
+    };
+
+    // go to preset position:
+    // 1. Stow arm & wrist
+    // 2. Move elevator
+    // 3. Deploy arm
+    // 4. Rotate wrist
+    private Command getGoToLockedPresetCommand() {
+        return new StowArm(coralSubsystem)
+                .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
+                .andThen(new ParallelCommandGroup(
+                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
+                        new WaitPivotClearance(coralSubsystem)
+                                .andThen(new MoveRoll(coralSubsystem, currentLockedPresetSupplier)
+                                        .alongWith(new MovePitch(coralSubsystem, currentLockedPresetSupplier)))));
+    }
+
+    private Command getStowCommand() {
+        return new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.STOW);
+        }).andThen(getGoToLockedPresetCommand());
     }
 
     /**
@@ -98,62 +138,75 @@ public class RobotContainer {
     private void configureBindings() {
         /*
          * operator
-        */
-        // low algae
+         */
+        // low algae TODO: Make a preset for low reef algae
         operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
             algaeSubsystem.setAlgaePreset(AlgaePresets.FLOOR);
         }));
-        // high algae
+        // high algae TODO: Make a preset for high reef algae
         operatorXbox.rightBumper().onTrue(new InstantCommand(() -> {
             algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
         }));
 
-        // L1 
+        // L1
         operatorXbox.a().onTrue(new InstantCommand(() -> {
-            currentCoralPreset = CoralPresets.LEVEL_1;
+            selectedScoringPreset = CoralPresets.LEVEL_1;
         }));
         // L2
         operatorXbox.x().onTrue(new InstantCommand(() -> {
-            currentCoralPreset = CoralPresets.LEVEL_2;
+            selectedScoringPreset = CoralPresets.LEVEL_2;
         }));
         // L3
         operatorXbox.y().onTrue(new InstantCommand(() -> {
-            currentCoralPreset = CoralPresets.LEVEL_3;
+            selectedScoringPreset = CoralPresets.LEVEL_3;
         }));
         // L4
         operatorXbox.b().onTrue(new InstantCommand(() -> {
-            currentCoralPreset = CoralPresets.LEVEL_4;
+            selectedScoringPreset = CoralPresets.LEVEL_4;
         }));
-        // go to preset position
-        operatorXbox.rightTrigger().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPreset(currentCoralPreset);
-        }));
+
+        operatorXbox.rightTrigger().whileTrue(new InstantCommand(() -> {
+            // coralSubsystem.setCoralPreset(currentCoralPreset);
+            lockCoralArmPreset(selectedScoringPreset);
+        }).andThen(getGoToLockedPresetCommand())).whileFalse(getStowCommand());
+
         // wrist adjustment
-        operatorXbox.rightStick().and(new BooleanSupplier() {
-            // deadzone
-            @Override
-            public boolean getAsBoolean() {
-                return Math.sqrt(Math.pow(operatorXbox.getRightX(),2) + Math.pow(operatorXbox.getRightY(),2)) > 0.25; 
-            }
-        }).whileTrue(new CoralWristFollowCommand(coralSubsystem, operatorXbox));
-        // score / intake coral
+        // Hold for now, until everything else is working
+        // operatorXbox.rightStick().and(new BooleanSupplier() {
+        // // deadzone
+        // @Override
+        // public boolean getAsBoolean() {
+        // return Math.sqrt(Math.pow(operatorXbox.getRightX(), 2) +
+        // Math.pow(operatorXbox.getRightY(), 2)) > 0.25;
+        // }
+        // }).whileTrue(new CoralWristFollowCommand(coralSubsystem, operatorXbox));
+
+        // Score coral
+        // TODO: Is it a good idea to stow right after this?
         operatorXbox.rightBumper().and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
                 return coralSubsystem.isHolding();
             }
-        }).whileTrue(new ScoreCoralCommand(coralSubsystem));
+        }).whileTrue(new ScoreCoralCommand(coralSubsystem).andThen(getStowCommand())).whileFalse(getStowCommand());
+
+        // Intake coral
         operatorXbox.rightBumper().and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
                 return !coralSubsystem.isHolding();
             }
-        }).whileTrue(new IntakeCoralCommand(coralSubsystem));
+        }).whileTrue(new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.INTAKE);
+        }).andThen(getGoToLockedPresetCommand()).andThen(getStowCommand())).whileFalse(getStowCommand());
+        // .onFalse(normalDrive);
+
         // purge coral
         operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));
+
         /*
          * driver
-        */
+         */
         // stop the climber
         driverXbox.x().onTrue(new InstantCommand(() -> {
             climberSubsystem.setOutput(0);
@@ -161,6 +214,7 @@ public class RobotContainer {
         // move the climber
         driverXbox.y().and(new BooleanSupplier() {
             private boolean deployed = true;
+
             @Override
             public boolean getAsBoolean() {
                 deployed = !(deployed);
@@ -173,18 +227,17 @@ public class RobotContainer {
         }));
         // TODO: something something maintainence
         driverXbox.button(6).onTrue(new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                System.out.print("swaaws");
-            })
-        ));
+                new InstantCommand(() -> {
+                    System.out.print("swaaws");
+                })));
         // set field orientation
         driverXbox.button(7).onTrue(new InstantCommand(() -> {
             swerveDriveSubsystem.setHeading(0);
         }));
 
-        /* 
+        /*
          * coop
-        */
+         */
         // algae floor / shoot
         driverXbox.leftBumper().and(new BooleanSupplier() {
             @Override

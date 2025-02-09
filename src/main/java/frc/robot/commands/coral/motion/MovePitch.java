@@ -1,0 +1,25 @@
+package frc.robot.commands.coral.motion;
+
+import java.util.function.Supplier;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.coral.CoralSubsystem;
+import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
+
+public class MovePitch extends Command {
+    private CoralSubsystem coralSub;
+
+    public MovePitch(CoralSubsystem coralSub, Supplier<CoralPresets> presetSupplier) {
+        this.coralSub = coralSub;
+        // HACK: This is much sketch
+        // addRequirements(coralSub);
+        SmartDashboard.putString("Arm Sequence", "Moving Pitch");
+        coralSub.setCoralPresetPitch(presetSupplier.get());
+    }
+
+    @Override
+    public boolean isFinished() {
+        return coralSub.isPitchInPosition();
+    }
+}

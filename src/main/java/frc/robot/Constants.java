@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.PropertyResourceBundle;
+
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -42,10 +44,10 @@ public final class Constants {
   public static class RobotConstants {
     public static final double robotWidthMeters = Units.inchesToMeters(25.0);
     public static final double robotLengthMeters = Units.inchesToMeters(25.0);
-    
-      // TODO: ############## REPLACE PLACEHOLDERS ##############
-      public static final double TOTAL_MASS_KG = 10;
-      public static final double MOMENT_OF_INERTIA = 1;
+
+    // TODO: ############## REPLACE PLACEHOLDERS ##############
+    public static final double TOTAL_MASS_KG = 10;
+    public static final double MOMENT_OF_INERTIA = 1;
   }
 
   public static final class FieldConstants {
@@ -159,11 +161,10 @@ public final class Constants {
   public static class Climber {
     public static final int MOTOR_PORT = 20;
     public static final ProfiledPIDController PID = new ProfiledPIDController(
-      1,
-      0.0,
-      0.0, 
-      new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
-    );
+        1,
+        0.0,
+        0.0,
+        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
   }
 
   // TODO: ##################### PLACEHOLDERS #####################
@@ -172,43 +173,41 @@ public final class Constants {
       public static final int MOTOR_PORT = 14;
       public static final int ENCODER_PORT = 28;
 
-      public static final double MAXIMUM_ANGLE = 80;
-      public static final double FRAME_BORDER_ANGLE = 30;
+      public static final double MAXIMUM_ANGLE = Units.degreesToRadians(80);
+      public static final double FRAME_BORDER_ANGLE = Units.degreesToRadians(30);
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-        1,
-        0.0,
-        0.0,
-        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
-      );
+          1,
+          0.0,
+          0.0,
+          new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
 
       // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
-        0.0,
-        1.04,// V
-        1.62,// V*s/rad
-        0.05// V*s^2/rad
+          0.0,
+          0.75, // V
+          1.62, // V*s/rad
+          0.05// V*s^2/rad
       );
+
       public static class PhysicalConstants {
         public static final DCMotor MOTOR = DCMotor.getNeoVortex(1);
         public static final double NET_REDUCTION = 96.0;
         public static final double MASS_KG = 4.8;
         public static final double ARM_LENGTH_METERS = 0.51;
         public static final double MOI = 0.2875548495; // Kg*m^2
-        public static final double GEARING = 1; // TODO: this is the only placholder
       }
     }
 
     public static class Roll {
       public static final int MOTOR_PORT = 15;
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-        1,
-        0.0,
-        0.0,
-        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
-      );
-      public static final double MAXIMUM_ANGLE = 90;
+          1,
+          0.0,
+          0.0,
+          new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
+      public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
@@ -216,20 +215,19 @@ public final class Constants {
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
         public static final double MOI = 0.0403605447; // Kg*m^2
-        public static final double GEARING = 1; // TODO: this is the only placholder
       }
     }
+
     public static class Pitch {
       public static final int MOTOR_PORT = 16;
 
-      public static final double MAXIMUM_ANGLE = 115;
+      public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-        1,
-        0.0,
-        0.0,
-        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
-      );
+          1,
+          0.0,
+          0.0,
+          new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
@@ -237,19 +235,21 @@ public final class Constants {
         public static final double MASS_KG = 2.16; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.101;
         public static final double MOI = 0.0200055915; // Kg*m^2
-        public static final double GEARING = 1; // TODO: this is the only placeholder
       }
     }
 
     public static class Intake {
       public static final int MOTOR_PORT = 17;
 
-      public static final double POSITIVE_RATE_LIMIT = 5.0;
-      public static final double NEGATIVE_RATE_LIMIT = 5.0;
+      public static final double POSITIVE_RATE_LIMIT = 20.0; // Fast shoot
+      public static final double NEGATIVE_RATE_LIMIT = 5.0; // Slow intake
+
+      public static final double SCORE_EXTRA_SECONDS = 0.1;
 
       public static final double IN_OUT_CURRENT_LIMIT = 40.0; // Stator limit
       public static final double HOLD_CURRENT_LIMIT = 5.0; // Stator, TODO: Test this!
       // TODO: ################### PLACHOLDERS ###################
+
       public static final class PhysicalConstants {
         public static final DCMotor MOTOR = DCMotor.getFalcon500(1);
         public static final double MOI = 0.1; // J*KG / M^2
@@ -257,7 +257,7 @@ public final class Constants {
       }
     }
   }
-  
+
   // TODO: ##################### PLACEHOLDERS #####################
   public static final class Algae {
     public static final class Pivot {
@@ -265,16 +265,14 @@ public final class Constants {
       public static final int ENCODER_PORT = 27;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-        1,
-        0.0,
-        0.0,
-        new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE)
-      );
+          1,
+          0.0,
+          0.0,
+          new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
-        1,
-        1,
-        1
-      );
+          1,
+          1,
+          1);
 
       public static final double RETRACTED_LIMIT_DEGREES = 10.0;
       public static final double EXTENDED_LIMIT_DEGREES = 90.0;
@@ -291,7 +289,8 @@ public final class Constants {
 
     public static final class Intake {
       public static final int MOTOR_PORT = 19;
-      public static final int BEAMBREAK_PORT = 0; // NOTE: Beambreak will *probably* be a rockwell proximity sensor wired into the SPARK max
+      public static final int BEAMBREAK_PORT = 0; // NOTE: Beambreak will *probably* be a rockwell proximity sensor
+                                                  // wired into the SPARK max
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
       public static final double NEGATIVE_RATE_LIMIT = -5.0;
@@ -304,7 +303,8 @@ public final class Constants {
     }
   }
 
-  // See https://cad.onshape.com/documents/fa9a0365dfdf7e376f93f1b4/w/36bfb0cc9de95ef5933791e3/e/700ba3cf920578fe61d3ec24
+  // See
+  // https://cad.onshape.com/documents/fa9a0365dfdf7e376f93f1b4/w/36bfb0cc9de95ef5933791e3/e/700ba3cf920578fe61d3ec24
   public static final class Elevator {
     public static final class Leader {
       public static final int MOTOR_PORT = 10;
@@ -324,7 +324,8 @@ public final class Constants {
       public static double kI = 0.0;
       public static double kD = 0.5;
       public static double MAX_VELOCITY = 3.20;
-      // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if the elevator can make or exceed this
+      // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
+      // the elevator can make or exceed this
       public static double MAX_ACCELERATION = 20.0;
     }
 
@@ -333,27 +334,29 @@ public final class Constants {
       public static double Ks = 0.0;
       public static double Kv = 3.5;
       public static double Ka = 0.08;
-      public static double Kg = 0.75; // TODO: Check this!!!
+      public static double Kg = 0.35; // TODO: Check this!!!
     }
 
     public static ElevatorFeedforward FEEDFORWARD = new ElevatorFeedforward(
-      FeedforwardConstants.Ks,
-      FeedforwardConstants.Kg,
-      FeedforwardConstants.Kv,
-      FeedforwardConstants.Ka
-    );
+        FeedforwardConstants.Ks,
+        FeedforwardConstants.Kg,
+        FeedforwardConstants.Kv,
+        FeedforwardConstants.Ka);
 
     public static class PhysicalParameters {
       public static final double GEARING = 5.0 / 2.0;
       public static final double DRIVE_RADIUS_METERS = 0.0121;
-      public static final double CARRIAGE_MASS_KG = 8.77; // NOTE: This includes the weight "reduction" due to CF spring counterbalance!
+      public static final double CARRIAGE_MASS_KG = 6.0; // Load on the SECOND stage NOTE: This includes the weight
+                                                         // "reduction" due to CF spring counterbalance!
 
       public static final double MAX_TRAVEL = Units.inchesToMeters(59.5);
       public static final double BOTTOM_TO_FLOOR = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
       public static final double CARRIAGE_HEIGHT = Units.inchesToMeters(8.0); // Bottom to top of stage 2
-      
-      public static final double CORAL_PIVOT_VERTICAL_OFFSET = Units.inchesToMeters(6.0); // From bottom of stage 2 to coral arm pivot axis
-      public static final double CORAL_PIVOT_HORIZONTAL_OFFSET = Units.inchesToMeters(7.5); // From bottom of stage 2 to coral arm pivot axis
+
+      public static final double CORAL_PIVOT_VERTICAL_OFFSET = Units.inchesToMeters(6.0); // From bottom of stage 2 to
+                                                                                          // coral arm pivot axis
+      public static final double CORAL_PIVOT_HORIZONTAL_OFFSET = Units.inchesToMeters(7.5); // From bottom of stage 2 to
+                                                                                            // coral arm pivot axis
       public static final double ELEVATOR_FORWARDS_OFFSET = Units.inchesToMeters(1); // To mid-plane of elevator
 
       public static final DCMotor MOTOR = DCMotor.getNeoVortex(2);
@@ -365,26 +368,24 @@ public final class Constants {
     public static final PIDConstants ROTATION_PID = new PIDConstants(5, 0, 0.2);
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
-      TRANSLATION_PID,
-      ROTATION_PID
-    );
+        TRANSLATION_PID,
+        ROTATION_PID);
 
     public static final RobotConfig ROBOT_CONFIG = new RobotConfig(
-      RobotConstants.TOTAL_MASS_KG,
-      RobotConstants.MOMENT_OF_INERTIA,
-      new ModuleConfig(
-        SwerveModuleConstants.WHEEL_DIAMETER/2,
-        DriveConstants.MAX_MODULE_VELOCITY,
-        SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
-        DCMotor.getKrakenX60(1),
-        DriveConstants.MAX_MODULE_CURRENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
-        1
-      ),
-      new Translation2d(-0.5, 0.5),
-      new Translation2d(0.5, 0.5),
-      new Translation2d(-0.5, -0.5),
-      new Translation2d(0.5, -0.5)
-    );
+        RobotConstants.TOTAL_MASS_KG,
+        RobotConstants.MOMENT_OF_INERTIA,
+        new ModuleConfig(
+            SwerveModuleConstants.WHEEL_DIAMETER / 2,
+            DriveConstants.MAX_MODULE_VELOCITY,
+            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT, // TODO: ############## REPLACE PLACEHOLDERS
+                                                              // ##############
+            DCMotor.getKrakenX60(1),
+            DriveConstants.MAX_MODULE_CURRENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
+            1),
+        new Translation2d(-0.5, 0.5),
+        new Translation2d(0.5, 0.5),
+        new Translation2d(-0.5, -0.5),
+        new Translation2d(0.5, -0.5));
   }
 
   public static final class PoseConstants {
