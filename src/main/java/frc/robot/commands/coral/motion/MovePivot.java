@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
@@ -19,6 +20,6 @@ public class MovePivot extends Command {
 
     @Override
     public boolean isFinished() {
-        return coralSub.isPivotInPosition();
+        return Constants.Coral.Pivot.DBG_DISABLED || coralSub.isPivotInPosition();
     }
 }

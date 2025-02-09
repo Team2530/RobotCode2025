@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
@@ -20,6 +21,6 @@ public class MovePitch extends Command {
 
     @Override
     public boolean isFinished() {
-        return coralSub.isPitchInPosition();
+        return Constants.Coral.Pitch.DBG_DISABLED || coralSub.isPitchInPosition();
     }
 }

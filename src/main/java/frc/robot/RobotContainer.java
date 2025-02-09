@@ -52,6 +52,7 @@ public class RobotContainer {
             ControllerConstants.DRIVER_CONTROLLER_PORT);
     private final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
+    private final CommandXboxController debugXboxController = new CommandXboxController(3);
 
     // private final CommandXboxController debugXbox = new CommandXboxController(0);
 
@@ -246,6 +247,13 @@ public class RobotContainer {
                 return algaeSubsystem.isHolding();
             }
         }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
+
+        /////////////////// DEBUGGING //////////////////
+        debugXboxController.a().onTrue(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
+        })).onFalse(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
+        }));
     }
 
     /**

@@ -47,11 +47,13 @@ public class CoralIntake extends SubsystemBase {
         // if no coral
         if (curHolding) {
             double output = intakeProfile.calculate(outputPercentage);
-            intakeMotor.set(output);
+            if (!Constants.Coral.Intake.DBG_DISABLED)
+                intakeMotor.set(output);
         } else {
             // hold, negative is out so intake a bit.
             // Set to 0.1 to be good
-            intakeMotor.set(Math.min(0.1, outputPercentage));
+            if (!Constants.Coral.Intake.DBG_DISABLED)
+                intakeMotor.set(Math.min(0.1, outputPercentage));
         }
 
         if (lastHolding != curHolding) {

@@ -165,6 +165,8 @@ public final class Constants {
         0.0,
         0.0,
         new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
+
+    public static boolean DBG_DISABLED = true;
   }
 
   // TODO: ##################### PLACEHOLDERS #####################
@@ -172,6 +174,9 @@ public final class Constants {
     public static class Pivot {
       public static final int MOTOR_PORT = 14;
       public static final int ENCODER_PORT = 28;
+      public static boolean DBG_DISABLED = true;
+
+      public static final boolean ENCODER_INVERTED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(80);
       public static final double FRAME_BORDER_ANGLE = Units.degreesToRadians(30);
@@ -204,6 +209,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 15;
       public static final boolean ENCODER_INVERTED = false;
       public static final double ENCODER_OFFSET_RADS = 0.0;
+      public static boolean DBG_DISABLED = true;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
           1,
@@ -225,6 +231,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 16;
       public static final boolean ENCODER_INVERTED = false;
       public static final double ENCODER_OFFSET_RADS = 0.0;
+      public static boolean DBG_DISABLED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
 
@@ -245,6 +252,7 @@ public final class Constants {
 
     public static class Intake {
       public static final int MOTOR_PORT = 17;
+      public static boolean DBG_DISABLED = true;
 
       public static final double POSITIVE_RATE_LIMIT = 20.0; // Fast shoot
       public static final double NEGATIVE_RATE_LIMIT = 5.0; // Slow intake
@@ -320,6 +328,8 @@ public final class Constants {
       public static final int MOTOR_PORT = 11;
       public static final boolean INVERTED = false;
     }
+
+    public static boolean DBG_DISABLED = true;
 
     public static double MOTOR_REVOLUTIONS_PER_METER = 32.81;
 

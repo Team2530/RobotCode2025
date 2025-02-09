@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.Elevator;
 
@@ -122,12 +123,16 @@ public class CoralElevator extends SubsystemBase {
             SmartDashboard.putNumber("Elevator/goal", elevatorPID.getGoal().position);
             SmartDashboard.putNumber("Elevator/pid_out", pid_out);
 
-            leaderMotor.setVoltage(output);
-            followerMotor.setVoltage(output);
+            if (!Constants.Elevator.DBG_DISABLED) {
+                leaderMotor.setVoltage(output);
+                followerMotor.setVoltage(output);
+            }
         } else {
-            // slowly move down to zero
-            leaderMotor.set(-0.05);
-            followerMotor.set(-0.05);
+            if (!Constants.Elevator.DBG_DISABLED) {
+                // slowly move down to zero
+                leaderMotor.set(-0.05);
+                followerMotor.set(-0.05);
+            }
         }
     }
 

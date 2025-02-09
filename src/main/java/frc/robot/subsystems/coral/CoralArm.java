@@ -1,5 +1,6 @@
 package frc.robot.subsystems.coral;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
@@ -90,7 +91,6 @@ public class CoralArm extends SubsystemBase {
         private double pitchGoal = 0.0; // Rads
 
         public CoralArm() {
-
                 AnalogSensorConfig wristEncConfig = new AnalogSensorConfig()
                                 .positionConversionFactor((Math.PI * 2) / 5.0)
                                 .velocityConversionFactor((Math.PI * 2) / 5.0);
@@ -153,8 +153,8 @@ public class CoralArm extends SubsystemBase {
                 }
 
                 double pivotPosition = Units
-                                .rotationsToRadians(pivotEncoder.getAbsolutePosition()
-                                                .getValueAsDouble());
+                                .rotationsToRadians((pivotEncoder.getAbsolutePosition().getValueAsDouble()
+                                                * (Constants.Coral.Pivot.ENCODER_INVERTED ? -1.0 : 1.0)));
                 double pivotFFout = pivotFeedforward.calculate(pivotPID.getSetpoint().position,
                                 pivotPID.getSetpoint().velocity);
                 double pivotPIDout = pivotPID.calculate(pivotPosition);
@@ -167,21 +167,24 @@ public class CoralArm extends SubsystemBase {
                 SmartDashboard.putNumber("Coral/Pivot/goal", pivotPID.getGoal().position);
 
                 // run the motors
-                pivotMotor.setVoltage(pivotPIDout + pivotFFout);
+                if (!Constants.Coral.Pivot.DBG_DISABLED)
+                        pivotMotor.setVoltage(pivotPIDout + pivotFFout);
 
                 double rollPIDout = rollPID.calculate(readRollEncoderPosition());
                 SmartDashboard.putNumber("Coral/Roll/position", readRollEncoderPosition());
                 SmartDashboard.putNumber("Coral/Roll/target", rollPID.getSetpoint().position);
                 SmartDashboard.putNumber("Coral/Roll/goal", rollPID.getGoal().position);
                 SmartDashboard.putNumber("Coral/Roll/out", rollPIDout);
-                rollMotor.setVoltage(rollPIDout);
+                if (!Constants.Coral.Roll.DBG_DISABLED)
+                        rollMotor.setVoltage(rollPIDout);
 
                 double pitchPIDout = pitchPID.calculate(readPitchEncoderPosition());
                 SmartDashboard.putNumber("Coral/Pitch/position", readPitchEncoderPosition());
                 SmartDashboard.putNumber("Coral/Pitch/target", pitchPID.getSetpoint().position);
                 SmartDashboard.putNumber("Coral/Pitch/goal", pitchPID.getGoal().position);
                 SmartDashboard.putNumber("Coral/Pitch/out", pitchPIDout);
-                pitchMotor.setVoltage(pitchPIDout);
+                if (!Constants.Coral.Pitch.DBG_DISABLED)
+                        pitchMotor.setVoltage(pitchPIDout);
         }
 
         @Override
@@ -267,8 +270,9 @@ public class CoralArm extends SubsystemBase {
         }
 
         public double getPivotPositionDegrees() {
-                return Units.radiansToDegrees(Robot.isReal()
-                                ? pivotEncoder.getAbsolutePosition().getValueAsDouble()
+                return Units.rotationsToDegrees(Robot.isReal()
+                                ? (pivotEncoder.getAbsolutePosition().getValueAsDouble()
+                                                * (Constants.Coral.Pivot.ENCODER_INVERTED ? -1.0 : 1.0))
                                 : simPivotPhysics.getAngleRads());
         }
 
