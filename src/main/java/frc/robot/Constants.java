@@ -202,6 +202,9 @@ public final class Constants {
 
     public static class Roll {
       public static final int MOTOR_PORT = 15;
+      public static final boolean ENCODER_INVERTED = false;
+      public static final double ENCODER_OFFSET_RADS = 0.0;
+
       public static final ProfiledPIDController PID = new ProfiledPIDController(
           1,
           0.0,
@@ -220,6 +223,8 @@ public final class Constants {
 
     public static class Pitch {
       public static final int MOTOR_PORT = 16;
+      public static final boolean ENCODER_INVERTED = false;
+      public static final double ENCODER_OFFSET_RADS = 0.0;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
 

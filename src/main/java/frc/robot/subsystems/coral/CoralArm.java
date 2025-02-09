@@ -5,11 +5,14 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.AnalogSensorConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -38,8 +41,8 @@ public class CoralArm extends SubsystemBase {
         private final SparkMaxSim simPitchMotor = new SparkMaxSim(pitchMotor, Coral.Pitch.PhysicalConstants.MOTOR);
 
         private final CANcoder pivotEncoder = new CANcoder(Coral.Pivot.ENCODER_PORT);
-        private final AbsoluteEncoder rollEncoder = rollMotor.getAbsoluteEncoder();
-        private final AbsoluteEncoder pitchEncoder = pitchMotor.getAbsoluteEncoder();
+        private final SparkAnalogSensor rollEncoder = rollMotor.getAnalog();
+        private final SparkAnalogSensor pitchEncoder = pitchMotor.getAnalog();
         // sim encoders
         private final SparkAbsoluteEncoderSim simRollEncoder = new SparkAbsoluteEncoderSim(rollMotor);
         private final SparkAbsoluteEncoderSim simPitchEncoder = new SparkAbsoluteEncoderSim(pitchMotor);
@@ -88,6 +91,10 @@ public class CoralArm extends SubsystemBase {
 
         public CoralArm() {
 
+                AnalogSensorConfig wristEncConfig = new AnalogSensorConfig()
+                                .positionConversionFactor((Math.PI * 2) / 5.0)
+                                .velocityConversionFactor((Math.PI * 2) / 5.0);
+
                 pivotMotor.configure(
                                 pivotConfig.idleMode(IdleMode.kBrake).apply(
                                                 new EncoderConfig()
@@ -102,10 +109,12 @@ public class CoralArm extends SubsystemBase {
                                 // Seconds
                                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
                 rollMotor.configure(
-                                rollConfig.idleMode(IdleMode.kBrake),
+                                rollConfig.idleMode(IdleMode.kBrake)
+                                                .apply(wristEncConfig.inverted(Constants.Coral.Roll.ENCODER_INVERTED)),
                                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
                 pitchMotor.configure(pitchConfig
-                                .idleMode(IdleMode.kBrake),
+                                .idleMode(IdleMode.kBrake).apply(wristEncConfig
+                                                .inverted(Constants.Coral.Pitch.ENCODER_INVERTED)),
                                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
                 /*
@@ -160,15 +169,15 @@ public class CoralArm extends SubsystemBase {
                 // run the motors
                 pivotMotor.setVoltage(pivotPIDout + pivotFFout);
 
-                double rollPIDout = rollPID.calculate(rollEncoder.getPosition());
-                SmartDashboard.putNumber("Coral/Roll/position", rollEncoder.getPosition());
+                double rollPIDout = rollPID.calculate(readRollEncoderPosition());
+                SmartDashboard.putNumber("Coral/Roll/position", readRollEncoderPosition());
                 SmartDashboard.putNumber("Coral/Roll/target", rollPID.getSetpoint().position);
                 SmartDashboard.putNumber("Coral/Roll/goal", rollPID.getGoal().position);
                 SmartDashboard.putNumber("Coral/Roll/out", rollPIDout);
                 rollMotor.setVoltage(rollPIDout);
 
-                double pitchPIDout = pitchPID.calculate(pitchEncoder.getPosition());
-                SmartDashboard.putNumber("Coral/Pitch/position", pitchEncoder.getPosition());
+                double pitchPIDout = pitchPID.calculate(readPitchEncoderPosition());
+                SmartDashboard.putNumber("Coral/Pitch/position", readPitchEncoderPosition());
                 SmartDashboard.putNumber("Coral/Pitch/target", pitchPID.getSetpoint().position);
                 SmartDashboard.putNumber("Coral/Pitch/goal", pitchPID.getGoal().position);
                 SmartDashboard.putNumber("Coral/Pitch/out", pitchPIDout);
@@ -265,13 +274,13 @@ public class CoralArm extends SubsystemBase {
 
         public double getRollPositionDegrees() {
                 return Units.radiansToDegrees(Robot.isReal()
-                                ? rollEncoder.getPosition()
+                                ? readRollEncoderPosition()
                                 : simRollEncoder.getPosition());
         }
 
         public double getPitchPositionDegrees() {
                 return Units.radiansToDegrees(Robot.isReal()
-                                ? pitchEncoder.getPosition()
+                                ? readPitchEncoderPosition()
                                 : simPitchEncoder.getPosition());
         }
 
@@ -285,5 +294,13 @@ public class CoralArm extends SubsystemBase {
 
         public boolean isPivotInPosition() {
                 return pivotPID.atGoal();
+        }
+
+        public double readPitchEncoderPosition() {
+                return pitchEncoder.getPosition() + Constants.Coral.Pitch.ENCODER_OFFSET_RADS;
+        }
+
+        public double readRollEncoderPosition() {
+                return rollEncoder.getPosition() + Constants.Coral.Roll.ENCODER_OFFSET_RADS;
         }
 }
