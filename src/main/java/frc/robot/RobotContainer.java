@@ -198,7 +198,8 @@ public class RobotContainer {
             }
         }).whileTrue(new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.INTAKE);
-        }).andThen(getGoToLockedPresetCommand()).andThen(getStowCommand())).whileFalse(getStowCommand());
+        }).andThen(getGoToLockedPresetCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
+                .andThen(getStowCommand())).whileFalse(getStowCommand());
         // .onFalse(normalDrive);
 
         // purge coral
