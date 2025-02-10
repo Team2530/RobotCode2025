@@ -24,6 +24,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,9 +38,9 @@ public class CoralArm extends SubsystemBase {
         private final SparkMax rollMotor = new SparkMax(Coral.Roll.MOTOR_PORT, MotorType.kBrushless);
         private final SparkMax pitchMotor = new SparkMax(Coral.Pitch.MOTOR_PORT, MotorType.kBrushless);
         // sim motors
-        private final SparkFlexSim simPivotMotor = new SparkFlexSim(pivotMotor, Coral.Pivot.PhysicalConstants.MOTOR);
-        private final SparkMaxSim simRollMotor = new SparkMaxSim(rollMotor, Coral.Roll.PhysicalConstants.MOTOR);
-        private final SparkMaxSim simPitchMotor = new SparkMaxSim(pitchMotor, Coral.Pitch.PhysicalConstants.MOTOR);
+        private double simPivotVoltage = 0.0;
+        private double simRollVoltage = 0.0;
+        private double simPitchVoltage = 0.0;
 
         private final CANcoder pivotEncoder = new CANcoder(Coral.Pivot.ENCODER_PORT);
         private final SparkAnalogSensor rollEncoder = rollMotor.getAnalog();
@@ -54,17 +55,15 @@ public class CoralArm extends SubsystemBase {
                         Coral.Pivot.PhysicalConstants.NET_REDUCTION,
                         Coral.Pivot.PhysicalConstants.MOI,
                         Coral.Pivot.PhysicalConstants.ARM_LENGTH_METERS,
-                        Units.degreesToRadians(Coral.Pivot.MAXIMUM_ANGLE * -1),
-                        Units.degreesToRadians(Coral.Pivot.MAXIMUM_ANGLE),
-                        true,
-                        0);
+                        Coral.Pivot.MAXIMUM_ANGLE * -1,
+                        Coral.Pivot.MAXIMUM_ANGLE, true, 0);
         private final SingleJointedArmSim simRollPhysics = new SingleJointedArmSim(
                         Coral.Roll.PhysicalConstants.MOTOR,
                         Coral.Roll.PhysicalConstants.NET_REDUCTION,
                         Coral.Roll.PhysicalConstants.MOI,
                         Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS,
-                        Units.degreesToRadians(Coral.Roll.MAXIMUM_ANGLE * -1),
-                        Units.degreesToRadians(Coral.Roll.MAXIMUM_ANGLE),
+                        Coral.Roll.MAXIMUM_ANGLE * -1,
+                        Coral.Roll.MAXIMUM_ANGLE,
                         false,
                         0);
         private final SingleJointedArmSim simPitchPhysics = new SingleJointedArmSim(
@@ -72,8 +71,8 @@ public class CoralArm extends SubsystemBase {
                         Coral.Pitch.PhysicalConstants.NET_REDUCTION,
                         Coral.Pitch.PhysicalConstants.MOI,
                         Coral.Pitch.PhysicalConstants.ARM_LENGTH_METERS,
-                        Units.degreesToRadians(Coral.Pitch.MAXIMUM_ANGLE * -1),
-                        Units.degreesToRadians(Coral.Pitch.MAXIMUM_ANGLE),
+                        Coral.Pitch.MAXIMUM_ANGLE * -1,
+                        Coral.Pitch.MAXIMUM_ANGLE,
                         false,
                         0);
 
@@ -169,48 +168,45 @@ public class CoralArm extends SubsystemBase {
                 // run the motors
                 if (!Constants.Coral.Pivot.DBG_DISABLED)
                         pivotMotor.setVoltage(pivotPIDout + pivotFFout);
+                simPivotVoltage = pivotPIDout + pivotFFout;
 
                 double rollPIDout = rollPID.calculate(readRollEncoderPosition());
+                double rollFFout = Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
                 SmartDashboard.putNumber("Coral/Roll/position", readRollEncoderPosition());
                 SmartDashboard.putNumber("Coral/Roll/target", rollPID.getSetpoint().position);
                 SmartDashboard.putNumber("Coral/Roll/goal", rollPID.getGoal().position);
-                SmartDashboard.putNumber("Coral/Roll/out", rollPIDout);
+                SmartDashboard.putNumber("Coral/Roll/pid_out", rollPIDout);
+                SmartDashboard.putNumber("Coral/Roll/ff_out", rollPIDout);
+                SmartDashboard.putNumber("Coral/Roll/out", rollPIDout + rollFFout);
                 if (!Constants.Coral.Roll.DBG_DISABLED)
-                        rollMotor.setVoltage(rollPIDout);
+                        rollMotor.setVoltage(rollPIDout + rollFFout);
+                simRollVoltage = rollPIDout;
 
                 double pitchPIDout = pitchPID.calculate(readPitchEncoderPosition());
+                double pitchFFout = Constants.Coral.Pitch.FEEDFORWARD.calculate(pitchPID.getSetpoint().velocity);
                 SmartDashboard.putNumber("Coral/Pitch/position", readPitchEncoderPosition());
                 SmartDashboard.putNumber("Coral/Pitch/target", pitchPID.getSetpoint().position);
                 SmartDashboard.putNumber("Coral/Pitch/goal", pitchPID.getGoal().position);
-                SmartDashboard.putNumber("Coral/Pitch/out", pitchPIDout);
+                SmartDashboard.putNumber("Coral/Pitch/out", pitchPIDout + pitchFFout);
+                SmartDashboard.putNumber("Coral/Pitch/pid_out", pitchPIDout);
+                SmartDashboard.putNumber("Coral/Pitch/ff_out", pitchFFout);
                 if (!Constants.Coral.Pitch.DBG_DISABLED)
-                        pitchMotor.setVoltage(pitchPIDout);
+                        pitchMotor.setVoltage(pitchPIDout + pitchFFout);
+                simPitchVoltage = pitchPIDout;
         }
 
         @Override
         public void simulationPeriodic() {
                 // update physics
-                simPivotPhysics.setInput(simPivotMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
-                simRollPhysics.setInput(simRollMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
-                simPitchPhysics.setInput(simPitchMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
+                simPivotPhysics.setInput(MathUtil.clamp(simPivotVoltage, -12.0, 12.0));
+                simRollPhysics.setInput(MathUtil.clamp(simRollVoltage, -12.0, 12.0));
+                simPitchPhysics.setInput(MathUtil.clamp(simPitchVoltage, -12.0, 12.0));
+                SmartDashboard.putNumber("simPitchMotor.getPosition", simPitchPhysics.getAngleRads()
+                                * RoboRioSim.getVInVoltage());
 
                 simPivotPhysics.update(0.02);
                 simRollPhysics.update(0.02);
                 simPitchPhysics.update(0.02);
-
-                // update sim objects
-                simPivotMotor.iterate(
-                                simPivotPhysics.getVelocityRadPerSec(),
-                                RoboRioSim.getVInVoltage(),
-                                0.02);
-                simRollMotor.iterate(
-                                simRollPhysics.getVelocityRadPerSec(),
-                                RoboRioSim.getVInVoltage(),
-                                0.02);
-                simPitchMotor.iterate(
-                                simPitchPhysics.getVelocityRadPerSec(),
-                                RoboRioSim.getVInVoltage(),
-                                0.02);
         }
 
         // this should be relative to straight upwards.
@@ -277,15 +273,11 @@ public class CoralArm extends SubsystemBase {
         }
 
         public double getRollPositionDegrees() {
-                return Units.radiansToDegrees(Robot.isReal()
-                                ? readRollEncoderPosition()
-                                : simRollEncoder.getPosition());
+                return Units.radiansToDegrees(readRollEncoderPosition());
         }
 
         public double getPitchPositionDegrees() {
-                return Units.radiansToDegrees(Robot.isReal()
-                                ? readPitchEncoderPosition()
-                                : simPitchEncoder.getPosition());
+                return Units.radiansToDegrees(readPitchEncoderPosition());
         }
 
         public boolean isPitchInPosition() {
@@ -301,10 +293,14 @@ public class CoralArm extends SubsystemBase {
         }
 
         public double readPitchEncoderPosition() {
-                return pitchEncoder.getPosition() + Constants.Coral.Pitch.ENCODER_OFFSET_RADS;
+                return Robot.isSimulation() ? simPitchPhysics.getAngleRads()
+                                : MathUtil.angleModulus(
+                                                pitchEncoder.getPosition() + Constants.Coral.Pitch.ENCODER_OFFSET_RADS);
         }
 
         public double readRollEncoderPosition() {
-                return rollEncoder.getPosition() + Constants.Coral.Roll.ENCODER_OFFSET_RADS;
+                return Robot.isSimulation() ? simRollPhysics.getAngleRads()
+                                : MathUtil.angleModulus(
+                                                rollEncoder.getPosition() + Constants.Coral.Roll.ENCODER_OFFSET_RADS);
         }
 }

@@ -14,6 +14,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -201,6 +202,7 @@ public final class Constants {
         public static final double NET_REDUCTION = 96.0;
         public static final double MASS_KG = 4.8;
         public static final double ARM_LENGTH_METERS = 0.51;
+        public static final double JOINT_LENGTH_METERS = Units.inchesToMeters(23.0);
         public static final double MOI = 0.2875548495; // Kg*m^2
       }
     }
@@ -215,7 +217,9 @@ public final class Constants {
           1,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
+          new TrapezoidProfile.Constraints(20.0, 200.0));
+      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.4);
+
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
       public static class PhysicalConstants {
@@ -236,16 +240,19 @@ public final class Constants {
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          1,
+          20.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
+          new TrapezoidProfile.Constraints(12.0, 400.0)); // Radians
+
+      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.88);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
         public static final double NET_REDUCTION = 92.85714286; // Yeah this is cursed
         public static final double MASS_KG = 2.16; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.101;
+        public static final double JOINT_LENGTH_METERS = Units.inchesToMeters(13.875);
         public static final double MOI = 0.0200055915; // Kg*m^2
       }
     }

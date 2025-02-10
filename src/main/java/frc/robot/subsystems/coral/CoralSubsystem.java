@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class CoralSubsystem extends SubsystemBase {
 
@@ -16,11 +17,11 @@ public class CoralSubsystem extends SubsystemBase {
     private final CoralElevator elevator = new CoralElevator();
 
     private final Mechanism2d coralMechanism = new Mechanism2d(2, 3);
-    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 1.5, 0);
+    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 0.0, 0.0);
     private final MechanismLigament2d elevatorMechanism = rootMechanism.append(
-            new MechanismLigament2d("Elevator", 1, 0));
+            new MechanismLigament2d("Elevator", Constants.Elevator.PhysicalParameters.BOTTOM_TO_FLOOR, 0));
     private final MechanismLigament2d pivotMechanism = elevatorMechanism.append(
-            new MechanismLigament2d("Coral", 1, 0));
+            new MechanismLigament2d("Coral", Constants.Coral.Pivot.PhysicalConstants.JOINT_LENGTH_METERS, 0));
 
     public enum CoralPresets {
         LEVEL_1(1.0, 20.0, 0.0, 0.0), // TODO: Figure out level 1, TBD
@@ -83,7 +84,8 @@ public class CoralSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // i have no idea what any of the getPositions output
-        elevatorMechanism.setLength(elevator.getPosition());
+        elevatorMechanism
+                .setLength(elevator.getPosition() + Constants.Elevator.PhysicalParameters.CORAL_PIVOT_VERTICAL_OFFSET);
         pivotMechanism.setAngle(arm.getPivotPositionDegrees());
 
         SmartDashboard.putData("Coral Mechanism", coralMechanism);
