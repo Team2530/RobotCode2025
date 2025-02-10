@@ -254,6 +254,23 @@ public class RobotContainer {
         })).onFalse(new InstantCommand(() -> {
             coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
         }));
+
+        debugXboxController.b().onTrue(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetRoll(CoralPresets.LEVEL_4);
+        })).onFalse(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetRoll(CoralPresets.STOW);
+        }));
+
+        debugXboxController.x().onTrue(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetPivot(CoralPresets.LEVEL_4);
+        })).onFalse(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetPivot(CoralPresets.STOW);
+        }));
+        debugXboxController.y().onTrue(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_4);
+        })).onFalse(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
+        }));
     }
 
     /**

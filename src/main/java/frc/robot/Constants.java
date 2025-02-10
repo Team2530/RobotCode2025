@@ -184,24 +184,24 @@ public final class Constants {
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          1,
+          20.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
+          new TrapezoidProfile.Constraints(7.0, 20.0));
 
       // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
           0.0,
-          0.75, // V
-          1.62, // V*s/rad
-          0.05// V*s^2/rad
+          0.4, // V
+          1.0, // V*s/rad
+          0.04// V*s^2/rad
       );
 
       public static class PhysicalConstants {
         public static final DCMotor MOTOR = DCMotor.getNeoVortex(1);
         public static final double NET_REDUCTION = 96.0;
-        public static final double MASS_KG = 4.8;
-        public static final double ARM_LENGTH_METERS = 0.51;
+        public static final double MASS_KG = 4.7727;
+        public static final double ARM_LENGTH_METERS = 0.510;
         public static final double JOINT_LENGTH_METERS = Units.inchesToMeters(23.0);
         public static final double MOI = 0.2875548495; // Kg*m^2
       }
@@ -214,11 +214,11 @@ public final class Constants {
       public static boolean DBG_DISABLED = true;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          1,
+          10.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(20.0, 200.0));
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.4);
+          new TrapezoidProfile.Constraints(20.0, 150.0));
+      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.5);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
@@ -243,9 +243,9 @@ public final class Constants {
           20.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(12.0, 400.0)); // Radians
+          new TrapezoidProfile.Constraints(12.0, 200.0)); // Radians
 
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.88);
+      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.9);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
