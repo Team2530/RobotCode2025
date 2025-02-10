@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
-import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -35,6 +34,7 @@ public class CoralElevator extends SubsystemBase {
     // sim motors
     private final SparkFlexSim simLeaderMotor = new SparkFlexSim(leaderMotor, DCMotor.getNeoVortex(1));
     private final SparkFlexSim simFollowerMotor = new SparkFlexSim(followerMotor, DCMotor.getNeoVortex(1));
+    private double simOutputVoltage = 0.0;
 
     private final RelativeEncoder leaderEncoder = leaderMotor.getEncoder();
     private final RelativeEncoder followerEncoder = followerMotor.getEncoder();
@@ -113,20 +113,23 @@ public class CoralElevator extends SubsystemBase {
             lastTime = Timer.getFPGATimestamp();
             lastVelocity = setpoint.velocity;
 
-            double pid_out = elevatorPID.calculate(leaderEncoder.getPosition());
-            double output = feedForward.calculate(setpoint.velocity, deltaVelocity / deltaTime)
-                    + pid_out;
+            double pid_out = elevatorPID.calculate(getPosition());
+            double ff_out = feedForward.calculate(setpoint.velocity, deltaVelocity / deltaTime);
+            double output = ff_out + pid_out;
 
-            SmartDashboard.putNumber("Elevator/Output", output);
-            SmartDashboard.putNumber("Elevator/position", leaderEncoder.getPosition());
+            SmartDashboard.putNumber("Elevator/output", output);
+            SmartDashboard.putNumber("Elevator/position", getPosition());
             SmartDashboard.putNumber("Elevator/target", setpoint.position);
             SmartDashboard.putNumber("Elevator/goal", elevatorPID.getGoal().position);
             SmartDashboard.putNumber("Elevator/pid_out", pid_out);
+            SmartDashboard.putNumber("Elevator/ff_out", ff_out);
 
             if (!Constants.Elevator.DBG_DISABLED) {
                 leaderMotor.setVoltage(output);
                 followerMotor.setVoltage(output);
             }
+
+            simOutputVoltage = output;
         } else {
             if (!Constants.Elevator.DBG_DISABLED) {
                 // slowly move down to zero
@@ -139,8 +142,7 @@ public class CoralElevator extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         // update physics
-        simElevator.setInput(
-                (leaderMotor.getAppliedOutput() + followerMotor.getAppliedOutput()) * 0.5 * RoboRioSim.getVInVoltage());
+        simElevator.setInput(MathUtil.clamp(simOutputVoltage, -12.0, 12.0));
         simElevator.update(0.02);
 
         // update sim objects
@@ -165,7 +167,7 @@ public class CoralElevator extends SubsystemBase {
     public double getPosition() {
         return Robot.isReal()
                 ? leaderEncoder.getPosition()
-                : simLeaderEncoder.getPosition();
+                : simElevator.getPositionMeters();
     }
 
     public boolean isInPosition() {

@@ -344,7 +344,7 @@ public final class Constants {
     public static class PID {
       public static double kP = 20.0;
       public static double kI = 0.0;
-      public static double kD = 0.5;
+      public static double kD = 0.01;
       public static double MAX_VELOCITY = 3.20;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
@@ -354,8 +354,8 @@ public final class Constants {
     // TODO: PAD THE ELEVATOR!!!!!!!
     public static class FeedforwardConstants {
       public static double Ks = 0.0;
-      public static double Kv = 3.5;
-      public static double Ka = 0.08;
+      public static double Kv = 3.0;
+      public static double Ka = 0.04;
       public static double Kg = 0.35; // TODO: Check this!!!
     }
 
