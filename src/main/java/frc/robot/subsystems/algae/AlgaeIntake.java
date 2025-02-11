@@ -40,14 +40,17 @@ public class AlgaeIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
+        double output;
         // if no algae
         if (intakeBeambreak.get()) {
-            double output = intakeProfile.calculate(outputPercentage);
-            intakeMotor.set(output);
+            output = intakeProfile.calculate(outputPercentage);
         } else {
             // hold
-            intakeMotor.set(Math.min(0.05, outputPercentage));
+            output = Math.min(0.05, outputPercentage);
         }
+
+        intakeMotor.set(output);
+        simIntakeMotor.setAppliedOutput(output);
     }
     
     @Override
