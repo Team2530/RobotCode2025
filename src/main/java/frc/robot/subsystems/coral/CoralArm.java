@@ -4,6 +4,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.sim.SparkAnalogSensorSim;
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
@@ -45,6 +46,7 @@ public class CoralArm extends SubsystemBase {
     // sim encoders
     private final SparkAnalogSensorSim simRollEncoder = new SparkAnalogSensorSim(rollMotor);
     private final SparkAnalogSensorSim simPitchEncoder = new SparkAnalogSensorSim(pitchMotor);
+    private final SparkRelativeEncoderSim simPivotEncoder = new SparkRelativeEncoderSim(pivotMotor);
 
     // physics simulations
     private final SingleJointedArmSim simPivotPhysics = new SingleJointedArmSim(
@@ -53,7 +55,7 @@ public class CoralArm extends SubsystemBase {
             Coral.Pivot.PhysicalConstants.MOI,
             Coral.Pivot.PhysicalConstants.ARM_LENGTH_METERS,
             0.5 * Math.PI - Coral.Pivot.MAXIMUM_ANGLE,
-            0.5 * Math.PI + Coral.Pivot.MAXIMUM_ANGLE, true, 0.5 * Math.PI - 0.05);
+            0.5 * Math.PI + Coral.Pivot.MAXIMUM_ANGLE, true, 0.5 * Math.PI);
     private final SingleJointedArmSim simRollPhysics = new SingleJointedArmSim(
             Coral.Roll.PhysicalConstants.MOTOR,
             Coral.Roll.PhysicalConstants.NET_REDUCTION,
@@ -158,7 +160,8 @@ public class CoralArm extends SubsystemBase {
          * run the motors
          */
 
-        double pivotPosition = pivotMotor.getEncoder().getPosition();// readPivotEncoderPosition();
+        double pivotPosition = Robot.isSimulation() ? readPivotEncoderPosition()
+                : pivotMotor.getEncoder().getPosition();// readPivotEncoderPosition();
         double pivotFFout = pivotFeedforward.calculate(
                 Math.PI * 0.5 + pivotPosition,
                 pivotPID.getSetpoint().velocity);
@@ -202,7 +205,7 @@ public class CoralArm extends SubsystemBase {
     public void simulationPeriodic() {
         // update physics
         simPivotPhysics
-                .setInput(MathUtil.clamp(simPitchMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
+                .setInput(MathUtil.clamp(simPivotMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
         simRollPhysics
                 .setInput(MathUtil.clamp(simRollMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
         simPitchPhysics
@@ -228,14 +231,19 @@ public class CoralArm extends SubsystemBase {
                 RoboRioSim.getVInVoltage(),
                 0.02);
 
-        simRollEncoder.setPosition(simRollPhysics.getAngleRads() / 5.0);
+        simRollEncoder.setPosition(Units.radiansToRotations(simRollPhysics.getAngleRads()) * 3.3
+                - Constants.Coral.Roll.ENCODER_OFFSET_VOLTS);
         simRollEncoder.iterate(
                 simRollPhysics.getVelocityRadPerSec(),
                 0.02);
-        simPitchEncoder.setPosition(simPitchPhysics.getAngleRads() / 5.0);
+        simPitchEncoder.setPosition(Units.radiansToRotations(simPitchPhysics.getAngleRads()) * 3.3
+                - Constants.Coral.Pitch.ENCODER_OFFSET_VOLTS);
         simPitchEncoder.iterate(
                 simPitchPhysics.getVelocityRadPerSec(),
                 0.02);
+
+        simPivotEncoder.setPosition(simPivotPhysics.getAngleRads() - Math.PI * 0.5);
+        simPivotEncoder.iterate(simPivotPhysics.getVelocityRadPerSec(), 0.02);
     }
 
     // this should be relative to straight upwards.
@@ -331,19 +339,20 @@ public class CoralArm extends SubsystemBase {
     }
 
     public double readPitchEncoderPosition() {
-        return Robot.isSimulation() ? simPitchEncoder.getPosition()
-                : MathUtil
-                        .angleModulus(((pitchEncFilter.calculate(pitchEncoder.getPosition())
-                                + Constants.Coral.Pitch.ENCODER_OFFSET_VOLTS) / 3.3)
-                                * 2 * Math.PI);
+        return MathUtil
+                .angleModulus(((pitchEncFilter.calculate(Robot.isSimulation() ? simPitchEncoder.getPosition()
+                        : pitchEncoder.getPosition())
+                        + Constants.Coral.Pitch.ENCODER_OFFSET_VOLTS)
+                        / 3.3)
+                        * 2 * Math.PI);
     }
 
     public double readRollEncoderPosition() {
-        return Robot.isSimulation() ? simRollEncoder.getPosition()
-                : MathUtil
-                        .angleModulus(((rollEncFilter.calculate(rollEncoder.getPosition())
-                                + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS) / 3.3)
-                                * 2 * Math.PI);
+        return MathUtil
+                .angleModulus(((rollEncFilter
+                        .calculate(Robot.isSimulation() ? simRollEncoder.getPosition() : rollEncoder.getPosition())
+                        + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS) / 3.3)
+                        * 2 * Math.PI);
     }
 
     public double readPivotEncoderPosition() {

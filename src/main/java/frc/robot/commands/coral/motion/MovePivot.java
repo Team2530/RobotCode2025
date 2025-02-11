@@ -20,6 +20,6 @@ public class MovePivot extends Command {
 
     @Override
     public boolean isFinished() {
-        return Constants.Coral.Pivot.DBG_DISABLED || coralSub.isPivotInPosition();
+        return coralSub.isPivotInPosition();
     }
 }

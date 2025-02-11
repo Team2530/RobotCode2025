@@ -21,6 +21,6 @@ public class MovePitch extends Command {
 
     @Override
     public boolean isFinished() {
-        return Constants.Coral.Pitch.DBG_DISABLED || coralSub.isPitchInPosition();
+        return coralSub.isPitchInPosition();
     }
 }

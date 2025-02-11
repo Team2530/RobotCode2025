@@ -20,6 +20,6 @@ public class MoveRoll extends Command {
 
     @Override
     public boolean isFinished() {
-        return Constants.Coral.Roll.DBG_DISABLED || coralSub.isRollInPosition();
+        return coralSub.isRollInPosition();
     }
 }

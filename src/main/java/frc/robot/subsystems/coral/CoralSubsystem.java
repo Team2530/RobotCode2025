@@ -228,4 +228,8 @@ public class CoralSubsystem extends SubsystemBase {
     public double getPivotPositionDegrees() {
         return arm.getPivotPositionDegrees();
     }
+
+    public boolean isElevatorSupposedToBeInPosition() {
+        return elevator.isSupposedToBeInPosition();
+    }
 }

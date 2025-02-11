@@ -97,13 +97,9 @@ public class CoralElevator extends SubsystemBase {
     public void periodic() {
         // check if needs to be zeroed and is at zero
         // TODO: ######################### PLACEHOLDERS AGAIN #########################
-        if (
-            !isZeroed
-            && (
-                ((leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2) > 20
-                || Robot.isSimulation()
-            )
-        ) {
+        if (!isZeroed
+                && (((leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2) > 20
+                        || Robot.isSimulation())) {
             leaderEncoder.setPosition(0);
             isZeroed = true;
         }
@@ -147,7 +143,8 @@ public class CoralElevator extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         // update physics
-        simElevator.setInput(MathUtil.clamp(simLeaderMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
+        simElevator
+                .setInput(MathUtil.clamp(simLeaderMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
         simElevator.update(0.02);
 
         // update sim objects
@@ -177,6 +174,11 @@ public class CoralElevator extends SubsystemBase {
 
     public boolean isInPosition() {
         return elevatorPID.atGoal();
+    }
+
+    public boolean isSupposedToBeInPosition() {
+        return MathUtil.isNear(elevatorPID.getSetpoint().position, elevatorPID.getGoal().position,
+                Units.inchesToMeters(1 / 16.0));
     }
 
     public void zeroElevator() {

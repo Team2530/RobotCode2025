@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -227,7 +226,7 @@ public final class Constants {
         public static final double NET_REDUCTION = 45.0;
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
-        public static final double MOI = 0.0403605447; // Kg*m^2
+        public static final double MOI = 0.00403605447; // Kg*m^2
       }
     }
 
@@ -254,7 +253,7 @@ public final class Constants {
         public static final double MASS_KG = 2.16; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.101;
         public static final double JOINT_LENGTH_METERS = Units.inchesToMeters(13.875);
-        public static final double MOI = 0.0200055915; // Kg*m^2
+        public static final double MOI = 0.00200055915; // Kg*m^2
       }
     }
 

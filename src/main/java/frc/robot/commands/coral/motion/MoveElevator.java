@@ -20,6 +20,6 @@ public class MoveElevator extends Command {
 
     @Override
     public boolean isFinished() {
-        return Constants.Elevator.DBG_DISABLED || coralSub.isElevatorInPosition();
+        return Constants.Elevator.DBG_DISABLED || coralSub.isElevatorSupposedToBeInPosition();
     }
 }
