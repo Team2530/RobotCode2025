@@ -10,11 +10,17 @@ import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
 public class MovePitch extends Command {
     private CoralSubsystem coralSub;
+    private Supplier<CoralPresets> presetSupplier;
 
     public MovePitch(CoralSubsystem coralSub, Supplier<CoralPresets> presetSupplier) {
         this.coralSub = coralSub;
+        this.presetSupplier = presetSupplier;
         // HACK: This is much sketch
         // addRequirements(coralSub);
+    }
+
+    @Override
+    public void initialize() {
         SmartDashboard.putString("Arm Sequence", "Moving Pitch");
         coralSub.setCoralPresetPitch(presetSupplier.get());
     }

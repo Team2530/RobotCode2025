@@ -360,4 +360,16 @@ public class CoralArm extends SubsystemBase {
                 : Units.rotationsToRadians((pivotEncoder.getAbsolutePosition().getValueAsDouble()
                         * (Constants.Coral.Pivot.ENCODER_INVERTED ? -1.0 : 1.0)));
     }
+
+    public boolean isPitchSupposedToBeInPosition() {
+        return MathUtil.isNear(this.pitchPID.getSetpoint().position, pitchGoal, 0.01);
+    }
+
+    public boolean isPivotSupposedToBeInPosition() {
+        return MathUtil.isNear(this.pivotPID.getSetpoint().position, pivotGoal, 0.01);
+    }
+
+    public boolean isRollSupposedToBeInPosition() {
+        return MathUtil.isNear(this.rollPID.getSetpoint().position, rollGoal, 0.01);
+    }
 }

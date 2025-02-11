@@ -1,5 +1,7 @@
 package frc.robot.subsystems.coral;
 
+import java.util.function.BooleanSupplier;
+
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -7,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class CoralSubsystem extends SubsystemBase {
 
@@ -26,8 +29,8 @@ public class CoralSubsystem extends SubsystemBase {
         LEVEL_2(0.237, 19.032, 90, 105.968),
         LEVEL_3(0.640, 19.032, 90, 105.968),
         LEVEL_4(1.342, 23.238, 90, 111.762),
-        INTAKE(0.0, 9.559, 90, 50.44),
-        STOW(0.02, 0.0, 0.0, 0.0),
+        INTAKE(0.01, 9.559, 90, 50.44),
+        STOW(0.01, 0.0, 0.0, 0.0),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
 
@@ -168,7 +171,16 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public boolean isHolding() {
-        return intake.isHolding();
+        return Robot.isSimulation() ? SmartDashboard.getBoolean("[SIM] Holding Coral", false) : intake.isHolding();
+    }
+
+    public BooleanSupplier isHoldingSupplier() {
+        return new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return isHolding();
+            }
+        };
     }
 
     public void setCustomPosition(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle) {
@@ -231,5 +243,22 @@ public class CoralSubsystem extends SubsystemBase {
 
     public boolean isElevatorSupposedToBeInPosition() {
         return elevator.isSupposedToBeInPosition();
+    }
+
+    public boolean isPitchSupposedToBeInPosition() {
+        return arm.isPitchSupposedToBeInPosition();
+    }
+
+    public boolean isRollSupposedToBeInPosition() {
+        return arm.isRollSupposedToBeInPosition();
+    }
+
+    public boolean isPivotSupposedToBeInPosition() {
+        return arm.isPivotSupposedToBeInPosition();
+    }
+
+    public boolean isSupposedToBeInPosition() {
+        return isPivotSupposedToBeInPosition() && isRollSupposedToBeInPosition() && isElevatorSupposedToBeInPosition()
+                && isPitchSupposedToBeInPosition();
     }
 }

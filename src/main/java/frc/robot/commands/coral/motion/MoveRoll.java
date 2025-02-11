@@ -10,10 +10,16 @@ import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
 public class MoveRoll extends Command {
     private CoralSubsystem coralSub;
+    private Supplier<CoralPresets> presetSupplier;
 
     public MoveRoll(CoralSubsystem coralSub, Supplier<CoralPresets> presetSupplier) {
         this.coralSub = coralSub;
         // addRequirements(coralSub);
+        this.presetSupplier = presetSupplier;
+    }
+
+    @Override
+    public void initialize() {
         SmartDashboard.putString("Arm Sequence", "Moving Roll");
         coralSub.setCoralPresetRoll(presetSupplier.get());
     }

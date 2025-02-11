@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -86,6 +87,14 @@ public class RobotContainer {
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
     private CoralPresets lockedPreset = CoralPresets.STOW;
+    private boolean isScoring = false;
+
+    Trigger coralAquisition = new Trigger(coralSubsystem.isHoldingSupplier());
+    Trigger coralInPosition = new Trigger(new BooleanSupplier() {
+        public boolean getAsBoolean() {
+            return coralSubsystem.isSupposedToBeInPosition();
+        };
+    });
 
     private void lockCoralArmPreset(CoralPresets preset) {
         lockedPreset = preset;
@@ -164,15 +173,20 @@ public class RobotContainer {
             selectedScoringPreset = CoralPresets.LEVEL_4;
         }));
 
-        operatorXbox.rightTrigger().and(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return coralSubsystem.isHolding();
-            }
-        }).whileTrue(new InstantCommand(() -> {
+        // Score!!!
+        operatorXbox.rightTrigger().whileTrue((new InstantCommand(() -> {
             // coralSubsystem.setCoralPreset(currentCoralPreset);
             lockCoralArmPreset(selectedScoringPreset);
-        }).andThen(getGoToLockedPresetCommand())).whileFalse(getStowCommand());
+            isScoring = true;
+        }).andThen(getGoToLockedPresetCommand().andThen(
+                new InstantCommand(() -> {
+                    operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
+                }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
+                    operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
+                }))))).onlyIf(coralSubsystem.isHoldingSupplier()))
+                .whileFalse(getStowCommand().alongWith(new InstantCommand(() -> {
+                    isScoring = false;
+                })));
 
         // wrist adjustment
         // Hold for now, until everything else is working
@@ -186,19 +200,19 @@ public class RobotContainer {
         // }).whileTrue(new CoralWristFollowCommand(coralSubsystem, operatorXbox));
 
         // Score coral
-        // TODO: Is it a good idea to stow right after this?
         operatorXbox.rightBumper().and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
-                return coralSubsystem.isHolding();
+                return coralSubsystem.isHolding() && isScoring;
             }
-        }).whileTrue(new ScoreCoralCommand(coralSubsystem).andThen(getStowCommand())).whileFalse(getStowCommand());
+        }).whileTrue(new ScoreCoralCommand(coralSubsystem));
+        operatorXbox.rightBumper().whileFalse(getStowCommand());
 
         // Intake coral
         operatorXbox.rightTrigger().and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
-                return !coralSubsystem.isHolding();
+                return !coralSubsystem.isHolding() && !isScoring;
             }
         }).whileTrue(new InstantCommand(() -> {
             System.out.println("Intaking");
@@ -208,6 +222,12 @@ public class RobotContainer {
 
         // purge coral
         operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));
+
+        coralAquisition.onChange(new InstantCommand(() -> {
+            operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
+        }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
+            operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
+        })));
 
         /*
          * driver
@@ -277,7 +297,6 @@ public class RobotContainer {
 
         debugXboxController.rightBumper().whileTrue(new IntakeCoralCommand(coralSubsystem));
         debugXboxController.leftBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
-
     }
 
     /**

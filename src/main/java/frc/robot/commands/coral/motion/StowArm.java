@@ -12,6 +12,10 @@ public class StowArm extends Command {
     public StowArm(CoralSubsystem coralSub) {
         this.coralSub = coralSub;
         addRequirements(coralSub);
+    }
+
+    @Override
+    public void initialize() {
         SmartDashboard.putString("Arm Sequence", "Stowing Arm");
         coralSub.setCoralPresetPitch(CoralPresets.STOW);
         coralSub.setCoralPresetRoll(CoralPresets.STOW);
@@ -20,8 +24,7 @@ public class StowArm extends Command {
 
     @Override
     public boolean isFinished() {
-        // Intentionally not worrying about pitch because it doesn't really matter
-        // anyways
+        // TODO: For the future... might want to wait? or not.
         return true;
     }
 }

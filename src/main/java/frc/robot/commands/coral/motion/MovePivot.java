@@ -10,10 +10,16 @@ import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
 public class MovePivot extends Command {
     private CoralSubsystem coralSub;
+    private Supplier<CoralPresets> presetSupplier;
 
     public MovePivot(CoralSubsystem coralSub, Supplier<CoralPresets> presetSupplier) {
         this.coralSub = coralSub;
+        this.presetSupplier = presetSupplier;
         addRequirements(coralSub);
+    }
+
+    @Override
+    public void initialize() {
         SmartDashboard.putString("Arm Sequence", "Moving Pivot");
         coralSub.setCoralPresetPivot(presetSupplier.get());
     }
