@@ -107,7 +107,9 @@ public class RobotContainer {
     // 3. Deploy arm
     // 4. Rotate wrist
     private Command getGoToLockedPresetCommand() {
-        return new StowArm(coralSubsystem)
+        return new InstantCommand(() -> {
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
                 .andThen(new ParallelCommandGroup(
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
@@ -141,13 +143,13 @@ public class RobotContainer {
          * operator
          */
         // low algae TODO: Make a preset for low reef algae
-        operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
-            algaeSubsystem.setAlgaePreset(AlgaePresets.FLOOR);
-        }));
-        // high algae TODO: Make a preset for high reef algae
-        operatorXbox.rightBumper().onTrue(new InstantCommand(() -> {
-            algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
-        }));
+        // operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
+        // algaeSubsystem.setAlgaePreset(AlgaePresets.FLOOR);
+        // }));
+        // // high algae TODO: Make a preset for high reef algae
+        // operatorXbox.rightBumper().onTrue(new InstantCommand(() -> {
+        // algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
+        // }));
 
         // L1
         operatorXbox.a().onTrue(new InstantCommand(() -> {
@@ -166,7 +168,12 @@ public class RobotContainer {
             selectedScoringPreset = CoralPresets.LEVEL_4;
         }));
 
-        operatorXbox.rightTrigger().whileTrue(new InstantCommand(() -> {
+        operatorXbox.rightTrigger().and(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return coralSubsystem.isHolding();
+            }
+        }).whileTrue(new InstantCommand(() -> {
             // coralSubsystem.setCoralPreset(currentCoralPreset);
             lockCoralArmPreset(selectedScoringPreset);
         }).andThen(getGoToLockedPresetCommand())).whileFalse(getStowCommand());
@@ -192,12 +199,13 @@ public class RobotContainer {
         }).whileTrue(new ScoreCoralCommand(coralSubsystem).andThen(getStowCommand())).whileFalse(getStowCommand());
 
         // Intake coral
-        operatorXbox.rightBumper().and(new BooleanSupplier() {
+        operatorXbox.rightTrigger().and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
                 return !coralSubsystem.isHolding();
             }
         }).whileTrue(new InstantCommand(() -> {
+            System.out.println("Intaking");
             lockCoralArmPreset(CoralPresets.INTAKE);
         }).andThen(getGoToLockedPresetCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
                 .andThen(getStowCommand())).whileFalse(getStowCommand());
@@ -250,7 +258,7 @@ public class RobotContainer {
 
         /////////////////// DEBUGGING //////////////////
         debugXboxController.a().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetPitch(CoralPresets.INTAKE);
+            coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
         })).onFalse(new InstantCommand(() -> {
             coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
         }));
@@ -271,6 +279,10 @@ public class RobotContainer {
         })).onFalse(new InstantCommand(() -> {
             coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
         }));
+
+        debugXboxController.rightBumper().whileTrue(new IntakeCoralCommand(coralSubsystem));
+        debugXboxController.leftBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
+
     }
 
     /**

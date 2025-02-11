@@ -140,9 +140,9 @@ public class CoralArm extends SubsystemBase {
         // rollPID.enableContinuousInput(-180, 180);
 
         // TODO: Are these reasonable? who knows.
-        pivotPID.setTolerance(Units.degreesToRadians(0.5));
-        rollPID.setTolerance(Units.degreesToRadians(0.5));
-        pitchPID.setTolerance(Units.degreesToRadians(0.5));
+        pivotPID.setTolerance(Units.degreesToRadians(3.0));
+        rollPID.setTolerance(Units.degreesToRadians(3.0));
+        pitchPID.setTolerance(Units.degreesToRadians(3.0));
     }
 
     @Override

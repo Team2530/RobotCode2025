@@ -261,14 +261,15 @@ public final class Constants {
 
     public static class Intake {
       public static final int MOTOR_PORT = 17;
-      public static boolean DBG_DISABLED = true;
+      public static boolean DBG_DISABLED = false;
+      public static boolean MOTOR_INVERTED = true;
 
-      public static final double POSITIVE_RATE_LIMIT = 20.0; // Fast shoot
-      public static final double NEGATIVE_RATE_LIMIT = 5.0; // Slow intake
+      public static final double POSITIVE_RATE_LIMIT = 200.0; // Fast shoot
+      public static final double NEGATIVE_RATE_LIMIT = 100.0; // Slow intake
 
-      public static final double SCORE_EXTRA_SECONDS = 0.1;
+      public static final double SCORE_EXTRA_SECONDS = 1.0;
 
-      public static final double IN_OUT_CURRENT_LIMIT = 40.0; // Stator limit
+      public static final double IN_OUT_CURRENT_LIMIT = 60.0; // Stator limit
       public static final double HOLD_CURRENT_LIMIT = 5.0; // Stator, TODO: Test this!
       // TODO: ################### PLACHOLDERS ###################
 
@@ -330,35 +331,37 @@ public final class Constants {
   public static final class Elevator {
     public static final class Leader {
       public static final int MOTOR_PORT = 10;
-      public static final boolean INVERTED = true;
+      public static final boolean INVERTED = false;
     }
 
     public static final class Follower {
       public static final int MOTOR_PORT = 11;
-      public static final boolean INVERTED = false;
+      public static final boolean INVERTED = true;
     }
 
-    public static boolean DBG_DISABLED = true;
+    public static boolean DBG_DISABLED = false;
 
     public static double MOTOR_REVOLUTIONS_PER_METER = 32.81;
 
     // TODO: Tune! Use FWERB for now
     public static class PID {
-      public static double kP = 20.0;
+      public static double kP = 28.0;
       public static double kI = 0.0;
       public static double kD = 0.01;
-      public static double MAX_VELOCITY = 3.20;
+      public static double MAX_VELOCITY = 3.00;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
-      public static double MAX_ACCELERATION = 20.0;
+      public static double MAX_ACCELERATION = 13.0;
     }
 
     // TODO: PAD THE ELEVATOR!!!!!!!
     public static class FeedforwardConstants {
       public static double Ks = 0.0;
-      public static double Kv = 3.0;
-      public static double Ka = 0.04;
-      public static double Kg = 0.35; // TODO: Check this!!!
+      public static double Kv = 2.45
+
+      ;
+      public static double Ka = 0.1;
+      public static double Kg = 0.05; // TODO: Check this!!!
     }
 
     public static ElevatorFeedforward FEEDFORWARD = new ElevatorFeedforward(

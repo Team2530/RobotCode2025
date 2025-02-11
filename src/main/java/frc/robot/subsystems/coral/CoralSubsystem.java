@@ -5,6 +5,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -31,7 +32,7 @@ public class CoralSubsystem extends SubsystemBase {
         LEVEL_3(0.640, 19.032, 90, 105.968),
         LEVEL_4(1.342, 23.238, 90, 111.762),
         INTAKE(0.0, 9.559, 90, 50.44),
-        STOW(0.0, 0.0, 0.0, 0.0),
+        STOW(0.02, 0.0, 0.0, 0.0),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
 
@@ -69,7 +70,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralIntakePresets {
         INTAKE(1),
-        HOLD(0.1),
+        HOLD(0.05),
         PURGE(-1),
         SCORE(-1),
         STOP(0),
@@ -91,6 +92,10 @@ public class CoralSubsystem extends SubsystemBase {
         pivotMechanism.setAngle(arm.getPivotPositionDegrees());
 
         SmartDashboard.putData("Coral Mechanism", coralMechanism);
+        SmartDashboard.putBoolean("Elevator in position", isElevatorInPosition());
+        SmartDashboard.putBoolean("Roll in position", isRollInPosition());
+        SmartDashboard.putBoolean("Pitch in position", isPitchInPosition());
+        SmartDashboard.putBoolean("Pivot in position", isPivotInPosition());
     }
 
     private CoralPresets currentPreset = CoralPresets.STOW;
@@ -213,6 +218,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void setCoralIntakePreset(CoralIntakePresets preset) {
+        SmartDashboard.putString("Coral Intake Preset", preset.toString());
         if (preset != currentIntakePreset) {
             intake.setOutputPercentage(preset.intakePercentage);
             currentIntakePreset = preset;

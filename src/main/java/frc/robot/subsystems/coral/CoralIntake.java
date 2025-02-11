@@ -39,17 +39,19 @@ public class CoralIntake extends SubsystemBase {
         intakeMotor.setNeutralMode(NeutralModeValue.Brake);
         intakeMotor.getConfigurator().apply(new CurrentLimitsConfigs().withStatorCurrentLimit(20.0));
         intakeMotor.getConfigurator()
-                .apply(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
+                .apply(new MotorOutputConfigs()
+                        .withInverted(Constants.Coral.Intake.MOTOR_INVERTED ? InvertedValue.Clockwise_Positive
+                                : InvertedValue.CounterClockwise_Positive));
     }
 
     private double outputPercentage = 0.0;
-    private boolean lastHolding = false;
+    // private boolean lastHolding = false;
 
     @Override
     public void periodic() {
         boolean curHolding = isHolding();
         // if no coral
-        if (curHolding) {
+        if (!curHolding) {
             double output = intakeProfile.calculate(outputPercentage);
             if (!Constants.Coral.Intake.DBG_DISABLED)
                 intakeMotor.set(output);
@@ -60,14 +62,15 @@ public class CoralIntake extends SubsystemBase {
                 intakeMotor.set(Math.min(0.1, outputPercentage));
         }
 
-        if (lastHolding != curHolding) {
-            intakeMotor.getConfigurator().apply(new CurrentLimitsConfigs().withStatorCurrentLimit(
-                    (curHolding && (outputPercentage > 0.0)) ? Constants.Coral.Intake.HOLD_CURRENT_LIMIT
-                            : Constants.Coral.Intake.IN_OUT_CURRENT_LIMIT));
+        // if (lastHolding != curHolding) {
+        // intakeMotor.getConfigurator().apply(new
+        // CurrentLimitsConfigs().withStatorCurrentLimit(
+        // (curHolding && (outputPercentage > 0.0)) ?
+        // Constants.Coral.Intake.HOLD_CURRENT_LIMIT
+        // : Constants.Coral.Intake.IN_OUT_CURRENT_LIMIT));
+        // }
 
-        }
-
-        lastHolding = curHolding;
+        // lastHolding = curHolding;
     }
 
     @Override
@@ -94,7 +97,7 @@ public class CoralIntake extends SubsystemBase {
 
     public boolean isHolding() {
         return Robot.isReal()
-                ? intakeMotor.getReverseLimit().getValue().value == 0
+                ? intakeMotor.getForwardLimit().getValue().value == 0
                 : false;
     }
 }

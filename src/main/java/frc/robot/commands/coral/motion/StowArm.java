@@ -22,7 +22,6 @@ public class StowArm extends Command {
     public boolean isFinished() {
         // Intentionally not worrying about pitch because it doesn't really matter
         // anyways
-        return Constants.Coral.Pivot.DBG_DISABLED || Constants.Coral.Roll.DBG_DISABLED
-                || coralSub.isRollInPosition() && coralSub.isPivotInPosition();
+        return true;
     }
 }
