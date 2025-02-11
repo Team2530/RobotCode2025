@@ -34,7 +34,6 @@ public class CoralElevator extends SubsystemBase {
     // sim motors
     private final SparkFlexSim simLeaderMotor = new SparkFlexSim(leaderMotor, DCMotor.getNeoVortex(1));
     private final SparkFlexSim simFollowerMotor = new SparkFlexSim(followerMotor, DCMotor.getNeoVortex(1));
-    private double simOutputVoltage = 0.0;
 
     private final RelativeEncoder leaderEncoder = leaderMotor.getEncoder();
     private final RelativeEncoder followerEncoder = followerMotor.getEncoder();
@@ -98,8 +97,13 @@ public class CoralElevator extends SubsystemBase {
     public void periodic() {
         // check if needs to be zeroed and is at zero
         // TODO: ######################### PLACEHOLDERS AGAIN #########################
-        if (!isZeroed && (leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2 > 20
-                || Robot.isSimulation()) {
+        if (
+            !isZeroed
+            && (
+                ((leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2) > 20
+                || Robot.isSimulation()
+            )
+        ) {
             leaderEncoder.setPosition(0);
             isZeroed = true;
         }
@@ -129,7 +133,8 @@ public class CoralElevator extends SubsystemBase {
                 followerMotor.setVoltage(output);
             }
 
-            simOutputVoltage = output;
+            simLeaderMotor.setAppliedOutput(output);
+            simFollowerMotor.setAppliedOutput(output);
         } else {
             if (!Constants.Elevator.DBG_DISABLED) {
                 // slowly move down to zero
@@ -142,7 +147,7 @@ public class CoralElevator extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         // update physics
-        simElevator.setInput(MathUtil.clamp(simOutputVoltage, -12.0, 12.0));
+        simElevator.setInput(MathUtil.clamp(simLeaderMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
         simElevator.update(0.02);
 
         // update sim objects

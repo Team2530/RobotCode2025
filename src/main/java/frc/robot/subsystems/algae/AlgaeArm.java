@@ -56,6 +56,7 @@ public class AlgaeArm extends SubsystemBase {
         );
 
         pivotMotor.set(output);
+        simPivotMotor.setAppliedOutput(output);
     }
 
     @Override

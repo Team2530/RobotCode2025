@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import java.util.PropertyResourceBundle;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;

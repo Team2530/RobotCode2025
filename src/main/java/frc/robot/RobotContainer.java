@@ -7,7 +7,6 @@ package frc.robot;
 import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.commands.algae.ShootAlgaeCommand;
-import frc.robot.commands.coral.CoralWristFollowCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
 import frc.robot.commands.coral.ScoreCoralCommand;
@@ -16,7 +15,6 @@ import frc.robot.commands.coral.motion.MovePitch;
 import frc.robot.commands.coral.motion.MovePivot;
 import frc.robot.commands.coral.motion.MoveRoll;
 import frc.robot.commands.coral.motion.StowArm;
-import frc.robot.commands.coral.motion.WaitPivotClearance;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
@@ -30,7 +28,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -111,9 +108,8 @@ public class RobotContainer {
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
                 .andThen(new ParallelCommandGroup(
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
-                        new WaitPivotClearance(coralSubsystem)
-                                .andThen(new MoveRoll(coralSubsystem, currentLockedPresetSupplier)
-                                        .alongWith(new MovePitch(coralSubsystem, currentLockedPresetSupplier)))));
+                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier),
+                        new MovePitch(coralSubsystem, currentLockedPresetSupplier)));
     }
 
     private Command getStowCommand() {
@@ -167,7 +163,6 @@ public class RobotContainer {
         }));
 
         operatorXbox.rightTrigger().whileTrue(new InstantCommand(() -> {
-            // coralSubsystem.setCoralPreset(currentCoralPreset);
             lockCoralArmPreset(selectedScoringPreset);
         }).andThen(getGoToLockedPresetCommand())).whileFalse(getStowCommand());
 
@@ -201,7 +196,6 @@ public class RobotContainer {
             lockCoralArmPreset(CoralPresets.INTAKE);
         }).andThen(getGoToLockedPresetCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
                 .andThen(getStowCommand())).whileFalse(getStowCommand());
-        // .onFalse(normalDrive);
 
         // purge coral
         operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));

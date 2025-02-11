@@ -1,9 +1,7 @@
 package frc.robot.subsystems.coral;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.sim.SparkAnalogSensorSim;
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkAnalogSensor;
@@ -12,19 +10,16 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.AnalogSensorConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,18 +33,17 @@ public class CoralArm extends SubsystemBase {
     private final SparkMax rollMotor = new SparkMax(Coral.Roll.MOTOR_PORT, MotorType.kBrushless);
     private final SparkMax pitchMotor = new SparkMax(Coral.Pitch.MOTOR_PORT, MotorType.kBrushless);
     // sim motors
-    private double simPivotVoltage = 0.0;
-    private double simRollVoltage = 0.0;
-    private double simPitchVoltage = 0.0;
+    private final SparkFlexSim simPivotMotor = new SparkFlexSim(pivotMotor, Coral.Pivot.PhysicalConstants.MOTOR);
+    private final SparkMaxSim simRollMotor = new SparkMaxSim(rollMotor, Coral.Roll.PhysicalConstants.MOTOR);
+    private final SparkMaxSim simPitchMotor = new SparkMaxSim(pitchMotor, Coral.Pitch.PhysicalConstants.MOTOR);    
+
 
     private final CANcoder pivotEncoder = new CANcoder(Coral.Pivot.ENCODER_PORT);
     private final SparkAnalogSensor rollEncoder = rollMotor.getAnalog();
     private final SparkAnalogSensor pitchEncoder = pitchMotor.getAnalog();
     // sim encoders
-    // private final SparkAbsoluteEncoderSim simRollEncoder = new
-    // SparkAbsoluteEncoderSim(rollMotor);
-    // private final SparkAbsoluteEncoderSim simPitchEncoder = new
-    // SparkAbsoluteEncoderSim(pitchMotor);
+    private final SparkAnalogSensorSim simRollEncoder = new SparkAnalogSensorSim(rollMotor);
+    private final SparkAnalogSensorSim simPitchEncoder = new SparkAnalogSensorSim(pitchMotor);
 
     // physics simulations
     private final SingleJointedArmSim simPivotPhysics = new SingleJointedArmSim(
@@ -141,20 +135,23 @@ public class CoralArm extends SubsystemBase {
     public void periodic() {
         // if entering the frame border
         // && wrist is at neutral
+        if (
+            (pivotPID.getGoal().position != pivotGoal)
+            && (rollPID.atGoal() && pitchPID.atGoal())
+        ) {
+            // allow arm to enter frame border
+            pivotPID.setGoal(pivotGoal);
+        } else if ( // if exiting the frame border && has exited the frame border
+            ((rollGoal != rollPID.getGoal().position) || (pitchGoal != pitchPID.getGoal().position))
+            && (Math.abs(this.getPitchPositionDegrees()) > Coral.Pivot.FRAME_BORDER_ANGLE)
+        ) {
+            // set roll and pitch back to their goals
+            rollPID.setGoal(rollGoal);
+            pitchPID.setGoal(pitchGoal);
+        }
+        
         /*
-         * if ((pivotPID.getGoal().position != pivotGoal)
-         * && (rollPID.atGoal() && pitchPID.atGoal())) {
-         * // allow arm to enter frame border
-         * pivotPID.setGoal(pivotGoal);
-         * } else if ( // if exiting the frame border && has exited the frame border
-         * ((rollGoal != rollPID.getGoal().position) || (pitchGoal !=
-         * pitchPID.getGoal().position))
-         * && (Math.abs(this.getPitchPositionDegrees()) >
-         * Coral.Pivot.FRAME_BORDER_ANGLE)) {
-         * // set roll and pitch back to their goals
-         * rollPID.setGoal(rollGoal);
-         * pitchPID.setGoal(pitchGoal);
-         * }
+         * run the motors
          */
 
         double pivotPosition = readPivotEncoderPosition();
@@ -162,18 +159,15 @@ public class CoralArm extends SubsystemBase {
                 Math.PI * 0.5 + pivotPosition,
                 pivotPID.getSetpoint().velocity);
         double pivotPIDout = pivotPID.calculate(pivotPosition);
-
         SmartDashboard.putNumber("Coral/Pivot/pid_out", pivotPIDout);
         SmartDashboard.putNumber("Coral/Pivot/ff_out", pivotFFout);
         SmartDashboard.putNumber("Coral/Pivot/out", pivotFFout + pivotPIDout);
         SmartDashboard.putNumber("Coral/Pivot/position", pivotPosition);
         SmartDashboard.putNumber("Coral/Pivot/target", pivotPID.getSetpoint().position);
         SmartDashboard.putNumber("Coral/Pivot/goal", pivotPID.getGoal().position);
-
-        // run the motors
         if (!Constants.Coral.Pivot.DBG_DISABLED)
             pivotMotor.setVoltage(pivotPIDout + pivotFFout);
-        simPivotVoltage = pivotPIDout + pivotFFout;
+        simPivotMotor.setAppliedOutput(pivotPIDout + pivotFFout);
 
         double rollPIDout = rollPID.calculate(readRollEncoderPosition());
         double rollFFout = Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
@@ -185,7 +179,7 @@ public class CoralArm extends SubsystemBase {
         SmartDashboard.putNumber("Coral/Roll/out", rollPIDout + rollFFout);
         if (!Constants.Coral.Roll.DBG_DISABLED)
             rollMotor.setVoltage(rollPIDout + rollFFout);
-        simRollVoltage = rollPIDout;
+        simRollMotor.setAppliedOutput(rollPIDout);
 
         double pitchPIDout = pitchPID.calculate(readPitchEncoderPosition());
         double pitchFFout = Constants.Coral.Pitch.FEEDFORWARD.calculate(pitchPID.getSetpoint().velocity);
@@ -197,21 +191,49 @@ public class CoralArm extends SubsystemBase {
         SmartDashboard.putNumber("Coral/Pitch/ff_out", pitchFFout);
         if (!Constants.Coral.Pitch.DBG_DISABLED)
             pitchMotor.setVoltage(pitchPIDout + pitchFFout);
-        simPitchVoltage = pitchPIDout;
+        simPitchMotor.setAppliedOutput(pitchPIDout);
     }
 
     @Override
     public void simulationPeriodic() {
         // update physics
-        simPivotPhysics.setInput(MathUtil.clamp(simPivotVoltage, -12.0, 12.0));
-        simRollPhysics.setInput(MathUtil.clamp(simRollVoltage, -12.0, 12.0));
-        simPitchPhysics.setInput(MathUtil.clamp(simPitchVoltage, -12.0, 12.0));
+        simPivotPhysics.setInput(MathUtil.clamp(simPitchMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
+        simRollPhysics.setInput(MathUtil.clamp(simRollMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
+        simPitchPhysics.setInput(MathUtil.clamp(simPitchMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(), -12.0, 12.0));
         SmartDashboard.putNumber("simPitchMotor.getPosition", simPitchPhysics.getAngleRads()
                 * RoboRioSim.getVInVoltage());
 
         simPivotPhysics.update(0.02);
         simRollPhysics.update(0.02);
         simPitchPhysics.update(0.02);
+
+        // update sim objects        
+        simPivotMotor.iterate(
+            Units.radiansPerSecondToRotationsPerMinute(simPivotPhysics.getVelocityRadPerSec()),
+            RoboRioSim.getVInVoltage(),
+            0.02
+        );
+        simRollMotor.iterate(
+            Units.radiansPerSecondToRotationsPerMinute(simRollPhysics.getVelocityRadPerSec()),
+            RoboRioSim.getVInVoltage(),
+            0.02
+        );
+        simPitchMotor.iterate(
+            Units.radiansPerSecondToRotationsPerMinute(simPitchPhysics.getVelocityRadPerSec()),
+            RoboRioSim.getVInVoltage(),
+            0.02
+        );
+
+        simRollEncoder.setPosition(simRollPhysics.getAngleRads() / 5.0);
+        simRollEncoder.iterate(
+            simRollPhysics.getVelocityRadPerSec(),
+            0.02
+        );
+        simPitchEncoder.setPosition(simPitchPhysics.getAngleRads() / 5.0);
+        simPitchEncoder.iterate(
+            simPitchPhysics.getVelocityRadPerSec(),
+            0.02
+        );
     }
 
     // this should be relative to straight upwards.
@@ -307,13 +329,13 @@ public class CoralArm extends SubsystemBase {
     }
 
     public double readPitchEncoderPosition() {
-        return Robot.isSimulation() ? simPitchPhysics.getAngleRads()
+        return Robot.isSimulation() ? simPitchEncoder.getPosition()
                 : MathUtil.angleModulus(
                         pitchEncoder.getPosition() + Constants.Coral.Pitch.ENCODER_OFFSET_RADS);
     }
 
     public double readRollEncoderPosition() {
-        return Robot.isSimulation() ? simRollPhysics.getAngleRads()
+        return Robot.isSimulation() ? simRollEncoder.getPosition()
                 : MathUtil.angleModulus(
                         rollEncoder.getPosition() + Constants.Coral.Roll.ENCODER_OFFSET_RADS);
     }
