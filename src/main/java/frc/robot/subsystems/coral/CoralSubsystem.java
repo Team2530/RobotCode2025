@@ -3,6 +3,7 @@ package frc.robot.subsystems.coral;
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -121,6 +122,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void setCoralPresetPivot(CoralPresets preset) {
+        SmartDashboard.putNumber("Pivot Pre", preset.pivotAngleDeg);
         arm.setPivotGoalDegrees(
                 preset.pivotAngleDeg
                         * (mirrorSetting.isMirrored ? -1 : 1));
