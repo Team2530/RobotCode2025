@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.AnalogSensorConfig;
 import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -23,6 +24,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -91,10 +93,11 @@ public class CoralArm extends SubsystemBase {
     private double rollGoal = 0.0; // Rads
     private double pitchGoal = 0.0; // Rads
 
+    LinearFilter pitchEncFilter = LinearFilter.movingAverage(3);
+    LinearFilter rollEncFilter = LinearFilter.movingAverage(3);
+
     public CoralArm() {
-        AnalogSensorConfig wristEncConfig = new AnalogSensorConfig()
-                .positionConversionFactor((Math.PI * 2) / 5.0)
-                .velocityConversionFactor((Math.PI * 2) / 5.0);
+        AnalogSensorConfig wristEncConfig = new AnalogSensorConfig();
 
         pivotMotor.configure(
                 pivotConfig.idleMode(IdleMode.kBrake).apply(
@@ -111,12 +114,17 @@ public class CoralArm extends SubsystemBase {
                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         rollMotor.configure(
                 rollConfig.idleMode(IdleMode.kBrake)
-                        .apply(wristEncConfig.inverted(Constants.Coral.Roll.ENCODER_INVERTED)),
+                        .apply(wristEncConfig.inverted(Constants.Coral.Roll.ENCODER_INVERTED))
+                        .apply(new SparkMaxConfig().inverted(
+                                Constants.Coral.Pitch.MOTOR_INVERTED)),
                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         pitchMotor.configure(pitchConfig
                 .idleMode(IdleMode.kBrake).apply(wristEncConfig
-                        .inverted(Constants.Coral.Pitch.ENCODER_INVERTED)),
+                        .inverted(Constants.Coral.Pitch.ENCODER_INVERTED))
+                .apply(new SparkMaxConfig().inverted(Constants.Coral.Pitch.MOTOR_INVERTED)),
                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        pivotMotor.getEncoder().setPosition(readPivotEncoderPosition());
 
         /*
          * .apply(new EncoderConfig()
@@ -157,7 +165,7 @@ public class CoralArm extends SubsystemBase {
          * }
          */
 
-        double pivotPosition = readPivotEncoderPosition();
+        double pivotPosition = pivotMotor.getEncoder().getPosition();// readPivotEncoderPosition();
         double pivotFFout = pivotFeedforward.calculate(
                 Math.PI * 0.5 + pivotPosition,
                 pivotPID.getSetpoint().velocity);
@@ -174,6 +182,7 @@ public class CoralArm extends SubsystemBase {
         if (!Constants.Coral.Pivot.DBG_DISABLED)
             pivotMotor.setVoltage(pivotPIDout + pivotFFout);
         simPivotVoltage = pivotPIDout + pivotFFout;
+        // pivotMotor.set(0.02);
 
         double rollPIDout = rollPID.calculate(readRollEncoderPosition());
         double rollFFout = Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
@@ -308,14 +317,18 @@ public class CoralArm extends SubsystemBase {
 
     public double readPitchEncoderPosition() {
         return Robot.isSimulation() ? simPitchPhysics.getAngleRads()
-                : MathUtil.angleModulus(
-                        pitchEncoder.getPosition() + Constants.Coral.Pitch.ENCODER_OFFSET_RADS);
+                : MathUtil
+                        .angleModulus(((pitchEncFilter.calculate(pitchEncoder.getPosition())
+                                + Constants.Coral.Pitch.ENCODER_OFFSET_VOLTS) / 3.3)
+                                * 2 * Math.PI);
     }
 
     public double readRollEncoderPosition() {
         return Robot.isSimulation() ? simRollPhysics.getAngleRads()
-                : MathUtil.angleModulus(
-                        rollEncoder.getPosition() + Constants.Coral.Roll.ENCODER_OFFSET_RADS);
+                : MathUtil
+                        .angleModulus(((rollEncFilter.calculate(rollEncoder.getPosition())
+                                + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS) / 3.3)
+                                * 2 * Math.PI);
     }
 
     public double readPivotEncoderPosition() {

@@ -250,7 +250,7 @@ public class RobotContainer {
 
         /////////////////// DEBUGGING //////////////////
         debugXboxController.a().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
+            coralSubsystem.setCoralPresetPitch(CoralPresets.INTAKE);
         })).onFalse(new InstantCommand(() -> {
             coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
         }));

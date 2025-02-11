@@ -90,7 +90,7 @@ public final class Constants {
     public static final int FL_DRIVE_ID = 34;
     public static final int FL_STEER_ID = 4;
     public static final int FL_ABSOLUTE_ENCODER_PORT = 54;
-    public static final double FL_OFFSET_RADIANS = Units.rotationsToRadians(0.389893) + Math.PI * 0.5 + Math.PI;
+    public static final double FL_OFFSET_RADIANS = Units.rotationsToRadians(-0.310303) + Math.PI * 0.5 + Math.PI;
     public static final boolean FL_ABSOLUTE_ENCODER_REVERSED = true;
     public static final boolean FL_MOTOR_REVERSED = true;
 
@@ -98,7 +98,7 @@ public final class Constants {
     public static final int FR_DRIVE_ID = 31;
     public static final int FR_STEER_ID = 1;
     public static final int FR_ABSOLUTE_ENCODER_PORT = 51;
-    public static final double FR_OFFSET_RADIANS = Units.rotationsToRadians(0.323730) + Math.PI * 0.5 + Math.PI;
+    public static final double FR_OFFSET_RADIANS = Units.rotationsToRadians(-0.253906) + Math.PI * 0.5 + Math.PI;
     public static final boolean FR_ABSOLUTE_ENCODER_REVERSED = true;
     public static final boolean FR_MOTOR_REVERSED = true;
 
@@ -106,7 +106,7 @@ public final class Constants {
     public static final int BR_DRIVE_ID = 32;
     public static final int BR_STEER_ID = 2;
     public static final int BR_ABSOLUTE_ENCODER_PORT = 52;
-    public static final double BR_OFFSET_RADIANS = Units.rotationsToRadians(-0.360107) + Math.PI * 0.5 + Math.PI;
+    public static final double BR_OFFSET_RADIANS = Units.rotationsToRadians(0.353027) + Math.PI * 0.5 + Math.PI;
     public static final boolean BR_ABSOLUTE_ENCODER_REVERSED = true;
     public static final boolean BR_MOTOR_REVERSED = true;
 
@@ -114,7 +114,7 @@ public final class Constants {
     public static final int BL_DRIVE_ID = 33;
     public static final int BL_STEER_ID = 3;
     public static final int BL_ABSOLUTE_ENCODER_PORT = 53;
-    public static final double BL_OFFSET_RADIANS = Units.rotationsToRadians(0.399902) + Math.PI * 0.5 + Math.PI;
+    public static final double BL_OFFSET_RADIANS = Units.rotationsToRadians(-0.134033) + Math.PI * 0.5 + Math.PI;
     public static final boolean BL_ABSOLUTE_ENCODER_REVERSED = true;
     public static final boolean BL_MOTOR_REVERSED = true;
 
@@ -175,7 +175,7 @@ public final class Constants {
     public static class Pivot {
       public static final int MOTOR_PORT = 14;
       public static final int ENCODER_PORT = 28;
-      public static boolean DBG_DISABLED = true;
+      public static boolean DBG_DISABLED = false;
 
       public static final boolean ENCODER_INVERTED = false;
 
@@ -184,17 +184,17 @@ public final class Constants {
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          20.0,
+          15.0,
           0.0,
-          0.0,
+          0.1,
           new TrapezoidProfile.Constraints(7.0, 20.0));
 
       // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
           0.0,
           0.4, // V
-          1.0, // V*s/rad
-          0.04// V*s^2/rad
+          0.4, // 1.0, // V*s/rad
+          0.00// V*s^2/rad
       );
 
       public static class PhysicalConstants {
@@ -209,16 +209,17 @@ public final class Constants {
 
     public static class Roll {
       public static final int MOTOR_PORT = 15;
+      public static final boolean MOTOR_INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
-      public static final double ENCODER_OFFSET_RADS = 0.0;
-      public static boolean DBG_DISABLED = true;
+      public static final double ENCODER_OFFSET_VOLTS = -1.85;
+      public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          10.0,
+          2.5,
           0.0,
           0.0,
           new TrapezoidProfile.Constraints(20.0, 150.0));
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.5);
+      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.2);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
@@ -233,19 +234,20 @@ public final class Constants {
 
     public static class Pitch {
       public static final int MOTOR_PORT = 16;
-      public static final boolean ENCODER_INVERTED = false;
-      public static final double ENCODER_OFFSET_RADS = 0.0;
+      public static final boolean MOTOR_INVERTED = true;
+      public static final boolean ENCODER_INVERTED = true;
+      public static final double ENCODER_OFFSET_VOLTS = -2.7;
       public static boolean DBG_DISABLED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          20.0,
+          5.0,
           0.0,
           0.0,
           new TrapezoidProfile.Constraints(12.0, 200.0)); // Radians
 
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.9);
+      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.45);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);

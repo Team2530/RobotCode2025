@@ -2,6 +2,7 @@ package frc.robot.subsystems.coral;
 
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -26,10 +27,10 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralPresets {
         LEVEL_1(1.0, 20.0, 0.0, 0.0), // TODO: Figure out level 1, TBD
-        LEVEL_2(0.237, 19.032, -90, 105.968),
-        LEVEL_3(0.640, 19.032, -90, 105.968),
-        LEVEL_4(1.342, 23.238, -90, 111.762),
-        INTAKE(0.0, 9.559, -90, 50.44),
+        LEVEL_2(0.237, 19.032, 90, 105.968),
+        LEVEL_3(0.640, 19.032, 90, 105.968),
+        LEVEL_4(1.342, 23.238, 90, 111.762),
+        INTAKE(0.0, 9.559, 90, 50.44),
         STOW(0.0, 0.0, 0.0, 0.0),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);

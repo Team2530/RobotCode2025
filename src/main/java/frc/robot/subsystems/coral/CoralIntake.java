@@ -1,7 +1,9 @@
 package frc.robot.subsystems.coral;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -36,6 +38,8 @@ public class CoralIntake extends SubsystemBase {
     public CoralIntake() {
         intakeMotor.setNeutralMode(NeutralModeValue.Brake);
         intakeMotor.getConfigurator().apply(new CurrentLimitsConfigs().withStatorCurrentLimit(20.0));
+        intakeMotor.getConfigurator()
+                .apply(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
     }
 
     private double outputPercentage = 0.0;
