@@ -119,8 +119,8 @@ public class RobotContainer {
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
                 .andThen(new ParallelCommandGroup(
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
-                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier),
-                        new MovePitch(coralSubsystem, currentLockedPresetSupplier)))
+                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier)))
+                .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));

@@ -94,6 +94,11 @@ public class CoralSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Roll in position", isRollInPosition());
         SmartDashboard.putBoolean("Pitch in position", isPitchInPosition());
         SmartDashboard.putBoolean("Pivot in position", isPivotInPosition());
+
+        SmartDashboard.putBoolean("Elevator SUPPOSED to be in position", isElevatorSupposedToBeInPosition());
+        SmartDashboard.putBoolean("Roll SUPPOSED to be in position", isRollSupposedToBeInPosition());
+        SmartDashboard.putBoolean("Pitch SUPPOSED to be in position", isPitchSupposedToBeInPosition());
+        SmartDashboard.putBoolean("Pivot SUPPOSED to be in position", isPivotSupposedToBeInPosition());
     }
 
     private CoralPresets currentPreset = CoralPresets.STOW;

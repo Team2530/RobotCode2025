@@ -226,7 +226,7 @@ public final class Constants {
         public static final double NET_REDUCTION = 45.0;
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
-        public static final double MOI = 0.00403605447; // Kg*m^2
+        public static final double MOI = 0.0403605447; // Kg*m^2
       }
     }
 
@@ -267,9 +267,7 @@ public final class Constants {
 
       public static final double SCORE_EXTRA_SECONDS = 1.0;
 
-      public static final double IN_OUT_CURRENT_LIMIT = 60.0; // Stator limit
-      public static final double HOLD_CURRENT_LIMIT = 5.0; // Stator, TODO: Test this!
-      // TODO: ################### PLACHOLDERS ###################
+      public static final double CURRENT_LIMIT = 12.5; // Stator
 
       public static final class PhysicalConstants {
         public static final DCMotor MOTOR = DCMotor.getFalcon500(1);
