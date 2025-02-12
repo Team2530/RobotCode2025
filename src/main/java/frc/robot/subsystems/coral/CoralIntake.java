@@ -40,7 +40,7 @@ public class CoralIntake extends SubsystemBase {
     public CoralIntake() {
         intakeMotor.setNeutralMode(NeutralModeValue.Brake);
         intakeMotor.getConfigurator()
-                .apply(new CurrentLimitsConfigs().withStatorCurrentLimit(15.0).withStatorCurrentLimitEnable(true));
+                .apply(new CurrentLimitsConfigs().withStatorCurrentLimit(12.5).withStatorCurrentLimitEnable(true));
         intakeMotor.getConfigurator()
                 .apply(new MotorOutputConfigs()
                         .withInverted(Constants.Coral.Intake.MOTOR_INVERTED ? InvertedValue.Clockwise_Positive

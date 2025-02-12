@@ -237,6 +237,10 @@ public class RobotContainer {
             operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
         })));
 
+        operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
+            coralSubsystem.mirrorArm();
+        }));
+
         /*
          * driver
          */

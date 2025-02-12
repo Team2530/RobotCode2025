@@ -213,11 +213,11 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          2.5,
+          3.5,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(20.0, 50.0));
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.2);
+          new TrapezoidProfile.Constraints(10.0, 25.0));
+      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.1);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
@@ -243,7 +243,7 @@ public final class Constants {
           5.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(12.0, 50.0)); // Radians
+          new TrapezoidProfile.Constraints(10.0, 35.0)); // Radians
 
       public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.45);
 
@@ -346,10 +346,10 @@ public final class Constants {
       public static double kP = 28.0;
       public static double kI = 0.0;
       public static double kD = 0.01;
-      public static double MAX_VELOCITY = 3.00;
+      public static double MAX_VELOCITY = 2.75;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
-      public static double MAX_ACCELERATION = 13.0;
+      public static double MAX_ACCELERATION = 10.0;
     }
 
     // TODO: PAD THE ELEVATOR!!!!!!!
