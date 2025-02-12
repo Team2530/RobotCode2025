@@ -22,11 +22,18 @@ public class MovePitch extends Command {
     @Override
     public void initialize() {
         SmartDashboard.putString("Arm Sequence", "Moving Pitch");
+        SmartDashboard.putString("Move Pitch", "Start");
+
         coralSub.setCoralPresetPitch(presetSupplier.get());
     }
 
     @Override
+    public void end(boolean interrupted) {
+        SmartDashboard.putString("Move Pitch", "End");
+    }
+
+    @Override
     public boolean isFinished() {
-        return coralSub.isPitchInPosition();
+        return coralSub.isPitchSupposedToBeInPosition();
     }
 }

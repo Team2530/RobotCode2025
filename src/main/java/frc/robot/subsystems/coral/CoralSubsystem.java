@@ -26,9 +26,9 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralPresets {
         LEVEL_1(1.0, 20.0, 0.0, 0.0), // TODO: Figure out level 1, TBD
-        LEVEL_2(0.237, 19.032, 90, 105.968),
-        LEVEL_3(0.640, 19.032, 90, 105.968),
-        LEVEL_4(1.342, 23.238, 90, 111.762),
+        LEVEL_2(0.237, 19.032, 90, 102.968),
+        LEVEL_3(0.640, 19.032, 90, 102.968),
+        LEVEL_4(1.342, 21.238, 90, 111.762),
         INTAKE(0.01, 9.559, 90, 50.44),
         STOW(0.01, 0.0, 0.0, 0.0),
 
@@ -68,7 +68,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralIntakePresets {
         INTAKE(1),
-        HOLD(0.05),
+        HOLD(0.4),
         PURGE(-1),
         SCORE(-1),
         STOP(0),

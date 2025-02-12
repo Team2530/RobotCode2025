@@ -17,6 +17,8 @@ public class IntakeCoralCommand extends Command {
     @Override
     public void initialize() {
         subsystem.setCoralIntakePreset(CoralIntakePresets.INTAKE);
+        SmartDashboard.putString("Intake Command", "Started");
+
         if (Robot.isSimulation()) {
             SmartDashboard.putBoolean("[SIM] Holding Coral", true);
         }

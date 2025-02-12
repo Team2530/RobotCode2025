@@ -120,7 +120,10 @@ public class RobotContainer {
                 .andThen(new ParallelCommandGroup(
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
                         new MoveRoll(coralSubsystem, currentLockedPresetSupplier),
-                        new MovePitch(coralSubsystem, currentLockedPresetSupplier)));
+                        new MovePitch(coralSubsystem, currentLockedPresetSupplier)))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
     }
 
     private Command getStowCommand() {
@@ -177,7 +180,8 @@ public class RobotContainer {
         operatorXbox.rightTrigger().whileTrue((new InstantCommand(() -> {
             // coralSubsystem.setCoralPreset(currentCoralPreset);
             lockCoralArmPreset(selectedScoringPreset);
-            isScoring = true;
+            if (!coralSubsystem.isHolding())
+                isScoring = true;
         }).andThen(getGoToLockedPresetCommand().andThen(
                 new InstantCommand(() -> {
                     operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
@@ -200,12 +204,16 @@ public class RobotContainer {
         // }).whileTrue(new CoralWristFollowCommand(coralSubsystem, operatorXbox));
 
         // Score coral
-        operatorXbox.rightBumper().and(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return coralSubsystem.isHolding() && isScoring;
-            }
-        }).whileTrue(new ScoreCoralCommand(coralSubsystem));
+        /*
+         * .and(new BooleanSupplier() {
+         * 
+         * @Override
+         * public boolean getAsBoolean() {
+         * return coralSubsystem.isHolding() && isScoring;
+         * }
+         * })
+         */
+        operatorXbox.rightBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
         operatorXbox.rightBumper().whileFalse(getStowCommand());
 
         // Intake coral

@@ -182,16 +182,16 @@ public final class Constants {
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          15.0,
+          18.0,
           0.0,
           0.1,
-          new TrapezoidProfile.Constraints(7.0, 20.0));
+          new TrapezoidProfile.Constraints(7.0, 15.0));
 
       // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
           0.0,
           0.4, // V
-          0.4, // 1.0, // V*s/rad
+          0.35, // 1.0, // V*s/rad
           0.00// V*s^2/rad
       );
 
@@ -216,7 +216,7 @@ public final class Constants {
           2.5,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(20.0, 150.0));
+          new TrapezoidProfile.Constraints(20.0, 50.0));
       public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.2);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
@@ -243,7 +243,7 @@ public final class Constants {
           5.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(12.0, 200.0)); // Radians
+          new TrapezoidProfile.Constraints(12.0, 50.0)); // Radians
 
       public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.45);
 

@@ -21,11 +21,17 @@ public class MoveElevator extends Command {
     @Override
     public void initialize() {
         SmartDashboard.putString("Arm Sequence", "Moving Elevator");
+        SmartDashboard.putString("Move Elevator", "Started");
         coralSub.setCoralPresetElevator(presetSupplier.get());
     }
 
     @Override
+    public void end(boolean interrupted) {
+        SmartDashboard.putString("Move Elevator", "End");
+    }
+
+    @Override
     public boolean isFinished() {
-        return Constants.Elevator.DBG_DISABLED || coralSub.isElevatorSupposedToBeInPosition();
+        return coralSub.isElevatorSupposedToBeInPosition();
     }
 }

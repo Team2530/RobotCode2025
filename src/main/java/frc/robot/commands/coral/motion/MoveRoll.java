@@ -21,11 +21,18 @@ public class MoveRoll extends Command {
     @Override
     public void initialize() {
         SmartDashboard.putString("Arm Sequence", "Moving Roll");
+        SmartDashboard.putString("Move Roll", "Start");
+
         coralSub.setCoralPresetRoll(presetSupplier.get());
     }
 
     @Override
+    public void end(boolean interrupted) {
+        SmartDashboard.putString("Move Roll", "End");
+    }
+
+    @Override
     public boolean isFinished() {
-        return coralSub.isRollInPosition();
+        return coralSub.isRollSupposedToBeInPosition();
     }
 }

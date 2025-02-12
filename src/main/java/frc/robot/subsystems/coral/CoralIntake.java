@@ -1,6 +1,7 @@
 package frc.robot.subsystems.coral;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -38,11 +39,14 @@ public class CoralIntake extends SubsystemBase {
 
     public CoralIntake() {
         intakeMotor.setNeutralMode(NeutralModeValue.Brake);
-        intakeMotor.getConfigurator().apply(new CurrentLimitsConfigs().withStatorCurrentLimit(20.0));
+        intakeMotor.getConfigurator()
+                .apply(new CurrentLimitsConfigs().withStatorCurrentLimit(15.0).withStatorCurrentLimitEnable(true));
         intakeMotor.getConfigurator()
                 .apply(new MotorOutputConfigs()
                         .withInverted(Constants.Coral.Intake.MOTOR_INVERTED ? InvertedValue.Clockwise_Positive
                                 : InvertedValue.CounterClockwise_Positive));
+        intakeMotor.getConfigurator()
+                .apply(new HardwareLimitSwitchConfigs().withForwardLimitEnable(false).withReverseLimitEnable(false));
     }
 
     private double outputPercentage = 0.0;
@@ -53,7 +57,7 @@ public class CoralIntake extends SubsystemBase {
         boolean curHolding = isHolding();
         // if no coral
         if (!curHolding) {
-            double output = intakeProfile.calculate(outputPercentage);
+            double output = outputPercentage;// intakeProfile.calculate(outputPercentage);
             if (!Constants.Coral.Intake.DBG_DISABLED)
                 intakeMotor.set(output);
         } else {
@@ -72,6 +76,8 @@ public class CoralIntake extends SubsystemBase {
         // }
 
         // lastHolding = curHolding;
+
+        SmartDashboard.putBoolean("Holding Coral", curHolding);
     }
 
     @Override

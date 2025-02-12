@@ -23,20 +23,19 @@ public class AlgaeArm extends SubsystemBase {
     private final SparkFlex pivotMotor = new SparkFlex(Algae.Pivot.MOTOR_PORT, MotorType.kBrushless);
     // sim motor
     private final SparkFlexSim simPivotMotor = new SparkFlexSim(pivotMotor, Algae.Pivot.PhysicalConstants.MOTOR);
-    
+
     public final CANcoder pivotEncoder = new CANcoder(Algae.Pivot.ENCODER_PORT);
 
     // physics simulation
     private final SingleJointedArmSim simPivotPhysics = new SingleJointedArmSim(
-        Algae.Pivot.PhysicalConstants.MOTOR,
-        Algae.Pivot.PhysicalConstants.GEARING,
-        Algae.Pivot.PhysicalConstants.MOI,
-        Algae.Pivot.PhysicalConstants.ARM_LENGTH_METERS,
-        Units.degreesToRadians(Algae.Pivot.RETRACTED_LIMIT_DEGREES),
-        Units.degreesToRadians(Algae.Pivot.EXTENDED_LIMIT_DEGREES),
-        true,
-        Units.degreesToRadians(Algae.Pivot.RETRACTED_LIMIT_DEGREES)
-    );
+            Algae.Pivot.PhysicalConstants.MOTOR,
+            Algae.Pivot.PhysicalConstants.GEARING,
+            Algae.Pivot.PhysicalConstants.MOI,
+            Algae.Pivot.PhysicalConstants.ARM_LENGTH_METERS,
+            Units.degreesToRadians(Algae.Pivot.RETRACTED_LIMIT_DEGREES),
+            Units.degreesToRadians(Algae.Pivot.EXTENDED_LIMIT_DEGREES),
+            true,
+            Units.degreesToRadians(Algae.Pivot.RETRACTED_LIMIT_DEGREES));
 
     private final SparkMaxConfig pivotConfig = new SparkMaxConfig();
 
@@ -51,26 +50,25 @@ public class AlgaeArm extends SubsystemBase {
     @Override
     public void periodic() {
         double output = pivotPID.calculate(
-            pivotEncoder.getAbsolutePosition().getValueAsDouble()
-            + pivotFeedforward.calculate(Units.degreesToRadians(this.getGoalDegrees()), 0.0)
-        );
+                pivotEncoder.getAbsolutePosition().getValueAsDouble()
+                        + pivotFeedforward.calculate(Units.degreesToRadians(this.getGoalDegrees()), 0.0));
 
         pivotMotor.set(output);
-        simPivotMotor.setAppliedOutput(output);
+        if (Robot.isSimulation())
+            simPivotMotor.setAppliedOutput(output);
     }
 
     @Override
     public void simulationPeriodic() {
-        // update physics 
+        // update physics
         simPivotPhysics.setInput(simPivotMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
         simPivotPhysics.update(0.02);
 
         // update sim objects
         simPivotMotor.iterate(
-            Units.radiansPerSecondToRotationsPerMinute(simPivotPhysics.getVelocityRadPerSec()),
-            RoboRioSim.getVInVoltage(),
-            0.02
-        );
+                Units.radiansPerSecondToRotationsPerMinute(simPivotPhysics.getVelocityRadPerSec()),
+                RoboRioSim.getVInVoltage(),
+                0.02);
     }
 
     public void setGoalDegrees(double goal) {
@@ -82,8 +80,8 @@ public class AlgaeArm extends SubsystemBase {
     }
 
     public double getPositionDegrees() {
-        return Robot.isReal() 
-            ? pivotEncoder.getAbsolutePosition().getValueAsDouble()
-            : Units.radiansToDegrees(simPivotPhysics.getAngleRads());
+        return Robot.isReal()
+                ? pivotEncoder.getAbsolutePosition().getValueAsDouble()
+                : Units.radiansToDegrees(simPivotPhysics.getAngleRads());
     }
 }

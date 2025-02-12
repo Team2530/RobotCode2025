@@ -21,11 +21,18 @@ public class MovePivot extends Command {
     @Override
     public void initialize() {
         SmartDashboard.putString("Arm Sequence", "Moving Pivot");
+        SmartDashboard.putString("Move Pivot", "Start");
+
         coralSub.setCoralPresetPivot(presetSupplier.get());
     }
 
     @Override
+    public void end(boolean interrupted) {
+        SmartDashboard.putString("Move Pivot", "End");
+    }
+
+    @Override
     public boolean isFinished() {
-        return coralSub.isPivotInPosition();
+        return coralSub.isPivotSupposedToBeInPosition();
     }
 }

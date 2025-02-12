@@ -129,8 +129,10 @@ public class CoralElevator extends SubsystemBase {
                 followerMotor.setVoltage(output);
             }
 
-            simLeaderMotor.setAppliedOutput(output);
-            simFollowerMotor.setAppliedOutput(output);
+            if (Robot.isSimulation()) {
+                simLeaderMotor.setAppliedOutput(output);
+                simFollowerMotor.setAppliedOutput(output);
+            }
         } else {
             if (!Constants.Elevator.DBG_DISABLED) {
                 // slowly move down to zero
