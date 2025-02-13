@@ -144,23 +144,22 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
 
         if (!isalliancereset && DriverStation.getAlliance().isPresent()) {
+            RobotContainer.LLContainer.estimateMT1OdometryPrelim(getRotation2d(), lastChassisSpeeds, navX, getModulePositions());
+            /*
             Translation2d pospose = getPose().getTranslation();
             odometry.resetPosition(getRotation2d(), getModulePositions(),
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
             isalliancereset = true;
+            */
         }
 
         // TODO: Test
         // WARNING: REMOVE IF USING TAG FOLLOW!!!
         // updateVisionOdometry();
+        RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
 
-        if (DriverStation.isTeleopEnabled()) {
-            updateMegaTagOdometry();
-        } else {
-            updateVisionOdometry();
-        }
+        odometry.update(getRotation2d(), getModulePositions()); //grrrrrr
 
-        odometry.update(getRotation2d(), getModulePositions());
         // if (DriverStation.getAlliance().isPresent()) {
         // switch (DriverStation.getAlliance().get()) {
         // case Red:
