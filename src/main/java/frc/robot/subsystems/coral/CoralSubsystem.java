@@ -10,6 +10,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.util.LimelightAssistance;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.Limelight;
+import frc.robot.util.LimelightAssistance;
+
 
 public class CoralSubsystem extends SubsystemBase {
 
@@ -23,6 +28,8 @@ public class CoralSubsystem extends SubsystemBase {
             new MechanismLigament2d("Elevator", Constants.Elevator.PhysicalParameters.BOTTOM_TO_FLOOR, 0));
     private final MechanismLigament2d pivotMechanism = elevatorMechanism.append(
             new MechanismLigament2d("Coral", Constants.Coral.Pivot.PhysicalConstants.JOINT_LENGTH_METERS, 0));
+
+    private LimelightAssistance llAssist = null; 
 
     public enum CoralPresets {
         LEVEL_1(1.0, 20.0, 0.0, 0.0), // TODO: Figure out level 1, TBD
@@ -49,7 +56,8 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public CoralSubsystem() {
+    public CoralSubsystem(LimelightAssistance llAssist) {
+        this.llAssist = llAssist;
         // Epilogue.bind(this);
     }
 
@@ -218,7 +226,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void mirrorArm() {
-        if (mirrorSetting.isMirrored) {
+        if(llAssist.isTagOnLeft()) {
             mirrorSetting = MirrorPresets.RIGHT;
         } else {
             mirrorSetting = MirrorPresets.LEFT;
