@@ -21,6 +21,9 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
+import frc.robot.subsystems.limelights.Limelight;
+import frc.robot.subsystems.limelights.LimelightSubsystem;
+import frc.robot.subsystems.limelights.Limelight.LimelightType;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import java.util.function.BooleanSupplier;
@@ -34,8 +37,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
-import frc.robot.util.LimelightContainer;
-import frc.robot.subsystems.Limelight.LimelightType;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -53,7 +54,7 @@ public class RobotContainer {
     private static final Limelight LL_BR  = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
 
-    public static final LimelightContainer LLContainer = new LimelightContainer(LL_FR, LL_FL, LL_BR, LL_BL);
+    public static final LimelightSubsystem LLContainer = new LimelightSubsystem(LL_FR, LL_FL, LL_BR, LL_BL);
 
 
 
