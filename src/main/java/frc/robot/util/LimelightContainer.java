@@ -28,18 +28,22 @@ public class LimelightContainer {
   private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
 
-  public static boolean isOnLeft(){
-    int[] validIds = new int[6]; //change these to be all reef tags, for given alliance (check if they red or blue!!)
+  public static boolean isReefOnLeft(){
+    int[] validIds = new int[8]; 
     
     if(FieldConstants.getAlliance() == Alliance.Blue){
         for(int i = 0; i < 6; i++){
         validIds[i] = i+17;
         }
+        validIds[6] = 13;
+        validIds[7] = 12;
     }
     else if(FieldConstants.getAlliance() == Alliance.Red){
         for(int i = 0; i < 6; i++){
             validIds[i] = i +6;
         }
+        validIds[6] = 1;
+        validIds[7] = 2;
     }
 
     LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fl", validIds);
@@ -65,10 +69,9 @@ public class LimelightContainer {
 
         return false;
     }
-    else return false;
-    
+    else return false; //ideally this wouldn't be called, should add some error thing handling and such
   }
-
+ 
   public LimelightContainer(Limelight... limelights) {
     for (Limelight limelight : limelights) {
       LimelightContainer.limelights.add(limelight);

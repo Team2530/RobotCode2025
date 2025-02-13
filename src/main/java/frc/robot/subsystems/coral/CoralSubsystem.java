@@ -219,7 +219,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void mirrorArm() {
-        if (LimelightContainer.isOnLeft()) {
+        if (LimelightContainer.isReefOnLeft()) {
             mirrorSetting = MirrorPresets.LEFT;
         } else {
             mirrorSetting = MirrorPresets.RIGHT;
