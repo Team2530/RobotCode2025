@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.util.LimelightContainer;
 
 public class CoralSubsystem extends SubsystemBase {
 
@@ -218,10 +219,10 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void mirrorArm() {
-        if (mirrorSetting.isMirrored) {
-            mirrorSetting = MirrorPresets.RIGHT;
-        } else {
+        if (LimelightContainer.isOnLeft()) {
             mirrorSetting = MirrorPresets.LEFT;
+        } else {
+            mirrorSetting = MirrorPresets.RIGHT;
         }
     }
 

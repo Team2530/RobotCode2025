@@ -34,6 +34,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
+import frc.robot.util.LimelightContainer;
+import frc.robot.subsystems.Limelight.LimelightType;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -45,6 +47,15 @@ import edu.wpi.first.wpilibj2.command.button.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+    private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
+    private static final Limelight LL_FL = new Limelight(LimelightType.LL4, "limelight-fl", true, true);
+    private static final Limelight LL_BR  = new Limelight(LimelightType.LL4, "limelight-br", true, true);
+    private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
+
+    public static final LimelightContainer LLContainer = new LimelightContainer(LL_FR, LL_FL, LL_BR, LL_BL);
+
+
 
     private final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
