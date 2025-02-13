@@ -1,11 +1,9 @@
-package frc.robot;
+package frc.robot.util;
 
 import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,6 +21,7 @@ public class PathfindingHelpers {
     // TODO: change to 2025 layout when released of whenever
     private final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
 
+    // counterclockwise, starting from the left side of 6 oclock
     public static enum ReefPresets {        
         ALPHA(18, 7, Pathfinding.FACING_LEFT_ADJUST),
         BRAVO(18, 7, Pathfinding.FACING_RIGHT_ADJUST),
@@ -48,6 +47,25 @@ public class PathfindingHelpers {
             }
 
             this.parallelAdjustment = parallelAdjustment;
+        }
+    }
+
+    // counterclockwise, starting from 6 oclock
+    public static enum ReefFace {
+        ONE(ReefPresets.ALPHA, ReefPresets.BRAVO),
+        TWO(ReefPresets.CHARLIE, ReefPresets.DELTA),
+        THREE(ReefPresets.ECHO, ReefPresets.FOXTROT),
+        FOUR(ReefPresets.GOLF, ReefPresets.HOTEL),
+        FIVE(ReefPresets.INDIA, ReefPresets.JULIETTE),
+        SIX(ReefPresets.KILO, ReefPresets.LIMA);
+
+
+        private ReefPresets Left;
+        private ReefPresets Right;
+
+        private ReefFace(ReefPresets Left, ReefPresets Right) {
+            this.Left = Left;
+            this.Right = Right;
         }
     }
 

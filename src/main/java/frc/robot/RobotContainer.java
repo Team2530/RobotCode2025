@@ -19,9 +19,9 @@ import frc.robot.commands.coral.motion.StowArm;
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
-import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
