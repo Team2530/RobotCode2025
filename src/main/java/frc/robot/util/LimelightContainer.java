@@ -16,6 +16,8 @@ import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.Limelight;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.Constants.PoseConstants;
 
 public class LimelightContainer {
   static int SIMCOUNTER = 0;
@@ -129,5 +131,18 @@ public class LimelightContainer {
       
     }
   }
+  }
+
+  public int findNearestTagPos(SwerveDrivePoseEstimator odometry){
+    double min = 43490824;
+    int toReturn = 0;
+    for(int i = 0; i < 15; i++){
+      double thing = Math.sqrt(Math.abs(PoseConstants.tagPoses.get(i).getX() - odometry.getEstimatedPosition().getX()));
+      if(thing < min){
+        min = thing;
+        toReturn = i;
+      }
+    }
+    return toReturn;
   }
 }
