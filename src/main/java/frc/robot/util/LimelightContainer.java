@@ -45,22 +45,28 @@ public class LimelightContainer {
     LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fl", validIds);
     LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fr", validIds);
 
-    if(LimelightHelpers.getTA("limelight-fl")>5){
+
+    if(LimelightHelpers.getTA("limelight-fl")>1){
+      int[] allIDs = new int[22];
+      for(int i = 1; i <= 22; i++){
+          allIDs[i-1] = i; // sets allIDs to be {1, 2, 3, etc.}
+      }
+      LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fl", allIDs);
+      LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fr", allIDs);
         return true;
     }
-    else if(LimelightHelpers.getTA("limelight-fr")>5){
+    else if(LimelightHelpers.getTA("limelight-fr")>1){
+      int[] allIDs = new int[22];
+      for(int i = 1; i <= 22; i++){
+          allIDs[i-1] = i; // sets allIDs to be {1, 2, 3, etc.}
+      }
+      LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fl", allIDs);
+      LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fr", allIDs);
+
         return false;
     }
-
-    int[] allIDs = new int[22];
-    for(int i = 1; i <= 22; i++){
-        allIDs[i-1] = i; // sets allIDs to be {1, 2, 3, etc.}
-    }
-
-    LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fl", allIDs);
-    LimelightHelpers.SetFiducialIDFiltersOverride("limelight-fr", allIDs);
-
-    else return true;
+    else return false;
+    
   }
 
   public LimelightContainer(Limelight... limelights) {
