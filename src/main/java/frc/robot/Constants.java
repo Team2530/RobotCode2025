@@ -14,13 +14,13 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -53,7 +53,6 @@ public final class Constants {
 
   public static final class FieldConstants {
     public static final double GRAVITY = 9.81;
-    public static final double SPEAKER_HEIGHT = 2.05; // Meters
 
     public static Alliance getAlliance() {
       if (DriverStation.getAlliance().isPresent()) {
@@ -62,6 +61,18 @@ public final class Constants {
 
       return Alliance.Blue;
     }
+
+    public static final Pose2d REEF_POSITION = getAlliance() == Alliance.Blue
+      ? new Pose2d(
+        Units.feetToMeters(12),
+        Units.feetToMeters(13) + Units.inchesToMeters(2.5),
+        new Rotation2d(Math.PI)
+      )
+      : new Pose2d(
+        Units.feetToMeters(45) + Units.inchesToMeters(6 + (7/8)),
+        Units.feetToMeters(13) + Units.inchesToMeters(2.5),
+        new Rotation2d()
+      );
   }
 
   public static class SwerveModuleConstants {

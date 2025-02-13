@@ -60,7 +60,7 @@ public class CoralSubsystem extends SubsystemBase {
         STARBOARD(false),
         PORT(true);
 
-        boolean isMirrored;
+        public boolean isMirrored;
 
         private MirrorPresets(boolean isMirrored) {
             this.isMirrored = isMirrored;

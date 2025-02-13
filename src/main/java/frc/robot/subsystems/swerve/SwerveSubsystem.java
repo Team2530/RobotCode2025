@@ -11,6 +11,7 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -35,6 +36,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.PathfindingHelpers;
 
 public class SwerveSubsystem extends SubsystemBase {
     SwerveModule frontLeft = new SwerveModule(SwerveModuleConstants.FL_STEER_ID, SwerveModuleConstants.FL_DRIVE_ID,
@@ -187,6 +189,11 @@ public class SwerveSubsystem extends SubsystemBase {
         // swerveCurrent += pdh.getCurrent(chan);
         // SmartDashboard.putNumber("SwerveSubsystem Amps", swerveCurrent);
         // SmartDashboard.putNumber("PDH Amps", pdh.getTotalCurrent());
+       
+        SmartDashboard.putString(
+            "Nearest Reef Face",
+            PathfindingHelpers.getNearestReefFace(this.getPose()).toString()
+        );
 
         SmartDashboard.putNumberArray("SwerveStates", new double[] {
                 frontLeft.getModuleState().angle.getDegrees() + 90, -frontLeft.getModuleState().speedMetersPerSecond,
