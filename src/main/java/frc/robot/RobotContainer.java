@@ -64,7 +64,7 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
-    private final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem();
+    public final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem();
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
 
