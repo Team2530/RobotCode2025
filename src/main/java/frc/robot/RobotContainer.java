@@ -50,12 +50,10 @@ public class RobotContainer {
 
     private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
     private static final Limelight LL_FL = new Limelight(LimelightType.LL4, "limelight-fl", true, true);
-    private static final Limelight LL_BR  = new Limelight(LimelightType.LL4, "limelight-br", true, true);
+    private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
 
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_FR, LL_FL, LL_BR, LL_BL);
-
-
 
     private final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
@@ -132,6 +130,22 @@ public class RobotContainer {
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
                         new MoveRoll(coralSubsystem, currentLockedPresetSupplier)))
                 .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
+    // Goes to a preset more quickly by moving pitch+pivot+roll at the same time,
+    // but can throw coral. Good for intaking
+    private Command getGoToLockedPresetFASTCommand() {
+        return new InstantCommand(() -> {
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(coralSubsystem))
+                .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
+                .andThen(new ParallelCommandGroup(
+                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
+                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier),
+                        new MovePitch(coralSubsystem, currentLockedPresetSupplier)))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
@@ -236,7 +250,7 @@ public class RobotContainer {
         }).whileTrue(new InstantCommand(() -> {
             System.out.println("Intaking");
             lockCoralArmPreset(CoralPresets.INTAKE);
-        }).andThen(getGoToLockedPresetCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
+        }).andThen(getGoToLockedPresetFASTCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
                 .andThen(getStowCommand())).whileFalse(getStowCommand());
 
         // purge coral
