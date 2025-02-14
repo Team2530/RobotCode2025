@@ -144,24 +144,18 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (!isalliancereset && DriverStation.getAlliance().isPresent()) {
+
+        if ((!isalliancereset && DriverStation.getAlliance().isPresent())) {
             RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry, lastChassisSpeeds, navX, getModulePositions());
-            /*
-            Translation2d pospose = getPose().getTranslation();
-            odometry.resetPosition(getRotation2d(), getModulePositions(),
-                    new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
+            SmartDashboard.putString("Prelim odometry position", odometry.getEstimatedPosition().toString());
             isalliancereset = true;
-            */
         }
 
-        // TODO: Test
-        // WARNING: REMOVE IF USING TAG FOLLOW!!!
-        // updateVisionOdometry();
         RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
 
-        odometry.update(getRotation2d(), getModulePositions()); //grrrrrr
+        //odometry.update(getRotation2d(), getModulePositions());
 
-        // if (DriverStation.getAlliance().isPresent()) {
+                // if (DriverStation.getAlliance().isPresent()) {
         // switch (DriverStation.getAlliance().get()) {
         // case Red:
         // field.setRobotPose(new Pose2d(new Translation2d(16.5 - getPose().getX(),

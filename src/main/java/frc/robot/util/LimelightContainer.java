@@ -55,6 +55,7 @@ public class LimelightContainer {
   }
 
 
+
   public void estimateMT1OdometryPrelim(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx, SwerveModulePosition[] swerveModulePositions) {
     for (Limelight limelight : limelights) {
       boolean doRejectUpdate = false;
@@ -79,6 +80,7 @@ public class LimelightContainer {
         //odometry.addVisionMeasurement(
             //mt1.pose,
             //mt1.timestampSeconds);
+
         odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
         
         SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString()+" " + RLCountermt1);
@@ -106,30 +108,21 @@ public class LimelightContainer {
       if (Math.abs(navx.getRate()) > 720) {
         doRejectUpdate = true;
       }
-
-      if(Math.abs(odometry.getEstimatedPosition().getX() - mt1.pose.getX()) > .2){
-        //doRejectUpdate = true; // Re-implement this!
-        SmartDashboard.putBoolean("Rejected due to too-far pose", true);
-      }
- 
-      if (!doRejectUpdate) {
-
-        if(mt1.tagCount == 1){
-          odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999));
-          odometry.addVisionMeasurement(
-              mt1.pose,
-              mt1.timestampSeconds);
-        }
-        else if (mt1.tagCount >= 2){
-          odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.4, .4, 999));
-          odometry.addVisionMeasurement(
-              mt1.pose,
-              mt1.timestampSeconds);
-
-        }
       
+      if (!doRejectUpdate) {
+        
+         odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, .2));
+         odometry.addVisionMeasurement(
+              mt1.pose,
+              mt1.timestampSeconds);
+
+        
+        SmartDashboard.putString("Pos MT1: ", mt1.pose.toString()+" " + RLCountermt1);
+      }
+       
+      
+      RLCountermt1++;
     }
-  }
   }
 
   public int findNearestTagPos(SwerveDrivePoseEstimator odometry){

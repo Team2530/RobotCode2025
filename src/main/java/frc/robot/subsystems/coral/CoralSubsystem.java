@@ -226,6 +226,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void mirrorArm() {
+        SmartDashboard.putBoolean("Called", true);
         if(llAssist.isTagOnLeft()) {
             mirrorSetting = MirrorPresets.RIGHT;
         } else {
