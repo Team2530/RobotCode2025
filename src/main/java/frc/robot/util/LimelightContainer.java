@@ -79,7 +79,6 @@ public class LimelightContainer {
         //odometry.addVisionMeasurement(
             //mt1.pose,
             //mt1.timestampSeconds);
-
         odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
         
         SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString()+" " + RLCountermt1);
@@ -108,7 +107,7 @@ public class LimelightContainer {
         doRejectUpdate = true;
       }
 
-      if(Math.abs(odometry.getEstimatedPosition().getX() - mt1.pose.getX()) > .5){
+      if(Math.abs(odometry.getEstimatedPosition().getX() - mt1.pose.getX()) > .2){
         //doRejectUpdate = true; // Re-implement this!
         SmartDashboard.putBoolean("Rejected due to too-far pose", true);
       }
