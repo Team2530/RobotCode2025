@@ -23,6 +23,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import java.util.HashMap;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -444,5 +447,16 @@ public final class Constants {
     public static final double kVisionStdDevY = 5;
     public static final double kVisionStdDevX = 5;
     public static final double kVisionStdDevTheta = 500;
+
+    private static AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+
+    public final static HashMap<Integer, Pose2d> tagPoses = new HashMap<Integer, Pose2d>() {
+    {
+        for (int i = 0; i < 22; ++i) {
+          if (tagLayout.getTagPose(i + 1).isPresent())
+            put(i, tagLayout.getTagPose(i + 1).get().toPose2d());
+        }
+      }
+    };
   }
 }

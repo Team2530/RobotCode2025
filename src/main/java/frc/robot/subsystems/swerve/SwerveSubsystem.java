@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
+import frc.robot.RobotContainer;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.PathfindingHelpers;
 
@@ -146,23 +147,22 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
 
         if (!isalliancereset && DriverStation.getAlliance().isPresent()) {
+            RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry, lastChassisSpeeds, navX, getModulePositions());
+            /*
             Translation2d pospose = getPose().getTranslation();
             odometry.resetPosition(getRotation2d(), getModulePositions(),
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
             isalliancereset = true;
+            */
         }
 
         // TODO: Test
         // WARNING: REMOVE IF USING TAG FOLLOW!!!
         // updateVisionOdometry();
+        RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
 
-        if (DriverStation.isTeleopEnabled()) {
-            updateMegaTagOdometry();
-        } else {
-            updateVisionOdometry();
-        }
+        odometry.update(getRotation2d(), getModulePositions()); //grrrrrr
 
-        odometry.update(getRotation2d(), getModulePositions());
         // if (DriverStation.getAlliance().isPresent()) {
         // switch (DriverStation.getAlliance().get()) {
         // case Red:

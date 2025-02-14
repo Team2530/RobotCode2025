@@ -1,10 +1,9 @@
 package frc.robot.subsystems.limelights;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.LimelightHelpers.RawFiducial;
+import frc.robot.util.LimelightHelpers.RawFiducial;;
 
 public class Limelight extends SubsystemBase {
     public enum LimelightType {
@@ -31,7 +30,6 @@ public class Limelight extends SubsystemBase {
     private boolean cropEnabled;
     private double lastPoseEstimate = 0;
     private int counter = 0;
-    private double lastFrame = 0;
 
     public Limelight(LimelightType limelightType, String name, boolean isEnabled, boolean cropEnabled) {
         this.limelightType = limelightType;
@@ -59,7 +57,7 @@ public class Limelight extends SubsystemBase {
 
     public void smartCrop() {
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
-        if(poseEstimate == null){return;}
+
         if (lastPoseEstimate != poseEstimate.timestampSeconds){
             counter = ++counter % 50;
             if(counter > 40){ // For every 5 frames, out of 50, check the entire screen for apriltags
@@ -171,14 +169,6 @@ public class Limelight extends SubsystemBase {
 
     public boolean isCropEnabled() {
         return cropEnabled;
-    }
-
-    public double getLastFrameTime(){
-        return lastFrame;
-    }
-
-    public void setLastFrame(double lastFrameTime){
-        lastFrame = lastFrameTime;
     }
 
     public double getVFOV() {

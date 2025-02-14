@@ -16,6 +16,7 @@ import frc.robot.commands.coral.motion.MovePivot;
 import frc.robot.commands.coral.motion.MoveRoll;
 import frc.robot.commands.coral.motion.StowArm;
 
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
@@ -31,13 +32,14 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
-
+import frc.robot.util.LimelightAssistance;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -48,7 +50,6 @@ import edu.wpi.first.wpilibj2.command.button.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-
     private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
     private static final Limelight LL_FL = new Limelight(LimelightType.LL4, "limelight-fl", true, true);
     private static final Limelight LL_BR  = new Limelight(LimelightType.LL4, "limelight-br", true, true);
@@ -68,14 +69,16 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
-    private final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem();
+    public final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem();
+    public final LimelightAssistance limelightAssistance = new LimelightAssistance(swerveDriveSubsystem);
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
+    
 
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem();
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance);
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
