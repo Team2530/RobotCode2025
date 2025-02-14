@@ -76,7 +76,7 @@ public class RobotContainer {
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
-    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.

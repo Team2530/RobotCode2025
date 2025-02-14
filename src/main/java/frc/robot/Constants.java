@@ -165,7 +165,7 @@ public final class Constants {
         0.0,
         new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
 
-    public static boolean DBG_DISABLED = true;
+    public static boolean DBG_DISABLED = false;
   }
 
   // TODO: ##################### PLACEHOLDERS #####################

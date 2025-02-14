@@ -111,7 +111,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::getPose, // Robot pose supplier
                 this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT
+                                                                       // RELATIVE ChassisSpeeds
                 PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
                 PathPlannerConstants.ROBOT_CONFIG,
                 () -> {
@@ -143,22 +144,23 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (!isalliancereset && DriverStation.getAlliance().isPresent()) {
-            Translation2d pospose = getPose().getTranslation();
-            odometry.resetPosition(getRotation2d(), getModulePositions(),
-                    new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
-            isalliancereset = true;
-        }
+        // if (!isalliancereset && DriverStation.getAlliance().isPresent()) {
+        // Translation2d pospose = getPose().getTranslation();
+        // odometry.resetPosition(getRotation2d(), getModulePositions(),
+        // new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() ==
+        // Alliance.Blue ? 0.0 : Math.PI)));
+        // isalliancereset = true;
+        // }
 
         // TODO: Test
         // WARNING: REMOVE IF USING TAG FOLLOW!!!
         // updateVisionOdometry();
 
-        if (DriverStation.isTeleopEnabled()) {
-            updateMegaTagOdometry();
-        } else {
-            updateVisionOdometry();
-        }
+        // if (DriverStation.isTeleopEnabled()) {
+        // updateMegaTagOdometry();
+        // } else {
+        // updateVisionOdometry();
+        // }
 
         odometry.update(getRotation2d(), getModulePositions());
         // if (DriverStation.getAlliance().isPresent()) {
@@ -327,27 +329,28 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command followPathCommand(String pathName) {
         try {
             PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-            
-            return new FollowPathCommand(
-                path,
-                this::getPose, // Robot pose supplier
-                this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
-                PathPlannerConstants.ROBOT_CONFIG,
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red
-                    // alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
-                this // Reference to this subsystem to set requirements
+            return new FollowPathCommand(
+                    path,
+                    this::getPose, // Robot pose supplier
+                    this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given
+                                                                           // ROBOT RELATIVE ChassisSpeeds
+                    PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
+                    PathPlannerConstants.ROBOT_CONFIG,
+                    () -> {
+                        // Boolean supplier that controls when the path will be mirrored for the red
+                        // alliance
+                        // This will flip the path being followed to the red side of the field.
+                        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                        var alliance = DriverStation.getAlliance();
+                        if (alliance.isPresent()) {
+                            return alliance.get() == DriverStation.Alliance.Red;
+                        }
+                        return false;
+                    },
+                    this // Reference to this subsystem to set requirements
             );
         } catch (Exception exception) {
             return Commands.none();
