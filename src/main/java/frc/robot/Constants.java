@@ -170,6 +170,9 @@ public final class Constants {
 
   // TODO: ##################### PLACEHOLDERS #####################
   public static class Coral {
+    public static int LEFT_ULTRASONIC_PORT = 0;
+    public static int RIGHT_ULTRASONIC_PORT = 1;
+
     public static class Pivot {
       public static final int MOTOR_PORT = 14;
       public static final int ENCODER_PORT = 28;
