@@ -1,25 +1,19 @@
 package frc.robot.util;
 
-import frc.robot.RobotContainer;
+import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants.PoseConstants;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
 
 
 public class LimelightAssistance{
 
-    SwerveSubsystem swerveSub = null;
-    public LimelightAssistance(SwerveSubsystem swerveSub){
-        this.swerveSub = swerveSub;
-    }
+    public MirrorPresets optimalMirrorToTag(int tag, Pose2d robotPose){
 
-    public boolean isTagOnLeft(){
-
-        int nearestTag = RobotContainer.LLContainer.findNearestTagPos(swerveSub.odometry);
-        if(Math.abs(PoseConstants.tagPoses.get(nearestTag).getRotation().getDegrees() - swerveSub.odometry.getEstimatedPosition().getRotation().getDegrees()) > 180){
-            return true;
+        if(Math.abs(PoseConstants.tagPoses.get(tag).getRotation().getDegrees() - robotPose.getRotation().getDegrees()) > 180){
+            return MirrorPresets.PORT;
         }
         else{
-            return false;
+            return MirrorPresets.STARBOARD;
         }
     }
 }

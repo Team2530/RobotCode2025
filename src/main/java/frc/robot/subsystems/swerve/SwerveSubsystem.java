@@ -11,7 +11,6 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;

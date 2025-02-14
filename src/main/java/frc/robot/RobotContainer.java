@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
+import frc.robot.util.PathfindingHelpers;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -70,7 +71,6 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem();
-    public final LimelightAssistance limelightAssistance = new LimelightAssistance(swerveDriveSubsystem);
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
     
@@ -78,7 +78,7 @@ public class RobotContainer {
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance);
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem();
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
@@ -218,16 +218,6 @@ public class RobotContainer {
         // }
         // }).whileTrue(new CoralWristFollowCommand(coralSubsystem, operatorXbox));
 
-        // Score coral
-        /*
-         * .and(new BooleanSupplier() {
-         * 
-         * @Override
-         * public boolean getAsBoolean() {
-         * return coralSubsystem.isHolding() && isScoring;
-         * }
-         * })
-         */
         operatorXbox.rightBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
         operatorXbox.rightBumper().whileFalse(getStowCommand());
 
@@ -286,6 +276,14 @@ public class RobotContainer {
         driverXbox.button(7).onTrue(new InstantCommand(() -> {
             swerveDriveSubsystem.setHeading(0);
         }));
+
+        // TODO: test and implement on (comp) robot
+        driverXbox.leftTrigger().whileTrue(
+            PathfindingHelpers.generatePathToReefCommand(
+                PathfindingHelpers.getNearestReefFace(swerveDriveSubsystem.getPose()).Left, 
+                swerveDriveSubsystem.getPose()
+            )
+        );
 
         /*
          * coop

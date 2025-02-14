@@ -62,8 +62,8 @@ public class PathfindingHelpers {
         SIX(ReefPresets.KILO, ReefPresets.LIMA);
 
 
-        private ReefPresets Left;
-        private ReefPresets Right;
+        public ReefPresets Left;
+        public ReefPresets Right;
 
         private ReefFaces(ReefPresets Left, ReefPresets Right) {
             this.Left = Left;
@@ -71,7 +71,7 @@ public class PathfindingHelpers {
         }
     }
 
-    public static Command generatePathToReefCommand(ReefPresets target, Pose2d robotPose) {
+    public static Command generatePathToReefCommand(ReefPresets target, Pose2d startingPose) {
         Optional<Pose3d> apriltag = fieldLayout.getTagPose(target.targetApriltag);
 
         if (apriltag.isPresent()) {
@@ -79,9 +79,7 @@ public class PathfindingHelpers {
             Rotation2d apriltagDirection = apriltagPose.getRotation();
 
             // which side of the robot the reef is closer to
-            MirrorPresets optimalMirror = reefIsOnLeft(robotPose) 
-                ? MirrorPresets.PORT
-                : MirrorPresets.STARBOARD;
+            MirrorPresets optimalMirror = optimalMirrorToReef(startingPose); 
 
             // get position by offsetting from the apriltag pose by x in meters, in direction the apriltag is facing
             // then adjust x in meters parallel to the face for left / right pole
@@ -137,7 +135,7 @@ public class PathfindingHelpers {
         ];
     }
 
-    public static boolean reefIsOnLeft(Pose2d robotPosition) {
+    public static MirrorPresets optimalMirrorToReef(Pose2d robotPosition) {
         Pose2d relativePose = FieldConstants.REEF_POSITION.relativeTo(robotPosition);
         // angle of a line from the robot to the reef, relative to the heading of the robot
         // in radians
@@ -145,6 +143,8 @@ public class PathfindingHelpers {
             (Math.PI * 2) + Math.atan2(relativePose.getY(), relativePose.getX())
             - robotPosition.getRotation().getRadians()
         ) % (Math.PI * 2);
-        return orientedRelativeAngle < Math.PI;
+        return orientedRelativeAngle < Math.PI
+            ? MirrorPresets.PORT
+            : MirrorPresets.STARBOARD;
     }
 }
