@@ -12,11 +12,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class LimelightAssistance{
 
     SwerveSubsystem swerveSub = null;
+
     public LimelightAssistance(SwerveSubsystem swerveSub){
         this.swerveSub = swerveSub;
     }
 
-    public boolean isTagOnLeft(){
+    public boolean isTagOnRight(){
+
         SmartDashboard.putString("Recieved position to isTagOnLeft: ", swerveSub.odometry.getEstimatedPosition().toString());
         int nearestTag = RobotContainer.LLContainer.findNearestTagPos(swerveSub.odometry);
         SmartDashboard.putNumber("Recieved nearest tag to isTagOnLeft: ", nearestTag);

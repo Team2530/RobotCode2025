@@ -169,10 +169,9 @@ public final class Constants {
         0.0,
         new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
 
-    public static boolean DBG_DISABLED = true;
+    public static boolean DBG_DISABLED = false;
   }
 
-  // TODO: ##################### PLACEHOLDERS #####################
   public static class Coral {
     public static class Pivot {
       public static final int MOTOR_PORT = 14;
@@ -220,7 +219,7 @@ public final class Constants {
           3.5,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(10.0, 25.0));
+          new TrapezoidProfile.Constraints(18.0, 25.0));
       public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.1);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);

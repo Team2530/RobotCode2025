@@ -81,6 +81,8 @@ public class RobotContainer {
 
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
+    private final ManualClimberCommand climberCommand = new ManualClimberCommand(climberSubsystem, operatorXbox.getHID());
+
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -133,6 +135,20 @@ public class RobotContainer {
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
                         new MoveRoll(coralSubsystem, currentLockedPresetSupplier)))
                 .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
+    private Command getGoToLockedPresetFASTCommand() {
+        return new InstantCommand(() -> {
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(coralSubsystem))
+                .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
+                .andThen(new ParallelCommandGroup(
+                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
+                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier),
+                        new MovePitch(coralSubsystem, currentLockedPresetSupplier)))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
@@ -237,7 +253,7 @@ public class RobotContainer {
         }).whileTrue(new InstantCommand(() -> {
             System.out.println("Intaking");
             lockCoralArmPreset(CoralPresets.INTAKE);
-        }).andThen(getGoToLockedPresetCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
+        }).andThen(getGoToLockedPresetFASTCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
                 .andThen(getStowCommand())).whileFalse(getStowCommand());
 
         // purge coral
