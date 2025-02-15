@@ -29,7 +29,7 @@ public class ClimberSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (!Constants.Climber.DBG_DISABLED)
-            climberMotor.set(operator.getLeftBumper() ? (operator.getLeftY() * 0.4) : 0.0);
+            climberMotor.set(operator.getLeftBumper() ? (operator.getLeftY()) : 0.0);
 
     }
 

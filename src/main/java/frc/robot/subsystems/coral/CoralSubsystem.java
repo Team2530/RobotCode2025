@@ -34,11 +34,11 @@ public class CoralSubsystem extends SubsystemBase {
             254.0, 0.0);
 
     public enum CoralPresets {
-        LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(0.87), Units.radiansToDegrees(1.636)),
-        LEVEL_2(0.247, 19.032, 90, 98.968),
-        LEVEL_3(0.650, 19.032, 90, 98.968),
-        LEVEL_4(1.342, 21.238, 90, 111.762),
-        INTAKE(0.05, 18.0, 90, 35.0),
+        LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636)),
+        LEVEL_2(0.247, 19.032, 90, 96.968),
+        LEVEL_3(0.650, 19.032, 90, 96.968),
+        LEVEL_4(1.342, 21.238, 90, 108.762),
+        INTAKE(0.05, 18.0, 90, 30.0),
         STOW(0.05, 0.0, 0.0, 0.0),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
@@ -93,6 +93,9 @@ public class CoralSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Ultra Left", this.leftUltrasonic.get());
+        SmartDashboard.putNumber("Ultra Right", this.rightUltrasonic.get());
+
         // i have no idea what any of the getPositions output
         elevatorMechanism
                 .setLength(elevator.getPosition() + Constants.Elevator.PhysicalParameters.CORAL_PIVOT_VERTICAL_OFFSET);
@@ -226,13 +229,13 @@ public class CoralSubsystem extends SubsystemBase {
         arm.setPitchGoalDegrees(pitchAngle);
     }
 
-    public void mirrorArm() {
-        if (LimelightContainer.isReefOnLeft()) {
-            mirrorSetting = MirrorPresets.LEFT;
-        } else {
-            mirrorSetting = MirrorPresets.RIGHT;
-        }
-    }
+    // public void mirrorArm() {
+    // if (LimelightContainer.isReefOnLeft()) {
+    // mirrorSetting = MirrorPresets.LEFT;
+    // } else {
+    // mirrorSetting = MirrorPresets.RIGHT;
+    // }
+    // }
 
     public void mirrorArm(MirrorPresets preset) {
         mirrorSetting = preset;
