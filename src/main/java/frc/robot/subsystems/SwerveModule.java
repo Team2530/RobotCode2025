@@ -114,7 +114,7 @@ public class SwerveModule {
 
     public double getDriveVelocity() {
         // return driveMotorEncoder.getVelocity();
-        return driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
+        return driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_METERS_PER_MINUTE;
     }
 
     public double getSteerPosition() {
