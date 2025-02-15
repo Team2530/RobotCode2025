@@ -81,8 +81,6 @@ public class RobotContainer {
 
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
-    private final ManualClimberCommand climberCommand = new ManualClimberCommand(climberSubsystem, operatorXbox.getHID());
-
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
