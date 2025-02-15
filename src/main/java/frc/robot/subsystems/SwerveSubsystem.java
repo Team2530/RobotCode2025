@@ -112,7 +112,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::getPose, // Robot pose supplier
                 this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT
+                                                                       // RELATIVE ChassisSpeeds
                 PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
                 PathPlannerConstants.ROBOT_CONFIG,
                 () -> {
@@ -144,7 +145,6 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-
         if ((!isalliancereset && DriverStation.getAlliance().isPresent())) {
             RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry, lastChassisSpeeds, navX, getModulePositions());
             SmartDashboard.putString("Prelim odometry position", odometry.getEstimatedPosition().toString());
@@ -152,10 +152,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
-
-        //odometry.update(getRotation2d(), getModulePositions());
-
-                // if (DriverStation.getAlliance().isPresent()) {
+        // if (DriverStation.getAlliance().isPresent()) {
         // switch (DriverStation.getAlliance().get()) {
         // case Red:
         // field.setRobotPose(new Pose2d(new Translation2d(16.5 - getPose().getX(),
@@ -321,27 +318,28 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command followPathCommand(String pathName) {
         try {
             PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-            
-            return new FollowPathCommand(
-                path,
-                this::getPose, // Robot pose supplier
-                this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
-                PathPlannerConstants.ROBOT_CONFIG,
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red
-                    // alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
-                this // Reference to this subsystem to set requirements
+            return new FollowPathCommand(
+                    path,
+                    this::getPose, // Robot pose supplier
+                    this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given
+                                                                           // ROBOT RELATIVE ChassisSpeeds
+                    PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
+                    PathPlannerConstants.ROBOT_CONFIG,
+                    () -> {
+                        // Boolean supplier that controls when the path will be mirrored for the red
+                        // alliance
+                        // This will flip the path being followed to the red side of the field.
+                        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                        var alliance = DriverStation.getAlliance();
+                        if (alliance.isPresent()) {
+                            return alliance.get() == DriverStation.Alliance.Red;
+                        }
+                        return false;
+                    },
+                    this // Reference to this subsystem to set requirements
             );
         } catch (Exception exception) {
             return Commands.none();

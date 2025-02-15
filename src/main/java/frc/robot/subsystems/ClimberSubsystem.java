@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Climber;
@@ -14,8 +15,10 @@ import frc.robot.Constants.Climber;
 public class ClimberSubsystem extends SubsystemBase {
     private final SparkMax climberMotor = new SparkMax(Climber.MOTOR_PORT, MotorType.kBrushless);
     private final SparkMaxConfig climberConfig = new SparkMaxConfig();
+    XboxController operator;
 
-    public ClimberSubsystem() {
+    public ClimberSubsystem(XboxController operator) {
+        this.operator = operator;
         climberConfig.idleMode(IdleMode.kBrake);
 
         climberMotor.configure(climberConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -26,7 +29,8 @@ public class ClimberSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (!Constants.Climber.DBG_DISABLED)
-            climberMotor.set(output);
+            climberMotor.set(operator.getLeftBumper() ? (operator.getLeftY() * 0.4) : 0.0);
+
     }
 
     // TODO: limit the output somehow

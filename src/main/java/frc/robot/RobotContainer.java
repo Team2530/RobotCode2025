@@ -38,7 +38,9 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
+import frc.robot.subsystems.Limelight.LimelightType;import frc.robot.util.LimelightContainer;
 import frc.robot.subsystems.Limelight.LimelightType;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -52,6 +54,13 @@ public class RobotContainer {
     private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
     private static final Limelight LL_FL = new Limelight(LimelightType.LL4, "limelight-fl", true, true);
     private static final Limelight LL_BR  = new Limelight(LimelightType.LL4, "limelight-br", true, true);
+    private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
+
+    public static final LimelightContainer LLContainer = new LimelightContainer(LL_FR, LL_FL, LL_BR, LL_BL);
+
+    private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
+    private static final Limelight LL_FL = new Limelight(LimelightType.LL4, "limelight-fl", true, true);
+    private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
 
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_FR, LL_FL, LL_BR, LL_BL);
@@ -79,7 +88,7 @@ public class RobotContainer {
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
-    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -126,6 +135,7 @@ public class RobotContainer {
     // 4. Rotate wrist
     private Command getGoToLockedPresetCommand() {
         return new InstantCommand(() -> {
+            coralSubsystem.autoSetMirror();
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
@@ -138,8 +148,11 @@ public class RobotContainer {
                 }));
     }
 
+    // Goes to a preset more quickly by moving pitch+pivot+roll at the same time,
+    // but can throw coral. Good for intaking
     private Command getGoToLockedPresetFASTCommand() {
         return new InstantCommand(() -> {
+            coralSubsystem.autoSetMirror();
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
