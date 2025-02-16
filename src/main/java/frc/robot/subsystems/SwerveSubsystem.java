@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -88,6 +90,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private Field2d field = new Field2d();
 
+    private final StructPublisher<Pose2d> publisher;
+
     boolean isalliancereset = false;
 
     // TODO: Properly set starting pose
@@ -132,6 +136,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
         );
 
+        publisher = NetworkTableInstance.getDefault().getStructTopic("Odometry Pose", Pose2d.struct).publish();
+
         NamedCommands.registerCommand("namedCommand", new PrintCommand("Ran namedCommand"));
 
         chassisAccelX = new DoubleLogEntry(DataLogManager.getLog(), "Chassis/acceleration/x");
@@ -153,6 +159,11 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
+
+        odometry.update(getRotation2d(), getModulePositions());
+
+        publisher.set(getPose());
+        System.out.println(getPose().getX());
         // if (DriverStation.getAlliance().isPresent()) {
         // switch (DriverStation.getAlliance().get()) {
         // case Red:
@@ -363,60 +374,6 @@ public class SwerveSubsystem extends SubsystemBase {
         path.preventFlipping = true;
 
         return path;
-    }
-
-    public void updateVisionOdometry() {
-        boolean doRejectUpdate = false;
-        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-
-        if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-            if (mt1.rawFiducials[0].ambiguity > .7) {
-                doRejectUpdate = true;
-            }
-            // if (mt1.rawFiducials[0].distToCamera > 3) {
-            if (mt1.rawFiducials[0].distToCamera > 5) { // TODO: TUNE!!!
-
-                doRejectUpdate = true;
-            }
-        }
-        if (mt1.tagCount == 0) {
-            doRejectUpdate = true;
-        }
-
-        if (!doRejectUpdate) {
-            // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-            odometry.setVisionMeasurementStdDevs(createVisionMeasurementStdDevs(
-                    PoseConstants.kVisionStdDevX,
-                    PoseConstants.kVisionStdDevY,
-                    PoseConstants.kVisionStdDevTheta));
-            odometry.addVisionMeasurement(
-                    mt1.pose,
-                    mt1.timestampSeconds);
-        }
-    }
-
-    public void updateMegaTagOdometry() {
-        boolean doRejectUpdate = false;
-        LimelightHelpers.SetRobotOrientation("limelight", odometry.getEstimatedPosition().getRotation().getDegrees(), 0,
-                0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        if (Math.abs(navX.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore
-                                            // vision updates
-        {
-            doRejectUpdate = true;
-        }
-
-        if (mt2.tagCount <= 0) {
-            doRejectUpdate = true;
-        }
-        if (!doRejectUpdate) {
-            // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(2,2,2.0*PoseConstants.kVisionStdDevTheta));
-            odometry.setVisionMeasurementStdDevs(VecBuilder.fill(2, 2, 9999999));
-
-            odometry.addVisionMeasurement(
-                    mt2.pose,
-                    mt2.timestampSeconds);
-        }
     }
 
     public Vector<N3> createStateStdDevs(double x, double y, double theta) {
