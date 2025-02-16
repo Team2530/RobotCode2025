@@ -23,6 +23,7 @@ import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
+import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -128,14 +129,15 @@ public class RobotContainer {
     // 4. Rotate wrist
     private Command getGoToLockedPresetCommand() {
         return new InstantCommand(() -> {
-            coralSubsystem.autoSetMirror();
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
-                .andThen(new ParallelCommandGroup(
+                .andThen((new InstantCommand(() -> {
+                    coralSubsystem.autoSetMirror();
+                })).andThen(new ParallelCommandGroup(
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
                         new MoveRoll(coralSubsystem, currentLockedPresetSupplier)))
-                .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))
+                        .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier)))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
@@ -224,6 +226,13 @@ public class RobotContainer {
                     isScoring = false;
                 })));
 
+        // operatorXbox.povLeft().onTrue(new InstantCommand(() -> {
+        // coralSubsystem.mirrorArm(MirrorPresets.LEFT);
+        // }));
+        // operatorXbox.povRight().onTrue(new InstantCommand(() -> {
+        // coralSubsystem.mirrorArm(MirrorPresets.LEFT);
+        // }));
+
         // wrist adjustment
         // Hold for now, until everything else is working
         // operatorXbox.rightStick().and(new BooleanSupplier() {
@@ -269,9 +278,9 @@ public class RobotContainer {
             operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
         })));
 
-        operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
-            coralSubsystem.mirrorArm();
-        }));
+        // operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
+        // coralSubsystem.mirrorArm();
+        // }));
 
         /*
          * driver
@@ -349,9 +358,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        // return autoChooser.getSelected();
         // return new PathPlannerAuto("4-close-middle");
-
+        return new PrintCommand("Haha auto go brrr");
     }
 
     public SwerveSubsystem getSwerveSubsystem() {

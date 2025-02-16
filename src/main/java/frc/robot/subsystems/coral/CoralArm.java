@@ -139,6 +139,20 @@ public class CoralArm extends SubsystemBase {
         rollPID.setTolerance(Units.degreesToRadians(3.0));
         pitchPID.setTolerance(Units.degreesToRadians(3.0));
 
+        if (Constants.Coral.DEBUG_PIDS) {
+            SmartDashboard.putNumber("Coral/Pivot/PID/P", pivotPID.getP());
+            SmartDashboard.putNumber("Coral/Pivot/PID/I", pivotPID.getI());
+            SmartDashboard.putNumber("Coral/Pivot/PID/D", pivotPID.getD());
+
+            SmartDashboard.putNumber("Coral/Roll/PID/P", rollPID.getP());
+            SmartDashboard.putNumber("Coral/Roll/PID/I", rollPID.getI());
+            SmartDashboard.putNumber("Coral/Roll/PID/D", rollPID.getD());
+
+            SmartDashboard.putNumber("Coral/Pitch/PID/P", pitchPID.getP());
+            SmartDashboard.putNumber("Coral/Pitch/PID/I", pitchPID.getI());
+            SmartDashboard.putNumber("Coral/Pitch/PID/D", pitchPID.getD());
+        }
+
         // Warm up the filters
         for (int i = 0; i < 3; ++i) {
             readPitchEncoderPosition();
@@ -162,12 +176,27 @@ public class CoralArm extends SubsystemBase {
             pitchPID.setGoal(pitchGoal);
         }
 
+        if (Constants.Coral.DEBUG_PIDS) {
+            pivotPID.setP(SmartDashboard.getNumber("Coral/Pivot/PID/P", pivotPID.getP()));
+            pivotPID.setI(SmartDashboard.getNumber("Coral/Pivot/PID/I", pivotPID.getI()));
+            pivotPID.setD(SmartDashboard.getNumber("Coral/Pivot/PID/D", pivotPID.getD()));
+
+            rollPID.setP(SmartDashboard.getNumber("Coral/Roll/PID/P", rollPID.getP()));
+            rollPID.setI(SmartDashboard.getNumber("Coral/Roll/PID/I", rollPID.getI()));
+            rollPID.setD(SmartDashboard.getNumber("Coral/Roll/PID/D", rollPID.getD()));
+
+            pitchPID.setP(SmartDashboard.getNumber("Coral/Pitch/PID/P", pitchPID.getP()));
+            pitchPID.setI(SmartDashboard.getNumber("Coral/Pitch/PID/I", pitchPID.getI()));
+            pitchPID.setD(SmartDashboard.getNumber("Coral/Pitch/PID/D", pitchPID.getD()));
+        }
         /*
          * run the motors
          */
 
-        double pivotPosition = Robot.isSimulation() ? readPivotEncoderPosition()
-                : pivotMotor.getEncoder().getPosition();// readPivotEncoderPosition();
+        // double pivotPosition = Robot.isSimulation() ? readPivotEncoderPosition()
+        // : pivotMotor.getEncoder().getPosition();// readPivotEncoderPosition();
+        double pivotPosition = readPivotEncoderPosition();
+
         double pivotFFout = pivotFeedforward.calculate(
                 Math.PI * 0.5 + pivotPosition,
                 pivotPID.getSetpoint().velocity);
@@ -179,12 +208,14 @@ public class CoralArm extends SubsystemBase {
         SmartDashboard.putNumber("Coral/Pivot/target", pivotPID.getSetpoint().position);
         SmartDashboard.putNumber("Coral/Pivot/goal", pivotPID.getGoal().position);
         if (!Constants.Coral.Pivot.DBG_DISABLED)
-            pivotMotor.setVoltage(pivotPIDout + pivotFFout);
+            pivotMotor.setVoltage(
+                    (Math.abs(pivotGoal) < Units.degreesToRadians(3)) ? MathUtil.applyDeadband(
+                            pivotPIDout + pivotFFout, 0.6) : pivotPIDout + pivotFFout);
         if (Robot.isSimulation())
             simPivotMotor.setAppliedOutput(pivotPIDout + pivotFFout);
 
         double rollPIDout = rollPID.calculate(readRollEncoderPosition());
-        double rollFFout = Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
+        double rollFFout = 0.0;// Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
         SmartDashboard.putNumber("Coral/Roll/position", readRollEncoderPosition());
         SmartDashboard.putNumber("Coral/Roll/target", rollPID.getSetpoint().position);
         SmartDashboard.putNumber("Coral/Roll/goal", rollPID.getGoal().position);
@@ -197,7 +228,7 @@ public class CoralArm extends SubsystemBase {
             simRollMotor.setAppliedOutput(rollPIDout);
 
         double pitchPIDout = pitchPID.calculate(readPitchEncoderPosition());
-        double pitchFFout = Constants.Coral.Pitch.FEEDFORWARD.calculate(pitchPID.getSetpoint().velocity);
+        double pitchFFout = 0.0;// Constants.Coral.Pitch.FEEDFORWARD.calculate(pitchPID.getSetpoint().velocity);
         SmartDashboard.putNumber("Coral/Pitch/position", readPitchEncoderPosition());
         SmartDashboard.putNumber("Coral/Pitch/target", pitchPID.getSetpoint().position);
         SmartDashboard.putNumber("Coral/Pitch/goal", pitchPID.getGoal().position);

@@ -55,7 +55,8 @@ public class SwerveModule {
         driveMotor = new TalonFX(driveCanID);
         driveConfigurator = driveMotor.getConfigurator();
         driveConfig = new MotorOutputConfigs();
-        driveConfig.Inverted = motorReversed ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        driveConfig.Inverted = motorReversed ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
         driveConfig.NeutralMode = NeutralModeValue.Brake;
         driveConfigurator.apply(driveConfig);
 
@@ -109,12 +110,12 @@ public class SwerveModule {
             return driveEncSim;
         // return driveMotorEncoder.getPosition();
         // TODO: Do the conversion in the motor
-        return driveMotor.getPosition().getValueAsDouble()* SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
+        return driveMotor.getPosition().getValueAsDouble() * SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
     }
 
     public double getDriveVelocity() {
         // return driveMotorEncoder.getVelocity();
-        return driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
+        return driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_METERS_PER_MINUTE;
     }
 
     public double getSteerPosition() {
@@ -152,7 +153,8 @@ public class SwerveModule {
     public void setModuleStateRaw(SwerveModuleState state) {
         state.optimize(new Rotation2d(getSteerPosition()));
         double drive_command = state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY;
-        // SmartDashboard.putNumber("Module " + Integer.toString(this.thisModuleNumber) + " Drive", drive_command);
+        // SmartDashboard.putNumber("Module " + Integer.toString(this.thisModuleNumber)
+        // + " Drive", drive_command);
         driveMotor.set(drive_command * (motor_inv ? -1.0 : 1.0));
 
         // This is stupid
