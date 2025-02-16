@@ -166,6 +166,10 @@ public final class Constants {
         new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
 
     public static boolean DBG_DISABLED = false;
+    public static double GEAR_RATIO = 45.0;
+
+    public static double DEPLOY_SOFT_LIMIT = 0.0;
+    public static double CLIMB_SOFT_LIMIT = 0.0;
   }
 
   // TODO: ##################### PLACEHOLDERS #####################
