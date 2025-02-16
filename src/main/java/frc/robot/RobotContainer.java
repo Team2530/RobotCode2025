@@ -124,14 +124,15 @@ public class RobotContainer {
     // 4. Rotate wrist
     private Command getGoToLockedPresetCommand() {
         return new InstantCommand(() -> {
-            coralSubsystem.autoSetMirror();
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
-                .andThen(new ParallelCommandGroup(
+                .andThen((new InstantCommand(() -> {
+                    coralSubsystem.autoSetMirror();
+                })).andThen(new ParallelCommandGroup(
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
                         new MoveRoll(coralSubsystem, currentLockedPresetSupplier)))
-                .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))
+                        .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier)))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
@@ -352,9 +353,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        // return autoChooser.getSelected();
         // return new PathPlannerAuto("4-close-middle");
-
+        return new PrintCommand("Haha auto go brrr");
     }
 
     public SwerveSubsystem getSwerveSubsystem() {

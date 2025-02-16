@@ -166,9 +166,9 @@ public class CoralArm extends SubsystemBase {
                  * run the motors
                  */
 
-                double pivotPosition = Robot.isSimulation() ? readPivotEncoderPosition()
-                                : pivotMotor.getEncoder().getPosition();// readPivotEncoderPosition();
-                // double pivotPosition = readPivotEncoderPosition();
+                // double pivotPosition = Robot.isSimulation() ? readPivotEncoderPosition()
+                // : pivotMotor.getEncoder().getPosition();// readPivotEncoderPosition();
+                double pivotPosition = readPivotEncoderPosition();
 
                 double pivotFFout = pivotFeedforward.calculate(
                                 Math.PI * 0.5 + pivotPosition,
@@ -181,7 +181,9 @@ public class CoralArm extends SubsystemBase {
                 SmartDashboard.putNumber("Coral/Pivot/target", pivotPID.getSetpoint().position);
                 SmartDashboard.putNumber("Coral/Pivot/goal", pivotPID.getGoal().position);
                 if (!Constants.Coral.Pivot.DBG_DISABLED)
-                        pivotMotor.setVoltage(pivotPIDout + pivotFFout);
+                        pivotMotor.setVoltage(
+                                        (Math.abs(pivotGoal) < Units.degreesToRadians(3)) ? MathUtil.applyDeadband(
+                                                        pivotPIDout + pivotFFout, 0.6) : pivotPIDout + pivotFFout);
                 if (Robot.isSimulation())
                         simPivotMotor.setAppliedOutput(pivotPIDout + pivotFFout);
 

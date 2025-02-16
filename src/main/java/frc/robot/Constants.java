@@ -126,7 +126,7 @@ public final class Constants {
     public static final double MAX_ROBOT_RAD_VELOCITY = 12.0; // Approx. Measured rads/sec
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double MAX_MODULE_CURRENT = 10;
+    public static final double MAX_MODULE_CURRENT = 30;
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.75);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.75);
@@ -219,7 +219,7 @@ public final class Constants {
           3.5,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(12.0, 20.0));
+          new TrapezoidProfile.Constraints(20.0, 20.0));
       public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.1);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
@@ -246,7 +246,7 @@ public final class Constants {
           5.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(13.0, 35.0)); // Radians
+          new TrapezoidProfile.Constraints(12.0, 30.0)); // Radians
 
       public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.45);
 
@@ -347,10 +347,10 @@ public final class Constants {
       public static double kP = 28.0;
       public static double kI = 0.0;
       public static double kD = 0.01;
-      public static double MAX_VELOCITY = 2.75;
+      public static double MAX_VELOCITY = 2.80;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
-      public static double MAX_ACCELERATION = 10.0;
+      public static double MAX_ACCELERATION = 15.0;
     }
 
     // TODO: PAD THE ELEVATOR!!!!!!!
@@ -408,10 +408,7 @@ public final class Constants {
             DCMotor.getKrakenX60(1),
             DriveConstants.MAX_MODULE_CURRENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
             1),
-        new Translation2d(-0.5, 0.5),
-        new Translation2d(0.5, 0.5),
-        new Translation2d(-0.5, -0.5),
-        new Translation2d(0.5, -0.5));
+        DriveConstants.KINEMATICS.getModules());
   }
 
   public static final class PoseConstants {
