@@ -239,6 +239,7 @@ public class CoralSubsystem extends SubsystemBase {
         if(llAssist.isTagOnRight()) {
             mirrorSetting = MirrorPresets.RIGHT;
         }
+        else if(!llAssist.isTagOnRight()) mirrorSetting = MirrorPresets.LEFT;
     }
 
     public void mirrorArm(MirrorPresets preset) {

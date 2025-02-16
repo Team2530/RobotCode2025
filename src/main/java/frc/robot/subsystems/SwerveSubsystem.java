@@ -146,6 +146,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
 
         if ((!isalliancereset && DriverStation.getAlliance().isPresent())) {
+            navX.setAngleAdjustment(navxSim);
             RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry, lastChassisSpeeds, navX, getModulePositions());
             SmartDashboard.putString("Prelim odometry position", odometry.getEstimatedPosition().toString());
             isalliancereset = true;
