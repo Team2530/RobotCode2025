@@ -177,6 +177,8 @@ public final class Constants {
     public static int LEFT_ULTRASONIC_PORT = 0;
     public static int RIGHT_ULTRASONIC_PORT = 1;
 
+    public static boolean DEBUG_PIDS = true;
+
     public static class Pivot {
       public static final int MOTOR_PORT = 14;
       public static final int ENCODER_PORT = 28;
@@ -223,8 +225,9 @@ public final class Constants {
           3.5,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(20.0, 20.0));
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.1);
+          new TrapezoidProfile.Constraints(12.5, 20.0));
+      // public static final SimpleMotorFeedforward FEEDFORWARD = new
+      // SimpleMotorFeedforward(0.0, 0.1);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
@@ -250,9 +253,10 @@ public final class Constants {
           5.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(12.0, 30.0)); // Radians
+          new TrapezoidProfile.Constraints(10.0, 30.0)); // Radians
 
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.45);
+      // public static final SimpleMotorFeedforward FEEDFORWARD = new
+      // SimpleMotorFeedforward(0.0, 0.45);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
