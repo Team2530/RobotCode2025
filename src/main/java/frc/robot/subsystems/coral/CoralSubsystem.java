@@ -24,14 +24,19 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final CoralArm arm = new CoralArm();
     private final CoralIntake intake = new CoralIntake();
+
     private final CoralElevator elevator = new CoralElevator();
 
     private final Mechanism2d coralMechanism = new Mechanism2d(2, 3);
-    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 0.0, 0.0);
+    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 1.0, 0.0);
     private final MechanismLigament2d elevatorMechanism = rootMechanism.append(
-            new MechanismLigament2d("Elevator", Constants.Elevator.PhysicalParameters.BOTTOM_TO_FLOOR, 0));
+            new MechanismLigament2d("Elevator", Constants.Elevator.PhysicalParameters.BOTTOM_TO_FLOOR, 90));
     private final MechanismLigament2d pivotMechanism = elevatorMechanism.append(
             new MechanismLigament2d("Coral", Constants.Coral.Pivot.PhysicalConstants.JOINT_LENGTH_METERS, 0));
+    private final MechanismLigament2d pitchMechanism = pivotMechanism.append(
+            new MechanismLigament2d("Pitch", Constants.Coral.Pitch.PhysicalConstants.JOINT_LENGTH_METERS, 0));
+    private final MechanismLigament2d rollMechanism = pivotMechanism.append(
+            new MechanismLigament2d("Roll", Constants.Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS, 90));
 
     private LimelightAssistance llAssist = null; 
 
@@ -42,9 +47,9 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralPresets {
         LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636)),
-        LEVEL_2(0.247, 19.032, 90, 98.068),
-        LEVEL_3(0.650, 19.032, 90, 98.068),
-        LEVEL_4(1.342, 21.238, 90, 110.062),
+        LEVEL_2(0.247, 18.032, 90, 98.068),
+        LEVEL_3(0.650, 18.032, 90, 98.068),
+        LEVEL_4(1.342, 20.0, 90, 110.062),
         INTAKE(0.05, 18.0, 90, 30.0),
         STOW(0.05, 0.0, 0.0, 0.0),
 
@@ -84,18 +89,20 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public enum CoralIntakePresets {
-        INTAKE(1),
-        HOLD(0.4),
-        PURGE(-1),
-        SCORE(-1),
-        STOP(0),
+        INTAKE(1, 40.0),
+        HOLD(0.4, 12.5),
+        PURGE(-1, 40.0),
+        SCORE(-1, 30.0),
+        STOP(0, 12.5),
 
-        CUSTOM(Double.NaN);
+        CUSTOM(Double.NaN, 40.0);
 
         double intakePercentage;
+        double intakeCurrent;
 
-        private CoralIntakePresets(double intakePercentage) {
+        private CoralIntakePresets(double intakePercentage, double intakeCurrent) {
             this.intakePercentage = intakePercentage;
+            this.intakeCurrent = intakeCurrent;
         }
     }
 
@@ -108,6 +115,9 @@ public class CoralSubsystem extends SubsystemBase {
         elevatorMechanism
                 .setLength(elevator.getPosition() + Constants.Elevator.PhysicalParameters.CORAL_PIVOT_VERTICAL_OFFSET);
         pivotMechanism.setAngle(arm.getPivotPositionDegrees());
+        pitchMechanism.setAngle(arm.getPitchPositionDegrees());
+        rollMechanism.setLength(Math.cos(Units.degreesToRadians(arm.getRollPositionDegrees()))
+                * Constants.Coral.Roll.PhysicalConstants.JOINT_LENGTH_METERS);
 
         SmartDashboard.putData("Coral Mechanism", coralMechanism);
         SmartDashboard.putBoolean("Elevator in position", isElevatorInPosition());
@@ -258,6 +268,7 @@ public class CoralSubsystem extends SubsystemBase {
         SmartDashboard.putString("Coral Intake Preset", preset.toString());
         if (preset != currentIntakePreset) {
             intake.setOutputPercentage(preset.intakePercentage);
+            intake.setStatorLimit(preset.intakeCurrent);
             currentIntakePreset = preset;
         }
     }
@@ -265,6 +276,7 @@ public class CoralSubsystem extends SubsystemBase {
     public void setCustomIntakePercent(double percentage) {
         currentIntakePreset = CoralIntakePresets.CUSTOM;
         intake.setOutputPercentage(percentage);
+        intake.setStatorLimit(currentIntakePreset.intakeCurrent);
     }
 
     public double getPivotPositionDegrees() {
@@ -290,5 +302,17 @@ public class CoralSubsystem extends SubsystemBase {
     public boolean isSupposedToBeInPosition() {
         return isPivotSupposedToBeInPosition() && isRollSupposedToBeInPosition() && isElevatorSupposedToBeInPosition()
                 && isPitchSupposedToBeInPosition();
+    }
+
+    public CoralArm getCoralArm() {
+        return arm;
+    }
+
+    public CoralIntake getIntake() {
+        return intake;
+    }
+
+    public CoralElevator getElevator() {
+        return elevator;
     }
 }

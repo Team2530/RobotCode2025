@@ -172,15 +172,15 @@ public final class Constants {
     public static boolean DBG_DISABLED = false;
     public static double GEAR_RATIO = 45.0;
 
-    public static double DEPLOY_SOFT_LIMIT = 0.0;
-    public static double CLIMB_SOFT_LIMIT = 0.0;
+    public static double DEPLOY_SOFT_LIMIT = -6.0;
+    public static double CLIMB_SOFT_LIMIT = -3.10;
   }
 
   public static class Coral {
     public static int LEFT_ULTRASONIC_PORT = 0;
     public static int RIGHT_ULTRASONIC_PORT = 1;
 
-    public static boolean DEBUG_PIDS = true;
+    public static boolean DEBUG_PIDS = false;
 
     public static class Pivot {
       public static final int MOTOR_PORT = 14;
@@ -190,20 +190,20 @@ public final class Constants {
       public static final boolean ENCODER_INVERTED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(80);
-      public static final double FRAME_BORDER_ANGLE = Units.degreesToRadians(30);
+      public static final double ELEVATOR_BORDER_ANGLE = Units.degreesToRadians(10);
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          18.0,
+          12.0,
           0.0,
-          0.1,
+          0.005,
           new TrapezoidProfile.Constraints(7.0, 15.0));
 
       // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
           0.0,
-          0.4, // V
-          0.35, // 1.0, // V*s/rad
+          0.0, // V
+          0.0, // 1.0, // V*s/rad
           0.00// V*s^2/rad
       );
 
@@ -225,10 +225,10 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          3.5,
+          6,
           0.0,
-          0.0,
-          new TrapezoidProfile.Constraints(12.5, 20.0));
+          0.02,
+          new TrapezoidProfile.Constraints(15, 25.0));
       // public static final SimpleMotorFeedforward FEEDFORWARD = new
       // SimpleMotorFeedforward(0.0, 0.1);
 
@@ -239,6 +239,7 @@ public final class Constants {
         public static final double NET_REDUCTION = 45.0;
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
+        public static final double JOINT_LENGTH_METERS = 0.10;
         public static final double MOI = 0.0403605447; // Kg*m^2
       }
     }
@@ -253,7 +254,7 @@ public final class Constants {
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          5.0,
+          7.0,
           0.0,
           0.0,
           new TrapezoidProfile.Constraints(10.0, 30.0)); // Radians

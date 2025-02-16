@@ -15,6 +15,9 @@ import frc.robot.commands.coral.motion.MovePitch;
 import frc.robot.commands.coral.motion.MovePivot;
 import frc.robot.commands.coral.motion.MoveRoll;
 import frc.robot.commands.coral.motion.StowArm;
+import frc.robot.commands.coral.motion.WaitArmClearance;
+import frc.robot.commands.coral.motion.WaitElevatorApproach;
+import frc.robot.commands.coral.motion.WaitRollFinished;
 
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -141,6 +144,24 @@ public class RobotContainer {
                 }));
     }
 
+    private Command getGoToLockedPresetCommandV2() {
+        return new InstantCommand(() -> {
+            coralSubsystem.autoSetMirror();
+
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(coralSubsystem))
+                .andThen(new ParallelCommandGroup(
+                        new MoveElevator(coralSubsystem, currentLockedPresetSupplier),
+                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
+                        new WaitArmClearance(coralSubsystem)
+                                .andThen(new MoveRoll(coralSubsystem, currentLockedPresetSupplier)),
+                        new WaitRollFinished(coralSubsystem).andThen(new WaitElevatorApproach(coralSubsystem, 0.4))
+                                .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
     // Goes to a preset more quickly by moving pitch+pivot+roll at the same time,
     // but can throw coral. Good for intaking
     private Command getGoToLockedPresetFASTCommand() {
@@ -214,7 +235,7 @@ public class RobotContainer {
             lockCoralArmPreset(selectedScoringPreset);
             if (!coralSubsystem.isHolding())
                 isScoring = true;
-        }).andThen(getGoToLockedPresetCommand().andThen(
+        }).andThen(getGoToLockedPresetCommandV2().andThen(
                 new InstantCommand(() -> {
                     operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
                 }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
@@ -245,8 +266,9 @@ public class RobotContainer {
          * }
          * })
          */
-        operatorXbox.rightBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
+        driverXbox.rightBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
         operatorXbox.rightBumper().whileFalse(getStowCommand());
+        driverXbox.rightBumper().whileFalse(getStowCommand());
 
         // Intake coral
         operatorXbox.rightTrigger().and(new BooleanSupplier() {
@@ -262,11 +284,16 @@ public class RobotContainer {
 
         // purge coral
         operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));
+        operatorXbox.button(8).onTrue(new InstantCommand(() -> {
+            climberSubsystem.resetClimberDeploy();
+        }));
 
         coralAquisition.onChange(new InstantCommand(() -> {
             operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
+            driverXbox.setRumble(RumbleType.kBothRumble, 1.0);
         }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
             operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
+            driverXbox.setRumble(RumbleType.kBothRumble, 0.0);
         })));
 
         operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
