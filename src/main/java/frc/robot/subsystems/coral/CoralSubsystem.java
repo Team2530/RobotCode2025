@@ -19,14 +19,19 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final CoralArm arm = new CoralArm();
     private final CoralIntake intake = new CoralIntake();
+
     private final CoralElevator elevator = new CoralElevator();
 
     private final Mechanism2d coralMechanism = new Mechanism2d(2, 3);
-    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 0.0, 0.0);
+    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 1.0, 0.0);
     private final MechanismLigament2d elevatorMechanism = rootMechanism.append(
-            new MechanismLigament2d("Elevator", Constants.Elevator.PhysicalParameters.BOTTOM_TO_FLOOR, 0));
+            new MechanismLigament2d("Elevator", Constants.Elevator.PhysicalParameters.BOTTOM_TO_FLOOR, 90));
     private final MechanismLigament2d pivotMechanism = elevatorMechanism.append(
             new MechanismLigament2d("Coral", Constants.Coral.Pivot.PhysicalConstants.JOINT_LENGTH_METERS, 0));
+    private final MechanismLigament2d pitchMechanism = pivotMechanism.append(
+            new MechanismLigament2d("Pitch", Constants.Coral.Pitch.PhysicalConstants.JOINT_LENGTH_METERS, 0));
+    private final MechanismLigament2d rollMechanism = pivotMechanism.append(
+            new MechanismLigament2d("Roll", Constants.Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS, 90));
 
     private final AnalogPotentiometer leftUltrasonic = new AnalogPotentiometer(Constants.Coral.LEFT_ULTRASONIC_PORT,
             254.0, 0.0);
@@ -100,6 +105,9 @@ public class CoralSubsystem extends SubsystemBase {
         elevatorMechanism
                 .setLength(elevator.getPosition() + Constants.Elevator.PhysicalParameters.CORAL_PIVOT_VERTICAL_OFFSET);
         pivotMechanism.setAngle(arm.getPivotPositionDegrees());
+        pitchMechanism.setAngle(arm.getPitchPositionDegrees());
+        rollMechanism.setLength(Math.cos(Units.degreesToRadians(arm.getRollPositionDegrees()))
+                * Constants.Coral.Roll.PhysicalConstants.JOINT_LENGTH_METERS);
 
         SmartDashboard.putData("Coral Mechanism", coralMechanism);
         SmartDashboard.putBoolean("Elevator in position", isElevatorInPosition());
@@ -282,5 +290,17 @@ public class CoralSubsystem extends SubsystemBase {
     public boolean isSupposedToBeInPosition() {
         return isPivotSupposedToBeInPosition() && isRollSupposedToBeInPosition() && isElevatorSupposedToBeInPosition()
                 && isPitchSupposedToBeInPosition();
+    }
+
+    public CoralArm getCoralArm() {
+        return arm;
+    }
+
+    public CoralIntake getIntake() {
+        return intake;
+    }
+
+    public CoralElevator getElevator() {
+        return elevator;
     }
 }

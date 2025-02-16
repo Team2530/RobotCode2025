@@ -187,7 +187,7 @@ public final class Constants {
       public static final boolean ENCODER_INVERTED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(80);
-      public static final double FRAME_BORDER_ANGLE = Units.degreesToRadians(30);
+      public static final double ELEVATOR_BORDER_ANGLE = Units.degreesToRadians(10);
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
@@ -236,6 +236,7 @@ public final class Constants {
         public static final double NET_REDUCTION = 45.0;
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
+        public static final double JOINT_LENGTH_METERS = 0.10;
         public static final double MOI = 0.0403605447; // Kg*m^2
       }
     }
