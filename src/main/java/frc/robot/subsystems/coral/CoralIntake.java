@@ -99,6 +99,10 @@ public class CoralIntake extends SubsystemBase {
         this.outputPercentage = MathUtil.clamp(outputPercentage, -1, 1);
     }
 
+    public void setStatorLimit(double amps) {
+        intakeMotor.getConfigurator().apply(new CurrentLimitsConfigs().withStatorCurrentLimit(amps));
+    }
+
     public double getOutputPercentage() {
         return outputPercentage;
     }

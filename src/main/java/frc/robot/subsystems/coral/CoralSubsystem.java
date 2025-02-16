@@ -40,9 +40,9 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralPresets {
         LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636)),
-        LEVEL_2(0.247, 19.032, 90, 98.068),
-        LEVEL_3(0.650, 19.032, 90, 98.068),
-        LEVEL_4(1.342, 21.238, 90, 110.062),
+        LEVEL_2(0.247, 18.032, 90, 98.068),
+        LEVEL_3(0.650, 18.032, 90, 98.068),
+        LEVEL_4(1.342, 20.0, 90, 110.062),
         INTAKE(0.05, 18.0, 90, 30.0),
         STOW(0.05, 0.0, 0.0, 0.0),
 
@@ -81,18 +81,20 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public enum CoralIntakePresets {
-        INTAKE(1),
-        HOLD(0.4),
-        PURGE(-1),
-        SCORE(-1),
-        STOP(0),
+        INTAKE(1, 40.0),
+        HOLD(0.4, 12.5),
+        PURGE(-1, 40.0),
+        SCORE(-1, 30.0),
+        STOP(0, 12.5),
 
-        CUSTOM(Double.NaN);
+        CUSTOM(Double.NaN, 40.0);
 
         double intakePercentage;
+        double intakeCurrent;
 
-        private CoralIntakePresets(double intakePercentage) {
+        private CoralIntakePresets(double intakePercentage, double intakeCurrent) {
             this.intakePercentage = intakePercentage;
+            this.intakeCurrent = intakeCurrent;
         }
     }
 
@@ -258,6 +260,7 @@ public class CoralSubsystem extends SubsystemBase {
         SmartDashboard.putString("Coral Intake Preset", preset.toString());
         if (preset != currentIntakePreset) {
             intake.setOutputPercentage(preset.intakePercentage);
+            intake.setStatorLimit(preset.intakeCurrent);
             currentIntakePreset = preset;
         }
     }
@@ -265,6 +268,7 @@ public class CoralSubsystem extends SubsystemBase {
     public void setCustomIntakePercent(double percentage) {
         currentIntakePreset = CoralIntakePresets.CUSTOM;
         intake.setOutputPercentage(percentage);
+        intake.setStatorLimit(currentIntakePreset.intakeCurrent);
     }
 
     public double getPivotPositionDegrees() {

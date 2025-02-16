@@ -169,7 +169,7 @@ public final class Constants {
     public static double GEAR_RATIO = 45.0;
 
     public static double DEPLOY_SOFT_LIMIT = -6.0;
-    public static double CLIMB_SOFT_LIMIT = -2.5;
+    public static double CLIMB_SOFT_LIMIT = -3.10;
   }
 
   // TODO: ##################### PLACEHOLDERS #####################
