@@ -10,6 +10,9 @@ import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,12 +25,14 @@ public class ClimberSubsystem extends SubsystemBase {
     private RelativeEncoder climberEncoder;
     XboxController operator;
 
+    boolean isTested = false;
+
     public ClimberSubsystem(XboxController operator) {
         this.operator = operator;
         climberMotor.configure(climberConfig.idleMode(IdleMode.kBrake)
-                // .apply(new
-                // SoftLimitConfig().forwardSoftLimit(Constants.Climber.DEPLOY_SOFT_LIMIT)
-                // .forwardSoftLimitEnabled(true).reverseSoftLimit(Constants.Climber.CLIMB_SOFT_LIMIT))
+                .apply(new SoftLimitConfig().reverseSoftLimit(Constants.Climber.DEPLOY_SOFT_LIMIT)
+                        .reverseSoftLimitEnabled(true).forwardSoftLimit(0.0)
+                        .forwardSoftLimitEnabled(true))
                 .apply(
                         new EncoderConfig().positionConversionFactor(1.0 / Constants.Climber.GEAR_RATIO)
                                 .velocityConversionFactor(
@@ -44,15 +49,29 @@ public class ClimberSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Climber Encoder", climberEncoder.getPosition());
-        // if (climberEncoder.getPosition() > Constants.Climber.CLIMB_SOFT_LIMIT &&
-        // !deployed) {
-        // deployed = true;
-        // climberMotor.configure(climberConfig.apply(climberConfig.softLimit.reverseSoftLimitEnabled(true)),
-        // ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-        // }
+        if (climberEncoder.getPosition() < Constants.Climber.CLIMB_SOFT_LIMIT &&
+                !deployed) {
+            deployed = true;
+            climberMotor.configure(climberConfig.apply(climberConfig.softLimit.forwardSoftLimit(
+                    Constants.Climber.CLIMB_SOFT_LIMIT)),
+                    ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        }
+
+        if (DriverStation.isTestEnabled() & !isTested) {
+            climberMotor.configure(
+                    climberConfig.apply(
+                            climberConfig.softLimit.forwardSoftLimitEnabled(false).reverseSoftLimitEnabled(false)),
+                    ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+            isTested = false;
+        }
 
         if (!Constants.Climber.DBG_DISABLED)
-            climberMotor.set(operator.getLeftBumper() ? (operator.getLeftY()) : 0.0);
+            climberMotor.set(operator.getLeftBumper() ? (MathUtil.applyDeadband(operator.getLeftY(), 0.05)) : 0.0);
+    }
+
+    public void resetClimberDeploy() {
+        climberMotor.configure(climberConfig.apply(climberConfig.softLimit.forwardSoftLimit(0.0)),
+                ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     public void setOutput(double output) {

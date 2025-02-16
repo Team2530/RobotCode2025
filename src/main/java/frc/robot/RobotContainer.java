@@ -270,8 +270,9 @@ public class RobotContainer {
          * }
          * })
          */
-        operatorXbox.rightBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
+        driverXbox.rightBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
         operatorXbox.rightBumper().whileFalse(getStowCommand());
+        driverXbox.rightBumper().whileFalse(getStowCommand());
 
         // Intake coral
         operatorXbox.rightTrigger().and(new BooleanSupplier() {
@@ -287,6 +288,9 @@ public class RobotContainer {
 
         // purge coral
         operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));
+        operatorXbox.button(8).onTrue(new InstantCommand(() -> {
+            climberSubsystem.resetClimberDeploy();
+        }));
 
         coralAquisition.onChange(new InstantCommand(() -> {
             operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);

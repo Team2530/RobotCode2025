@@ -168,8 +168,8 @@ public final class Constants {
     public static boolean DBG_DISABLED = false;
     public static double GEAR_RATIO = 45.0;
 
-    public static double DEPLOY_SOFT_LIMIT = 0.0;
-    public static double CLIMB_SOFT_LIMIT = 0.0;
+    public static double DEPLOY_SOFT_LIMIT = -6.0;
+    public static double CLIMB_SOFT_LIMIT = -2.5;
   }
 
   // TODO: ##################### PLACEHOLDERS #####################
@@ -191,16 +191,16 @@ public final class Constants {
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          18.0,
+          12.0,
           0.0,
-          0.1,
+          0.005,
           new TrapezoidProfile.Constraints(7.0, 15.0));
 
       // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
           0.0,
-          0.4, // V
-          0.35, // 1.0, // V*s/rad
+          0.0, // V
+          0.0, // 1.0, // V*s/rad
           0.00// V*s^2/rad
       );
 
@@ -222,10 +222,10 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          3.5,
+          6,
           0.0,
-          0.0,
-          new TrapezoidProfile.Constraints(12.5, 20.0));
+          0.02,
+          new TrapezoidProfile.Constraints(15, 25.0));
       // public static final SimpleMotorFeedforward FEEDFORWARD = new
       // SimpleMotorFeedforward(0.0, 0.1);
 
@@ -251,7 +251,7 @@ public final class Constants {
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          5.0,
+          7.0,
           0.0,
           0.0,
           new TrapezoidProfile.Constraints(10.0, 30.0)); // Radians
