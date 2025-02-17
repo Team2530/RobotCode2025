@@ -8,6 +8,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -22,7 +23,13 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.subsystems.SwerveSubsystem.RotationStyle;
+import frc.robot.util.AllianceFlipUtil;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 
@@ -57,12 +64,46 @@ public final class Constants {
     public static final double GRAVITY = 9.81;
     public static final double SPEAKER_HEIGHT = 2.05; // Meters
 
+    public static final double FIELD_LENGTH = Units.inchesToMeters(690.876);
+    public static final double FIELD_WIDTH = Units.inchesToMeters(317);
+
     public static Alliance getAlliance() {
       if (DriverStation.getAlliance().isPresent()) {
         return DriverStation.getAlliance().get();
       }
 
       return Alliance.Blue;
+    }
+
+    public static ArrayList<Pose2d> getSourcePoses() {
+      Pose2d leftCenterFace = new Pose2d(
+          Units.inchesToMeters(33.526),
+          Units.inchesToMeters(291.176),
+          Rotation2d.fromDegrees(90 - 144.011));
+      Pose2d rightCenterFace = new Pose2d(
+          Units.inchesToMeters(33.526),
+          Units.inchesToMeters(25.824),
+          Rotation2d.fromDegrees(144.011 - 90));
+
+      if (getAlliance() == Alliance.Red) {
+        leftCenterFace = AllianceFlipUtil.flip(leftCenterFace);
+        rightCenterFace = AllianceFlipUtil.flip(rightCenterFace);
+      }
+
+      ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
+
+      poses.add(leftCenterFace);
+      poses.add(rightCenterFace);
+
+      return poses;
+    }
+
+    public static Pose2d getReefPose() {
+        Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d());
+        if(getAlliance() == Alliance.Red) {
+          AllianceFlipUtil.flip(reef);
+        }
+        return reef;
     }
   }
 
@@ -435,7 +476,7 @@ public final class Constants {
     private static AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
     public final static HashMap<Integer, Pose2d> tagPoses = new HashMap<Integer, Pose2d>() {
-    {
+      {
         for (int i = 0; i < 22; ++i) {
           if (tagLayout.getTagPose(i + 1).isPresent())
             put(i, tagLayout.getTagPose(i + 1).get().toPose2d());

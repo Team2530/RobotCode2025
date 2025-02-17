@@ -80,7 +80,7 @@ public class RobotContainer {
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance);
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance,swerveDriveSubsystem);
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
@@ -146,7 +146,11 @@ public class RobotContainer {
 
     private Command getGoToLockedPresetCommandV2() {
         return new InstantCommand(() -> {
-            coralSubsystem.autoSetMirror();
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
+                coralSubsystem.autoSetMirrorIntake();
+            } else {
+                coralSubsystem.autoSetMirrorScoring();
+            }
 
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))

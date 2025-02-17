@@ -1,7 +1,11 @@
 package frc.robot.subsystems.coral;
 
+import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Ultrasonic;
@@ -15,7 +19,9 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.util.LimelightAssistance;
 
 import frc.robot.util.LimelightContainer;
@@ -26,6 +32,8 @@ public class CoralSubsystem extends SubsystemBase {
     private final CoralIntake intake = new CoralIntake();
 
     private final CoralElevator elevator = new CoralElevator();
+
+    private final SwerveSubsystem swerveSubsystem;
 
     private final Mechanism2d coralMechanism = new Mechanism2d(2, 3);
     private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 1.0, 0.0);
@@ -38,7 +46,7 @@ public class CoralSubsystem extends SubsystemBase {
     private final MechanismLigament2d rollMechanism = pivotMechanism.append(
             new MechanismLigament2d("Roll", Constants.Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS, 90));
 
-    private LimelightAssistance llAssist = null; 
+    private LimelightAssistance llAssist = null;
 
     private final AnalogPotentiometer leftUltrasonic = new AnalogPotentiometer(Constants.Coral.LEFT_ULTRASONIC_PORT,
             254.0, 0.0);
@@ -70,8 +78,9 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public CoralSubsystem(LimelightAssistance llAssist) {
+    public CoralSubsystem(LimelightAssistance llAssist, SwerveSubsystem swerveSubsystem) {
         this.llAssist = llAssist;
+        this.swerveSubsystem = swerveSubsystem;
         // Epilogue.bind(this);
     }
 
@@ -249,20 +258,42 @@ public class CoralSubsystem extends SubsystemBase {
 
     public void mirrorArm() {
         SmartDashboard.putBoolean("Called", true);
-        if(llAssist.isTagOnRight()) {
+        if (llAssist.isTagOnRight()) {
             mirrorSetting = MirrorPresets.RIGHT;
-        }
-        else if(!llAssist.isTagOnRight()) mirrorSetting = MirrorPresets.LEFT;
+        } else if (!llAssist.isTagOnRight())
+            mirrorSetting = MirrorPresets.LEFT;
     }
 
     public void mirrorArm(MirrorPresets preset) {
         mirrorSetting = preset;
     }
 
-    // public void autoSetMirror() {
-    //     this.mirrorSetting = (this.leftUltrasonic.get() < this.rightUltrasonic.get()) ? MirrorPresets.LEFT
-    //             : MirrorPresets.RIGHT;
-    // }
+    public void autoSetMirrorIntake() {
+        Pose2d robotPose = swerveSubsystem.getPose();
+        Pose2d closestSource = robotPose.nearest(FieldConstants.getSourcePoses());
+        Pose2d left = robotPose.transformBy(new Transform2d(-0.2, 0, new Rotation2d()));
+        Pose2d right = robotPose.transformBy(new Transform2d(0, 0, new Rotation2d()));
+
+        this.mirrorSetting = left.getTranslation().getDistance(closestSource.getTranslation()) < right.getTranslation()
+                .getDistance(closestSource.getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
+
+        System.out.println("Mirror Side" + mirrorSetting.name());
+        
+        // this.mirrorSetting = (this.leftUltrasonic.get() < this.rightUltrasonic.get())
+        // ? MirrorPresets.LEFT
+        // : MirrorPresets.RIGHT;
+    }
+
+    public void autoSetMirrorScoring() {
+        Pose2d robotPose = swerveSubsystem.getPose();
+        Pose2d left = robotPose.transformBy(new Transform2d(-0.2, 0, new Rotation2d()));
+        Pose2d right = robotPose.transformBy(new Transform2d(0.2, 0, new Rotation2d()));
+
+        this.mirrorSetting = left.getTranslation().getDistance(FieldConstants.getReefPose().getTranslation()) < right.getTranslation()
+                .getDistance(FieldConstants.getReefPose().getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
+
+        System.out.println("Mirror Side" + mirrorSetting.name());
+    }
 
     public void setCoralIntakePreset(CoralIntakePresets preset) {
         SmartDashboard.putString("Coral Intake Preset", preset.toString());

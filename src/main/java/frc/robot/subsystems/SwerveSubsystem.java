@@ -163,7 +163,7 @@ public class SwerveSubsystem extends SubsystemBase {
         odometry.update(getRotation2d(), getModulePositions());
 
         publisher.set(getPose());
-        System.out.println(getPose().getX());
+        // System.out.println(getPose().getX());
         // if (DriverStation.getAlliance().isPresent()) {
         // switch (DriverStation.getAlliance().get()) {
         // case Red:
