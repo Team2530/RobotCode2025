@@ -170,7 +170,11 @@ public class RobotContainer {
     // but can throw coral. Good for intaking
     private Command getGoToLockedPresetFASTCommand() {
         return new InstantCommand(() -> {
-            //coralSubsystem.autoSetMirror();
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
+                coralSubsystem.autoSetMirrorIntake();
+            } else {
+                coralSubsystem.autoSetMirrorScoring();
+            }
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
@@ -186,7 +190,7 @@ public class RobotContainer {
     private Command getStowCommand() {
         return new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.STOW);
-        }).andThen(getGoToLockedPresetCommand());
+        }).andThen(getGoToLockedPresetFASTCommand());
     }
 
     /**
