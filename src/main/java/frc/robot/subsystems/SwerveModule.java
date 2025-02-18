@@ -101,7 +101,7 @@ public class SwerveModule {
     }
 
     public void simulate_step() {
-        driveEncSim += 0.02 * driveMotor.get() * (DriveConstants.MAX_MODULE_VELOCITY);
+        driveEncSim += 0.02 * driveMotor.get() * (DriveConstants.MAX_MODULE_VELOCITY) / SwerveModuleConstants.DRIVE_GEAR_RATIO * 0.8;
         steerEncSim += 0.02 * steerMotor.get() * (10.0);
     }
 

@@ -30,8 +30,10 @@ public class LimelightContainer {
   public LimelightContainer(Limelight... limelights) {
     for (Limelight limelight : limelights) {
       LimelightContainer.limelights.add(limelight);
+      LimelightHelpers.SetIMUMode(limelight.getName(), 0);
     }
     enableLimelights(true);
+    
   }
 
   public void enableLimelights(boolean enable) {
@@ -106,7 +108,7 @@ public class LimelightContainer {
         doRejectUpdate = true;
       }
 
-      if(mt1.avgTagDist > Units.feetToMeters(10))
+      if(mt1.avgTagDist < Units.feetToMeters(10))
 
       if (Math.abs(navx.getRate()) > 720) {
         doRejectUpdate = true;
@@ -114,7 +116,7 @@ public class LimelightContainer {
 
       if (!doRejectUpdate) {
 
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(5, 5, 5));
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(5, 5, 20));
         odometry.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);
