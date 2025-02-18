@@ -175,6 +175,8 @@ public final class Constants {
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.75);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.75);
+
+    public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.520);
     // TODO: Set this for FWERB V2
     public static final Rotation2d NAVX_ANGLE_OFFSET = Rotation2d.fromDegrees(-90);
     // TODO: I'm not going to touch this... but it seems important!

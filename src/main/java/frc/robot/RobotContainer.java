@@ -159,7 +159,7 @@ public class RobotContainer {
                         new MovePivot(coralSubsystem, currentLockedPresetSupplier),
                         new WaitArmClearance(coralSubsystem)
                                 .andThen(new MoveRoll(coralSubsystem, currentLockedPresetSupplier)),
-                        new WaitRollFinished(coralSubsystem).andThen(new WaitElevatorApproach(coralSubsystem, 0.4))
+                        new WaitRollFinished(coralSubsystem).andThen(new WaitElevatorApproach(coralSubsystem, 0.5))
                                 .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");

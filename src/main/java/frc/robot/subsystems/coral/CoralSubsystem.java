@@ -55,8 +55,8 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralPresets {
         LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636)),
-        LEVEL_2(0.247, 18.032, 90, 98.068),
-        LEVEL_3(0.650, 18.032, 90, 98.068),
+        LEVEL_2(0.247-0.02, 16.532, 90, 98.068),
+        LEVEL_3(0.650-0.02, 16.532, 90, 98.068),
         LEVEL_4(1.342, 20.0, 90, 110.062),
         INTAKE(0.05, 18.0, 90, 30.0),
         STOW(0.05, 0.0, 0.0, 0.0),
@@ -271,8 +271,8 @@ public class CoralSubsystem extends SubsystemBase {
     public void autoSetMirrorIntake() {
         Pose2d robotPose = swerveSubsystem.getPose();
         Pose2d closestSource = robotPose.nearest(FieldConstants.getSourcePoses());
-        Pose2d left = robotPose.transformBy(new Transform2d(-0.2, 0, new Rotation2d()));
-        Pose2d right = robotPose.transformBy(new Transform2d(0, 0, new Rotation2d()));
+        Pose2d left = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
+        Pose2d right = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
 
         this.mirrorSetting = left.getTranslation().getDistance(closestSource.getTranslation()) < right.getTranslation()
                 .getDistance(closestSource.getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
@@ -286,8 +286,8 @@ public class CoralSubsystem extends SubsystemBase {
 
     public void autoSetMirrorScoring() {
         Pose2d robotPose = swerveSubsystem.getPose();
-        Pose2d left = robotPose.transformBy(new Transform2d(-0.2, 0, new Rotation2d()));
-        Pose2d right = robotPose.transformBy(new Transform2d(0.2, 0, new Rotation2d()));
+        Pose2d left = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
+        Pose2d right = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
 
         this.mirrorSetting = left.getTranslation().getDistance(FieldConstants.getReefPose().getTranslation()) < right.getTranslation()
                 .getDistance(FieldConstants.getReefPose().getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;

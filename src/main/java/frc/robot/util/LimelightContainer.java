@@ -85,6 +85,11 @@ public class LimelightContainer {
         // mt1.pose,
         // mt1.timestampSeconds);
 
+        // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, 20));
+        // odometry.addVisionMeasurement(
+        // mt1.pose,
+        // mt1.timestampSeconds);
+
         odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
 
         SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString() + " " + RLCountermt1);
