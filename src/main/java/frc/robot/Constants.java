@@ -12,6 +12,7 @@ import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,7 +24,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.subsystems.SwerveSubsystem.RotationStyle;
+import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
 import frc.robot.util.AllianceFlipUtil;
 
 import java.util.ArrayList;
@@ -99,11 +100,11 @@ public final class Constants {
     }
 
     public static Pose2d getReefPose() {
-        Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d());
-        if(getAlliance() == Alliance.Red) {
-          AllianceFlipUtil.flip(reef);
-        }
-        return reef;
+      Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d());
+      if (getAlliance() == Alliance.Red) {
+        AllianceFlipUtil.flip(reef);
+      }
+      return reef;
     }
   }
 
@@ -177,6 +178,9 @@ public final class Constants {
     public static final double WHEEL_BASE = Units.inchesToMeters(19.75);
 
     public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.520);
+    public static final PIDController TRANSLATION_ASSIST = new PIDController(6, 0, 0.01);
+    public static final PIDController ROTATION_ASSIST = new PIDController(4, 0, 0.001);
+
     // TODO: Set this for FWERB V2
     public static final Rotation2d NAVX_ANGLE_OFFSET = Rotation2d.fromDegrees(-90);
     // TODO: I'm not going to touch this... but it seems important!

@@ -41,7 +41,11 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
-import frc.robot.subsystems.Limelight.LimelightType;import frc.robot.util.LimelightContainer;
+import frc.robot.util.Reef;
+import frc.robot.util.Reef.ReefBranch;
+import frc.robot.subsystems.Limelight.LimelightType;
+import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
+import frc.robot.util.LimelightContainer;
 import frc.robot.subsystems.Limelight.LimelightType;
 
 /**
@@ -337,6 +341,19 @@ public class RobotContainer {
         // set field orientation
         driverXbox.button(7).onTrue(new InstantCommand(() -> {
             swerveDriveSubsystem.setHeading(0);
+        }));
+
+        driverXbox.leftTrigger().and(new BooleanSupplier() {
+
+            @Override
+            public boolean getAsBoolean() {
+                return driverXbox.getLeftTriggerAxis() > 0.05;
+            }
+            
+        }).onTrue(new InstantCommand(() -> {
+            swerveDriveSubsystem.setDriveStyle(DriveStyle.ROTATION_ASSIST);
+        })).onFalse(new InstantCommand(() -> {
+            swerveDriveSubsystem.setDriveStyle(DriveStyle.FIELD_ORIENTED);
         }));
 
         /*

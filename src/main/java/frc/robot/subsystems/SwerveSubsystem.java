@@ -75,13 +75,14 @@ public class SwerveSubsystem extends SubsystemBase {
             2, 3
     };
 
-    public enum RotationStyle {
-        Driver,
-        AutoSpeaker,
-        AutoShuttle
+    public enum DriveStyle {
+        FIELD_ORIENTED,
+        ROBOT_ORIENTED,
+        ROTATION_ASSIST,
+        
     }
 
-    private RotationStyle rotationStyle = RotationStyle.Driver;
+    private DriveStyle driveStyle = DriveStyle.FIELD_ORIENTED;
 
     public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI);
     private double navxSim;
@@ -313,12 +314,12 @@ public class SwerveSubsystem extends SubsystemBase {
         navxSim += 0.02 * lastChassisSpeeds.omegaRadiansPerSecond;
     }
 
-    public RotationStyle getRotationStyle() {
-        return rotationStyle;
+    public DriveStyle getDriveStyle() {
+        return driveStyle;
     }
 
-    public void setRotationStyle(RotationStyle style) {
-        rotationStyle = style;
+    public void setDriveStyle(DriveStyle style) {
+        this.driveStyle = style;
     }
 
     // ---------- Path Planner Methods ---------- \\
