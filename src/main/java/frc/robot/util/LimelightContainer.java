@@ -87,14 +87,20 @@ public class LimelightContainer {
           }
 
           if (!doRejectUpdate) {
-            allPose2ds.add(mt1.pose);
+            //allPose2ds.add(mt1.pose);
+            limelight.pushPoseToShuffleboard(limelight.getName() + "mt1", mt1.pose);
+            odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.1, .1, 9999999));
+            odometry.addVisionMeasurement(
+                mt1.pose,
+                mt1.timestampSeconds);
+
           }
         }
       }
     }
-    if (allPose2ds.isEmpty()) {
-      return;
-    }
+    // if (allPose2ds.isEmpty()) {
+    //   return;
+    // }
 
     Pose2d filteredPose = filterPoses(allPose2ds);
 
@@ -193,7 +199,7 @@ public class LimelightContainer {
         new Rotation2d(sumThetaFiltered / filteredThetaVals.size()));
   }
 
-  public void estimateMT1Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
+  public void estimateMT1Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx, double xDev, double yDev, double tDev) {
     for (Limelight limelight : limelights) {
       boolean doRejectUpdate = false;
 
@@ -215,7 +221,7 @@ public class LimelightContainer {
 
       if (!doRejectUpdate) {
 
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(5, 5, 20));
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(xDev, yDev, tDev));
         odometry.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);

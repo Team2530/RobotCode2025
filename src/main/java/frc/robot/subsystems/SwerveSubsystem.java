@@ -170,17 +170,31 @@ public class SwerveSubsystem extends SubsystemBase {
         chassisRotZ = new DoubleLogEntry(DataLogManager.getLog(), "Chassis/rot_speed/z");
     }
 
+    boolean called = false;
     @Override
     public void periodic() {
 
         if ((!isalliancereset && DriverStation.getAlliance().isPresent())) {
+
             navX.setAngleAdjustment(navxSim);
-            RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry, lastChassisSpeeds, navX, getModulePositions());
-            SmartDashboard.putString("Prelim odometry position", odometry.getEstimatedPosition().toString());
+
+            Translation2d pospose = getPose().getTranslation();
+            odometry.resetPosition(getRotation2d(), getModulePositions(),
+                    new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Red ? 0.0 : Math.PI)));
             isalliancereset = true;
+            
+            // RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry, lastChassisSpeeds, navX, getModulePositions());
+            // SmartDashboard.putString("Prelim odometry position", odometry.getEstimatedPosition().toString());
+            // isalliancereset = true;
+        }
+        
+        SmartDashboard.putBoolean("Robot in starting pose?", false);
+        if((SmartDashboard.getBoolean("Robot in starting pose?", false))&&!called){
+            RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry, lastChassisSpeeds, navX, getModulePositions());
+            called = true;
         }
 
-        RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
+        RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX, 2, 2, 20);
 
 
         odometry.update(getRotation2d(), getModulePositions());
@@ -255,7 +269,7 @@ public class SwerveSubsystem extends SubsystemBase {
         setHeading(Units.radiansToDegrees(pose.getRotation().times(-1.0).getRadians()
                 + (FieldConstants.getAlliance() == Alliance.Red ? Math.PI : 0.0)));
 
-        SmartDashboard.putNumber("HEading reset to", getHeading());
+        SmartDashboard.putNumber("Heading reset to", getHeading());
         SmartDashboard.putBoolean("HASBEENREET", true);
         odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
     }
