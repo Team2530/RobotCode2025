@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.Reef;
 
 public class DriveCommand extends Command {
@@ -117,7 +118,7 @@ public class DriveCommand extends Command {
                 break;
             case ROTATION_ASSIST:
                 // ? X/Y have been left in here as comments in case you find that you want them!
-                Pose2d closestPose = swerveSubsystem.getPose().nearest(new ArrayList<Pose2d>(Reef.branches.values()));
+                Pose2d closestPose = swerveSubsystem.getPose().nearest(AllianceFlipUtil.flip(new ArrayList<Pose2d>(Reef.branches.values())));
 
                 double zError = swerveSubsystem.getPose().minus(closestPose).getRotation().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET).getRadians();
                 // double xError = swerveSubsystem.getPose().getX() -
