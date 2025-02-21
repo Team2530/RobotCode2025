@@ -135,7 +135,7 @@ public class LimelightContainer {
     ArrayList<Integer> indicesToIgnore = new ArrayList<Integer>();
 
     for(int i = 0; i < poses.size(); i++){
-      if((allXVals[i]>(sumX*(1+maxDeviation))))||(allXVals[i]<(sumX*(1-maxDeviation)))){
+      if((allXVals[i]>(sumX*(1+maxDeviation)))||(allXVals[i]<(sumX*(1-maxDeviation)))){
         indicesToIgnore.add(i);
         //SmartDashboard.putString("sumX Stuff: ", ""+sumX+" "+allXVals[i]+" "+ (sumX+(sumX*maxDeviation)));
       } //ignores all values deviating more than x% from the mean
