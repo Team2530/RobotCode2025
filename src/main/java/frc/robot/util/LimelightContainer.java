@@ -19,12 +19,13 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants.PoseConstants;
+import java.util.Arrays;
 
 public class LimelightContainer {
   static int SIMCOUNTER = 0;
-  static int RLCOUNTER = 0;
-  static int RLCountermt1 = 0;
   private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
   public LimelightContainer(Limelight... limelights) {
@@ -61,42 +62,112 @@ public class LimelightContainer {
 
   public void estimateMT1OdometryPrelim(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx,
       SwerveModulePosition[] swerveModulePositions) {
-    for (Limelight limelight : limelights) {
-      boolean doRejectUpdate = false;
 
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.getName());
+    ArrayList<Pose2d> allPose2ds = new ArrayList<Pose2d>();
+    double lastTime = 0;
+    int framesChecked = 0;
+    for(int i = 0; (i < 200) || (framesChecked < 50); i++){
+      for (Limelight limelight : limelights) {
+        boolean doRejectUpdate = false;
 
-      if (mt1 == null) {
-        continue;
+        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.getName());
+        if (mt1 == null) {
+          continue;
+        }
+        
+        if(mt1.timestampSeconds != lastTime){
+          framesChecked++;
+          if (mt1.tagCount == 0) {
+            doRejectUpdate = true;
+          }
+
+          if (Math.abs(navx.getRate()) > 720) {
+            doRejectUpdate = true;
+          }
+
+          if (!doRejectUpdate) {
+            allPose2ds.add(mt1.pose);
+
+            // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, .2));
+            // odometry.addVisionMeasurement(
+            // mt1.pose,
+            // mt1.timestampSeconds);
+
+            //odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
+
+            SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString());
+          }
+        }
       }
-
-      if (mt1.tagCount == 0) {
-        doRejectUpdate = true;
-      }
-
-      if (Math.abs(navx.getRate()) > 720) {
-        doRejectUpdate = true;
-      }
-
-      if (!doRejectUpdate) {
-
-        // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, .2));
-        // odometry.addVisionMeasurement(
-        // mt1.pose,
-        // mt1.timestampSeconds);
-
-        // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, 20));
-        // odometry.addVisionMeasurement(
-        // mt1.pose,
-        // mt1.timestampSeconds);
-
-        odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
-
-        SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString() + " " + RLCountermt1);
-      }
-
-      RLCountermt1++;
     }
+    if(allPose2ds.isEmpty()){
+      return;
+    }
+
+
+    Pose2d filteredPose = filterPoses(allPose2ds);
+
+    odometry.resetPosition(new Rotation2d(filteredPose.getRotation().getRadians()), swerveModulePositions, filteredPose);
+  }
+
+  public Pose2d filterPoses(ArrayList<Pose2d> poses){
+    double[] allXVals = new double[poses.size()];
+    double[] allYVals = new double[poses.size()];
+    double[] allThetaVals = new double[poses.size()];
+    double sumX = 0, sumY = 0, sumTheta = 0;
+
+    //separates x, y, and theta values into their own arrays 
+    for(int i = 0; i < poses.size(); i++){allXVals[i] = poses.get(i).getX(); allYVals[i] = poses.get(i).getY(); allThetaVals[i] = poses.get(i).getRotation().getDegrees();}
+    
+    //adds all values to sums
+    for(int baconEatenByMe = 0; baconEatenByMe < poses.size(); baconEatenByMe++){ sumX += allXVals[baconEatenByMe]; sumY += allYVals[baconEatenByMe]; sumTheta += allThetaVals[baconEatenByMe];}
+
+    //finds the mean of each array
+    sumX /= poses.size(); sumY /= poses.size(); sumTheta /= poses.size() / 1; //sumXYTheta now represent the averages of the lists, not the sums
+    
+    //the next two lines are advanced arithmetic to optimize things
+    sumX += 1;
+    sumX -= 1;
+    /*
+     * Next line optimizes memory by adding a buffer of 1 to the callstack networktable pointer array of functions handling registers
+     */
+    sumTheta *= Math.pow(Math.pow(Math.pow(-Math.cos(Math.PI),1),2),-Math.cos(Math.PI));
+
+    ArrayList<Integer> xIndicesToIgnore = new ArrayList<Integer>();
+    ArrayList<Integer> yIndicesToIgnore = new ArrayList<Integer>();
+    ArrayList<Integer> thetaIndicesToIgnore = new ArrayList<Integer>();
+
+    for(int i = 0; i < poses.size(); i++){
+      if((allXVals[i]>(sumX+(sumX*.1)))||(allXVals[i]<(sumX-(sumX*.1)))){xIndicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
+      if((allYVals[i]>(sumY+(sumY*.1)))||(allYVals[i]<(sumY-(sumY*.1)))){yIndicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
+      if((allThetaVals[i]>(sumTheta+(sumTheta*.1)))||(allThetaVals[i]<(sumTheta-(sumTheta*.1)))){thetaIndicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
+    }
+
+    ArrayList<Double> filteredXVals = new ArrayList<Double>();
+    ArrayList<Double> filteredYVals = new ArrayList<Double>();
+    ArrayList<Double> filteredThetaVals = new ArrayList<Double>();
+
+    //adds all filtered lists
+    for(int i = 0; i < poses.size(); i++){ //creates new lists, with only filtered values
+      if(!(xIndicesToIgnore.contains(i))){
+        filteredXVals.add(poses.get(i).getX());
+      }
+      if(!(yIndicesToIgnore.contains(i))){
+        filteredYVals.add(poses.get(i).getY());
+      }
+      if(!(thetaIndicesToIgnore.contains(i))){
+        filteredThetaVals.add(poses.get(i).getRotation().getRadians());
+      }
+    }
+    
+    double sumXFiltered = 0, sumYFiltered = 0, sumThetaFiltered = 0;
+
+
+    //averages from the filtered lists
+    for(int i = 0; i < filteredXVals.size(); i++) sumXFiltered += filteredXVals.get(i);
+    for(int i = 0; i < filteredYVals.size(); i++) sumYFiltered += filteredYVals.get(i);
+    for(int i = 0; i < filteredThetaVals.size(); i++) sumThetaFiltered += filteredThetaVals.get(i);
+    return new Pose2d((sumXFiltered / filteredXVals.size()), (sumYFiltered / filteredYVals.size()), new Rotation2d(sumThetaFiltered / filteredThetaVals.size()));
   }
 
   public void estimateMT1Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
@@ -126,12 +197,10 @@ public class LimelightContainer {
             mt1.pose,
             mt1.timestampSeconds);
 
-        SmartDashboard.putString("Pos MT1: ", mt1.pose.toString() + " " + RLCountermt1);
+        SmartDashboard.putString("Pos MT1: ", mt1.pose.toString());
 
         limelight.pushPoseToShuffleboard(limelight.getName() + "mt1", mt1.pose);
       }
-
-      RLCountermt1++;
     }
   }
 
