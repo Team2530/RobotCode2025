@@ -4,23 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.Constants.*;
-import frc.robot.commands.*;
-import frc.robot.commands.algae.ShootAlgaeCommand;
-import frc.robot.commands.coral.CoralWristFollowCommand;
-import frc.robot.commands.coral.IntakeCoralCommand;
-import frc.robot.commands.coral.PurgeCoralIntakeCommand;
-import frc.robot.commands.coral.ScoreCoralCommand;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import frc.robot.subsystems.*;
-import frc.robot.subsystems.algae.AlgaeSubsystem;
-import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
-import frc.robot.subsystems.coral.CoralSubsystem;
-import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
-
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -32,15 +16,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.ElevatorCommand;
-import frc.robot.commands.ElevatorCommand.ElevatorPresets;
-import frc.robot.commands.ElevatorFollowCommand;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.commands.algae.ShootAlgaeCommand;
+import frc.robot.commands.coral.CoralWristFollowCommand;
+import frc.robot.commands.coral.IntakeCoralCommand;
+import frc.robot.commands.coral.PurgeCoralIntakeCommand;
+import frc.robot.commands.coral.ScoreCoralCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.algae.AlgaeSubsystem;
+import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
+import frc.robot.subsystems.coral.CoralSubsystem;
+import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -92,7 +83,36 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
-        NamedCommands.registerCommand("Testing", elevatorToTop);
+
+        NamedCommands.registerCommand("Testing Coral", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_2);
+                })));
+
+        NamedCommands.registerCommand("L2", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_2);
+                })));
+
+        NamedCommands.registerCommand("L3", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_3);
+                })));
+
+        NamedCommands.registerCommand("L4", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_4);
+                })));
+
+        NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.INTAKE);
+                })));
+                
+        NamedCommands.registerCommand("Stow", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.STOW);
+                })));
     }
 
     // Command shootAction =
@@ -100,9 +120,7 @@ public class RobotContainer {
     // Command spoolAction =
     // Command intakeAction = ;
     
-    private ElevatorCommand elevatorToTop = new ElevatorCommand(elevator, ElevatorPresets.TOP, 0.0);
-    private ElevatorCommand elevatorToMiddle = new ElevatorCommand(elevator, ElevatorPresets.MIDDLE, 0.0);
-    private ElevatorCommand elevatorToStow = new ElevatorCommand(elevator, ElevatorPresets.STOW, 0.0);
+
 
 
     /**
