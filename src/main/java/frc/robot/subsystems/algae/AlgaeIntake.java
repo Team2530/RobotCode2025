@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Algae;
+import frc.robot.Robot;
 
 public class AlgaeIntake extends SubsystemBase {
     private final SparkMax intakeMotor = new SparkMax(Algae.Intake.MOTOR_PORT, MotorType.kBrushless);
@@ -20,36 +21,37 @@ public class AlgaeIntake extends SubsystemBase {
 
     // physics simulation
     private final FlywheelSim simIntakePhysics = new FlywheelSim(
-        LinearSystemId.createFlywheelSystem(
-            Algae.Intake.PhysicalConstants.MOTOR,
-            Algae.Intake.PhysicalConstants.MOI,
-            Algae.Intake.PhysicalConstants.GEARING
-        ),
-        Algae.Intake.PhysicalConstants.MOTOR
-    );
+            LinearSystemId.createFlywheelSystem(
+                    Algae.Intake.PhysicalConstants.MOTOR,
+                    Algae.Intake.PhysicalConstants.MOI,
+                    Algae.Intake.PhysicalConstants.GEARING),
+            Algae.Intake.PhysicalConstants.MOTOR);
 
     private final DigitalInput intakeBeambreak = new DigitalInput(Algae.Intake.BEAMBREAK_PORT);
 
     private final SlewRateLimiter intakeProfile = new SlewRateLimiter(
-        Algae.Intake.POSITIVE_RATE_LIMIT,
-        Algae.Intake.NEGATIVE_RATE_LIMIT, 
-        0
-    );
+            Algae.Intake.POSITIVE_RATE_LIMIT,
+            Algae.Intake.NEGATIVE_RATE_LIMIT,
+            0);
 
     private double outputPercentage = 0.0;
 
     @Override
     public void periodic() {
+        double output;
         // if no algae
         if (intakeBeambreak.get()) {
-            double output = intakeProfile.calculate(outputPercentage);
-            intakeMotor.set(output);
+            output = intakeProfile.calculate(outputPercentage);
         } else {
             // hold
-            intakeMotor.set(Math.min(0.05, outputPercentage));
+            output = Math.min(0.05, outputPercentage);
         }
+
+        intakeMotor.set(output);
+        if (Robot.isSimulation())
+            simIntakeMotor.setAppliedOutput(output);
     }
-    
+
     @Override
     public void simulationPeriodic() {
         // update physics
@@ -58,10 +60,9 @@ public class AlgaeIntake extends SubsystemBase {
 
         // update sim objects
         simIntakeMotor.iterate(
-            simIntakePhysics.getAngularVelocityRPM(),
-            RoboRioSim.getVInVoltage(),
-            0.02
-        );
+                simIntakePhysics.getAngularVelocityRPM(),
+                RoboRioSim.getVInVoltage(),
+                0.02);
     }
 
     public void setOutputPercentage(double outputPercentage) {

@@ -1,23 +1,26 @@
 package frc.robot.commands;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
+import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.Reef;
 
 public class DriveCommand extends Command {
     private final SwerveSubsystem swerveSubsystem;
     private final XboxController xbox;
 
     private SlewRateLimiter dsratelimiter = new SlewRateLimiter(4);
-
-    // Auto rotation pid/rate limiter
-    private PIDController rotationController = new PIDController(6, 0.0, 0.5);
 
     private double DRIVE_MULT = 1.0;
     private final double SLOWMODE_MULT = 0.25;
@@ -33,7 +36,7 @@ public class DriveCommand extends Command {
         this.swerveSubsystem = swerveSubsystem;
         this.xbox = xbox;
 
-        rotationController.enableContinuousInput(-Math.PI, Math.PI);
+        DriveConstants.ROTATION_ASSIST.enableContinuousInput(-Math.PI / 2, Math.PI / 2);
 
         dsratelimiter.reset(SLOWMODE_MULT);
 
@@ -103,58 +106,52 @@ public class DriveCommand extends Command {
 
         ChassisSpeeds speeds;
 
-        // switch (swerveSubsystem.getRotationStyle()) {
-        // // case Driver:
+        switch (swerveSubsystem.getDriveStyle()) {
+            case FIELD_ORIENTED:
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed, zSpeed,
+                        new Rotation2d(
+                                -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET)
+                                        .getRadians()));
+                break;
+            case ROBOT_ORIENTED:
+                speeds = new ChassisSpeeds(-xSpeed, ySpeed, -zSpeed);
+                break;
+            case ROTATION_ASSIST:
+                // ? X/Y have been left in here as comments in case you find that you want them!
+                Pose2d closestPose = swerveSubsystem.getPose().nearest(AllianceFlipUtil.flip(new ArrayList<Pose2d>(Reef.branches.values())));
 
-        // // // do nothing special
-        // // break;
-        // // case AutoSpeaker:
-        // // // Rotation2d r =
-        // // //
-        // swerveSubsystem.getPose().getTranslation().minus(FieldConstants.getSpeakerPosition()).getAngle();
-        // // // if (DriverStation.getAlliance().get() == Alliance.Red)
-        // // // r = r.rotateBy(new Rotation2d(Math.PI));
-        // // // double calculatedAngle = targeting.getPhi(arm.getHorizOffset());
-        // // // SmartDashboard.putNumber("Wanted Heading", calculatedAngle);
-        // // SmartDashboard.putNumberArray("Phi control", new double[] {
-        // // calculatedAngle,
-        // // swerveSubsystem.getHeading()
-        // // });
-        // // zSpeed =
-        // MathUtil.clamp(-rotationController.calculate(swerveSubsystem.getPose().getRotation().getRadians()
-        // + ((FieldConstants.getAlliance() == Alliance.Red) ? Math.PI : 0.0),
-        // calculatedAngle),
-        // // -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY, 0.5 *
-        // DriveConstants.MAX_ROBOT_RAD_VELOCITY);
-        // // break;
-        // // case AutoShuttle:
-        // // double shuttleCalculatedAngle = targeting.getShuttlePhi();
+                double zError = swerveSubsystem.getPose().minus(closestPose).getRotation().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET).getRadians();
+                // double xError = swerveSubsystem.getPose().getX() -
+                // swerveSubsystem.getTargetPose().getX();
+                // double yError = swerveSubsystem.getPose().getY() -
+                // swerveSubsystem.getTargetPose().getY();
 
-        // // zSpeed =
-        // MathUtil.clamp(-rotationController.calculate(swerveSubsystem.getPose().getRotation().getRadians()
-        // + ((FieldConstants.getAlliance() == Alliance.Red) ? Math.PI : 0.0),
-        // shuttleCalculatedAngle),
-        // // -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY, 0.5 *
-        // DriveConstants.MAX_ROBOT_RAD_VELOCITY);
-        // // break;
-        // }
+                // double yAssist = DriveConstants.TRANSLATION_ASSIST.calculate(-xError) *
+                // xbox.getLeftTriggerAxis();
+                // double xAssist = DriveConstants.TRANSLATION_ASSIST.calculate(yError) *
+                // xbox.getLeftTriggerAxis();
+                double zAssist = DriveConstants.ROTATION_ASSIST.calculate(zError);// * xbox.getLeftTriggerAxis();
+                // speeds = new ChassisSpeeds(-xSpeed + xAssist, ySpeed + yAssist, -zSpeed +
+                // zAssist);
 
-        // Drive Non Field Oriented
-        if (xbox.getRightBumper()) {
-            speeds = new ChassisSpeeds(-xSpeed, ySpeed, -zSpeed);
+                // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed + yAssist, xSpeed +
+                // xAssist,
+                // zSpeed + zAssist,
+                // new Rotation2d(
+                // -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET)
+                // .getRadians()));
 
-        } else if (!xbox.getLeftBumper()) {
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed, zSpeed,
-                    new Rotation2d(
-                            -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET).getRadians()));
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed,
+                        zSpeed - zAssist,
+                        new Rotation2d(
+                                -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET)
+                                        .getRadians()));
 
-            // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed,
-            // zSpeed,swerveSubsystem.odometry.getEstimatedPosition().getRotation().rotateBy(
-            // new Rotation2d(FieldConstants.getAlliance() == Alliance.Red ? Math.PI : 0)
-            // ));
-        } else {
-            // Normal non-field oriented
-            speeds = new ChassisSpeeds(-xSpeed, -ySpeed, zSpeed);
+                break;
+
+            default:
+                speeds = null;
+                break;
         }
 
         // State transition logic
