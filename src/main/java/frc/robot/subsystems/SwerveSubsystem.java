@@ -2,21 +2,29 @@ package frc.robot.subsystems;
 
 import java.util.List;
 
-import com.studica.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
+import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,8 +32,8 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,10 +42,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.PathPlannerConstants;
+import frc.robot.Constants.PoseConstants;
+import frc.robot.Constants.SwerveModuleConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
 import frc.robot.RobotContainer;
+
 
 public class SwerveSubsystem extends SubsystemBase {
     SwerveModule frontLeft = new SwerveModule(SwerveModuleConstants.FL_STEER_ID, SwerveModuleConstants.FL_DRIVE_ID,
@@ -112,7 +126,13 @@ public class SwerveSubsystem extends SubsystemBase {
         // zeroHeading()
 
         // --------- Path Planner Init ---------- \\
-
+                RobotConfig config = null;
+        try{
+        config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+        // Handle exception as needed
+        e.printStackTrace();
+        } 
         AutoBuilder.configure(
                 this::getPose, // Robot pose supplier
                 this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -120,6 +140,9 @@ public class SwerveSubsystem extends SubsystemBase {
                 (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT
                                                                        // RELATIVE ChassisSpeeds
                 PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
+
+                //(speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                /*PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER, // todo -> check above method^^^
                 PathPlannerConstants.ROBOT_CONFIG,
                 () -> {
                     // Boolean supplier that controls when the path will be mirrored for the red
@@ -131,7 +154,23 @@ public class SwerveSubsystem extends SubsystemBase {
                         return alliance.get() == DriverStation.Alliance.Red;
                     }
 
-                    return false;
+                    return false; */
+                (speeds, feedforwards) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+            ),
+            config, // The robot configuration
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
 
                 },
                 this // Reference to this subsystem to set requirements
@@ -160,6 +199,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
+
 
         odometry.update(getRotation2d(), getModulePositions());
 

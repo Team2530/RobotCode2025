@@ -4,8 +4,23 @@
 
 package frc.robot;
 
-import frc.robot.Constants.*;
-import frc.robot.commands.*;
+import java.util.function.BooleanSupplier;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
@@ -22,6 +37,7 @@ import frc.robot.commands.coral.motion.WaitRollFinished;
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
+
 import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
@@ -104,6 +120,36 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
+
+        NamedCommands.registerCommand("Testing Coral", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_2);
+                })));
+
+        NamedCommands.registerCommand("L2", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_2);
+                })));
+
+        NamedCommands.registerCommand("L3", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_3);
+                })));
+
+        NamedCommands.registerCommand("L4", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_4);
+                })));
+
+        NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.INTAKE);
+                })));
+                
+        NamedCommands.registerCommand("Stow", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPreset(CoralPresets.STOW);
+                })));
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
@@ -196,6 +242,7 @@ public class RobotContainer {
             lockCoralArmPreset(CoralPresets.STOW);
         }).andThen(getGoToLockedPresetFASTCommand());
     }
+
 
     /**
      * Use this method to define your trigger->command mappings. Triggers can be
