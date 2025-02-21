@@ -7,25 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "bottom 0"
+            "pathName": "middle start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "bottom 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "bottom 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "bottom 4"
+            "pathName": "middle 1"
           }
         }
       ]
