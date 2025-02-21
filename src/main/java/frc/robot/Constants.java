@@ -224,8 +224,6 @@ public final class Constants {
   }
 
   public static class Coral {
-    public static int LEFT_ULTRASONIC_PORT = 0;
-    public static int RIGHT_ULTRASONIC_PORT = 1;
 
     public static boolean DEBUG_PIDS = false;
 

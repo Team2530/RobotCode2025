@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import edu.wpi.first.wpilibj.Ultrasonic;
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -48,10 +47,6 @@ public class CoralSubsystem extends SubsystemBase {
 
     private LimelightAssistance llAssist = null;
 
-    private final AnalogPotentiometer leftUltrasonic = new AnalogPotentiometer(Constants.Coral.LEFT_ULTRASONIC_PORT,
-            254.0, 0.0);
-    private final AnalogPotentiometer rightUltrasonic = new AnalogPotentiometer(Constants.Coral.RIGHT_ULTRASONIC_PORT,
-            254.0, 0.0);
 
     public enum CoralPresets {
         LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636)),
@@ -117,8 +112,6 @@ public class CoralSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Ultra Left", this.leftUltrasonic.get());
-        SmartDashboard.putNumber("Ultra Right", this.rightUltrasonic.get());
 
         // i have no idea what any of the getPositions output
         elevatorMechanism
@@ -279,10 +272,7 @@ public class CoralSubsystem extends SubsystemBase {
 
         System.out.println("Mirror Side" + mirrorSetting.name());
         
-        // this.mirrorSetting = (this.leftUltrasonic.get() < this.rightUltrasonic.get())
-        // ? MirrorPresets.LEFT
-        // : MirrorPresets.RIGHT;
-    }
+            }
 
     public void autoSetMirrorScoring() {
         Pose2d robotPose = swerveSubsystem.getPose();
