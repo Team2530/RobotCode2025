@@ -137,9 +137,9 @@ public class LimelightContainer {
     ArrayList<Integer> indicesToIgnore = new ArrayList<Integer>();
 
     for(int i = 0; i < poses.size(); i++){
-      if((allXVals[i]>(sumX*maxDeviation))||(allXVals[i]<(sumX*maxDeviation))){indicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
-      else if((allYVals[i]>(sumY+(sumY*maxDeviation)))||(allYVals[i]<(sumY-(sumY*maxDeviation)))){indicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
-      else if((allThetaVals[i]>(sumTheta+(sumTheta*maxDeviation)))||(allThetaVals[i]<(sumTheta-(sumTheta*maxDeviation)))){indicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
+      if((allXVals[i]>(sumX*maxDeviation))||(allXVals[i]<(sumX*maxDeviation))){indicesToIgnore.add(i);} //ignores all values deviating more than x% from the mean
+      else if((allYVals[i]>(sumY+(sumY*maxDeviation)))||(allYVals[i]<(sumY-(sumY*maxDeviation)))){indicesToIgnore.add(i);} //ignores all values deviating more than x% from the mean
+      else if((allThetaVals[i]>(sumTheta+(sumTheta*maxDeviation)))||(allThetaVals[i]<(sumTheta-(sumTheta*maxDeviation)))){indicesToIgnore.add(i);} //ignores all values deviating more than x% from the mean
     }
 
     ArrayList<Double> filteredXVals = new ArrayList<Double>();
