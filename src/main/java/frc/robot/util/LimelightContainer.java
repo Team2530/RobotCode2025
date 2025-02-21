@@ -96,7 +96,6 @@ public class LimelightContainer {
 
             //odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
 
-            SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString());
           }
         }
       }
@@ -107,7 +106,6 @@ public class LimelightContainer {
 
 
     Pose2d filteredPose = filterPoses(allPose2ds);
-    SmartDashboard.putString("Filtered Pos: ", filteredPose.toString());
 
     odometry.resetPosition(new Rotation2d(filteredPose.getRotation().getRadians()), swerveModulePositions, filteredPose);
   }
@@ -137,16 +135,15 @@ public class LimelightContainer {
     ArrayList<Integer> indicesToIgnore = new ArrayList<Integer>();
 
     for(int i = 0; i < poses.size(); i++){
-      if((allXVals[i]>(sumX+(sumX*maxDeviation)))||(allXVals[i]<(sumX-(sumX*maxDeviation)))){
+      if((allXVals[i]>(sumX*(1+maxDeviation))))||(allXVals[i]<(sumX*(1-maxDeviation)))){
         indicesToIgnore.add(i);
-        SmartDashboard.putString("sumX Stuff: ", ""+sumX+" "+allXVals[i]+" "+ (sumX+(sumX*maxDeviation)));
+        //SmartDashboard.putString("sumX Stuff: ", ""+sumX+" "+allXVals[i]+" "+ (sumX+(sumX*maxDeviation)));
       } //ignores all values deviating more than x% from the mean
-      else if((allYVals[i]>(sumY+(sumY*maxDeviation)))||(allYVals[i]<(sumY-(sumY*maxDeviation)))){indicesToIgnore.add(i);
-        SmartDashboard.putString("sumY Stuff: ", ""+sumY+" "+allYVals[i]+" "+ (sumY+(sumY*maxDeviation)));
+      else if((allYVals[i]>(sumY*(1+maxDeviation)))||(allYVals[i]<(sumY*(1-maxDeviation)))){indicesToIgnore.add(i);
+        //SmartDashboard.putString("sumY Stuff: ", ""+sumY+" "+allYVals[i]+" "+ (sumY+(sumY*maxDeviation)));
       } //ignores all values deviating more than x% from the mean
-      else if((allThetaVals[i]>(sumTheta-(sumTheta*maxDeviation)))||(allThetaVals[i]<(sumTheta+(sumTheta*maxDeviation)))){indicesToIgnore.add(i);
-
-        SmartDashboard.putString("sumTheta Stuff: ", ""+sumTheta+" "+allThetaVals[i]+" "+ (sumTheta+(sumTheta*maxDeviation))+" "+(sumTheta-(sumTheta*maxDeviation)));
+      else if((allThetaVals[i]>(sumTheta*(1+maxDeviation)))||(allThetaVals[i]<(sumTheta*(1-maxDeviation)))){indicesToIgnore.add(i);
+        //SmartDashboard.putString("sumTheta Stuff: ", ""+sumTheta+" "+allThetaVals[i]+" "+ (sumTheta+(sumTheta*maxDeviation))+" "+(sumTheta-(sumTheta*maxDeviation)));
       } //ignores all values deviating more than x% from the mean
     }
 
