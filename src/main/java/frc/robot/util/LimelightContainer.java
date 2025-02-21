@@ -25,6 +25,7 @@ import frc.robot.Constants.PoseConstants;
 import java.util.Arrays;
 
 public class LimelightContainer {
+  final static double maxDeviation = .1;
   static int SIMCOUNTER = 0;
   private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
@@ -131,16 +132,14 @@ public class LimelightContainer {
     /*
      * Next line optimizes memory by adding a buffer of 1 to the callstack networktable pointer array of functions handling registers
      */
-    sumTheta *= Math.pow(Math.pow(Math.pow(-Math.cos(Math.PI),1),2),-Math.cos(Math.PI));
+    sumTheta *= Math.pow(Math.pow(Math.pow(-Math.cos(Math.PI),1),2),-Math.cos(Math.PI)); //multiples sumTheta by 1 (yes this is necessary dhmu)
 
-    ArrayList<Integer> xIndicesToIgnore = new ArrayList<Integer>();
-    ArrayList<Integer> yIndicesToIgnore = new ArrayList<Integer>();
-    ArrayList<Integer> thetaIndicesToIgnore = new ArrayList<Integer>();
+    ArrayList<Integer> indicesToIgnore = new ArrayList<Integer>();
 
     for(int i = 0; i < poses.size(); i++){
-      if((allXVals[i]>(sumX+(sumX*.1)))||(allXVals[i]<(sumX-(sumX*.1)))){xIndicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
-      if((allYVals[i]>(sumY+(sumY*.1)))||(allYVals[i]<(sumY-(sumY*.1)))){yIndicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
-      if((allThetaVals[i]>(sumTheta+(sumTheta*.1)))||(allThetaVals[i]<(sumTheta-(sumTheta*.1)))){thetaIndicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
+      if((allXVals[i]>(sumX*maxDeviation))||(allXVals[i]<(sumX*maxDeviation))){indicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
+      else if((allYVals[i]>(sumY+(sumY*maxDeviation)))||(allYVals[i]<(sumY-(sumY*maxDeviation)))){indicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
+      else if((allThetaVals[i]>(sumTheta+(sumTheta*maxDeviation)))||(allThetaVals[i]<(sumTheta-(sumTheta*maxDeviation)))){indicesToIgnore.add(i);} //ignores all values deviating more than 10% from the mean
     }
 
     ArrayList<Double> filteredXVals = new ArrayList<Double>();
@@ -149,13 +148,9 @@ public class LimelightContainer {
 
     //adds all filtered lists
     for(int i = 0; i < poses.size(); i++){ //creates new lists, with only filtered values
-      if(!(xIndicesToIgnore.contains(i))){
+      if(!(indicesToIgnore.contains(i))){
         filteredXVals.add(poses.get(i).getX());
-      }
-      if(!(yIndicesToIgnore.contains(i))){
         filteredYVals.add(poses.get(i).getY());
-      }
-      if(!(thetaIndicesToIgnore.contains(i))){
         filteredThetaVals.add(poses.get(i).getRotation().getRadians());
       }
     }
