@@ -25,7 +25,7 @@ import frc.robot.Constants.PoseConstants;
 import java.util.Arrays;
 
 public class LimelightContainer {
-  final static double maxDeviation = .02;
+  final static double maxDeviation = .05;
   static int SIMCOUNTER = 0;
   private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
