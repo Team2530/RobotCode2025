@@ -303,8 +303,7 @@ public class SwerveSubsystem extends SubsystemBase {
         backLeft.setModuleState(states[Constants.DriveConstants.ModuleIndices.REAR_LEFT]);
     }
 
-    //same method as 2025-Spudnik from STEM alliance.
-    /*
+        /*
     public void setChassisSpeedsAuto(ChassisSpeeds chassisSpeeds) {
         chassisSpeeds.vxMetersPerSecond *= -1;
         chassisSpeeds.vyMetersPerSecond *= -1;
