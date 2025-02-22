@@ -20,7 +20,6 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -47,9 +46,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.SwerveModuleConstants;
-import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
-import frc.robot.Constants.*;
 import frc.robot.RobotContainer;
 
 
@@ -139,8 +136,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT
                                                                        // RELATIVE ChassisSpeeds
-                PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
-
                 //(speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 /*PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER, // todo -> check above method^^^
                 PathPlannerConstants.ROBOT_CONFIG,
@@ -155,7 +150,6 @@ public class SwerveSubsystem extends SubsystemBase {
                     }
 
                     return false; */
-                (speeds, feedforwards) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                     new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
@@ -324,6 +318,8 @@ public class SwerveSubsystem extends SubsystemBase {
         speeds.vyMetersPerSecond = tmp;
         tmp = speeds.omegaRadiansPerSecond;
         speeds.omegaRadiansPerSecond *= -1;
+        speeds.vxMetersPerSecond = 0.1;
+        speeds.vyMetersPerSecond = 0.1;
         SwerveModuleState[] states = DriveConstants.KINEMATICS.toSwerveModuleStates(speeds);
         setModules(states);
     }
