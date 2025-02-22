@@ -123,32 +123,32 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("Testing Coral", new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_2);
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_2);
                 })));
 
         NamedCommands.registerCommand("L2", new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_2);
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_2);
                 })));
 
         NamedCommands.registerCommand("L3", new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_3);
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_3);
                 })));
 
         NamedCommands.registerCommand("L4", new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_4);
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_4);
                 })));
 
         NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPreset(CoralPresets.INTAKE);
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.INTAKE);
                 })));
                 
         NamedCommands.registerCommand("Stow", new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPreset(CoralPresets.STOW);
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.STOW);
                 })));
     }
 
