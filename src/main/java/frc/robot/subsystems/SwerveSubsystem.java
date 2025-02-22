@@ -162,6 +162,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         odometry.update(getRotation2d(), getModulePositions());
 
+        SmartDashboard.putNumber("NavX angle", getHeading());
+
         publisher.set(getPose());
         // System.out.println(getPose().getX());
         // if (DriverStation.getAlliance().isPresent()) {

@@ -121,7 +121,7 @@ public class LimelightContainer {
 
       if (!doRejectUpdate) {
 
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(5, 5, 20));
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 9999));
         odometry.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);
@@ -151,7 +151,7 @@ public class LimelightContainer {
       if(!doRejectUpdate)
       {
         limelight.pushPoseToShuffleboard(limelight.getName() + "mt2", mt2.pose);
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3,3,9999999));
         odometry.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds);
