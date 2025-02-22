@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -12,11 +13,14 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
@@ -33,36 +37,16 @@ import frc.robot.commands.coral.motion.StowArm;
 import frc.robot.commands.coral.motion.WaitArmClearance;
 import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
-
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
-import com.pathplanner.lib.auto.AutoBuilder;
-import frc.robot.subsystems.*;
-
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Limelight.LimelightType;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
-import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.math.kinematics.Odometry;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
-import frc.robot.util.Reef;
-import frc.robot.util.Reef.ReefBranch;
-import frc.robot.subsystems.Limelight.LimelightType;
-import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
-import frc.robot.util.LimelightContainer;
-import frc.robot.subsystems.Limelight.LimelightType;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -121,11 +105,11 @@ public class RobotContainer {
 
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
 
-        NamedCommands.registerCommand("Testing Coral", new SequentialCommandGroup(
+         NamedCommands.registerCommand("Testing", new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPreset(CoralPresets.LEVEL_2);
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_2);
                 })));
-
+        /* 
         NamedCommands.registerCommand("L2", new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     coralSubsystem.setCoralPreset(CoralPresets.LEVEL_2);
@@ -148,8 +132,8 @@ public class RobotContainer {
                 
         NamedCommands.registerCommand("Stow", new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPreset(CoralPresets.STOW);
-                })));
+                    coralSubsystem.setCoralPreset(CoralPresets.STOW); 
+                }))); */
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
