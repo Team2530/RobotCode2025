@@ -24,13 +24,13 @@ import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
  * project.
  */
 public class Robot extends TimedRobot {
-  
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
 
   public static SendableChooser<String> autoChooser = new SendableChooser<>();
-  //LEDstripOne m_stripOne = new LEDstripOne(9);
+  // LEDstripOne m_stripOne = new LEDstripOne(9);
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -45,8 +45,8 @@ public class Robot extends TimedRobot {
     // Shuffleboard.getTab("SmartDashboard").add(autoChooser);
     SmartDashboard.putData(autoChooser);
 
-            DataLogManager.start();
-        DriverStation.startDataLog(DataLogManager.getLog());
+    DataLogManager.start();
+    DriverStation.startDataLog(DataLogManager.getLog());
 
     m_robotContainer = new RobotContainer();
   }
@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods. This must be called from the
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
-    
+
     CommandScheduler.getInstance().run();
   }
 
@@ -118,7 +118,8 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
   public void testInit() {
@@ -139,6 +140,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    
+
   }
 }
