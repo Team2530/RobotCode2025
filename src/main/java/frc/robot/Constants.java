@@ -287,7 +287,7 @@ public final class Constants {
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
         public static final double JOINT_LENGTH_METERS = 0.10;
-        public static final double MOI = 0.0403605447; // Kg*m^2
+        public static final double MOI = 0.403605447; // Kg*m^2
       }
     }
 
@@ -431,7 +431,7 @@ public final class Constants {
     public static class PhysicalParameters {
       public static final double GEARING = 5.0 / 2.0;
       public static final double DRIVE_RADIUS_METERS = 0.0121;
-      public static final double CARRIAGE_MASS_KG = 6.0; // Load on the SECOND stage NOTE: This includes the weight
+      public static final double CARRIAGE_MASS_KG = 1.0; // Load on the SECOND stage NOTE: This includes the weight
                                                          // "reduction" due to CF spring counterbalance!
 
       public static final double MAX_TRAVEL = Units.inchesToMeters(59.5);
