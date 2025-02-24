@@ -108,9 +108,8 @@ public class RobotContainer {
          NamedCommands.registerCommand("Testing", new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_2);
-                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_2);
                 })));
-        /* 
+        /*
         NamedCommands.registerCommand("L2", new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_2);
@@ -135,6 +134,7 @@ public class RobotContainer {
                 new InstantCommand(() -> {
                     coralSubsystem.setCoralPresetDIRECT(CoralPresets.STOW);
                 })));
+                */
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
