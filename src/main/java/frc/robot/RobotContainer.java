@@ -15,6 +15,9 @@ import frc.robot.commands.coral.motion.MovePitch;
 import frc.robot.commands.coral.motion.MovePivot;
 import frc.robot.commands.coral.motion.MoveRoll;
 import frc.robot.commands.coral.motion.StowArm;
+import frc.robot.commands.coral.motion.WaitArmClearance;
+import frc.robot.commands.coral.motion.WaitElevatorApproach;
+import frc.robot.commands.coral.motion.WaitRollFinished;
 
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -40,6 +43,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
+import frc.robot.util.Reef;
+import frc.robot.util.Reef.ReefBranch;
+import frc.robot.subsystems.swerve.SwerveSubsystem.DriveStyle;
+import frc.robot.subsystems.limelights.LimelightSubsystem;
+
 import frc.robot.util.PathfindingHelpers;
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -51,14 +59,14 @@ import frc.robot.util.PathfindingHelpers;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-    private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
-    private static final Limelight LL_FL = new Limelight(LimelightType.LL4, "limelight-fl", true, true);
+
+
+
+    private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
     private static final Limelight LL_BR  = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
 
-    public static final LimelightSubsystem LLContainer = new LimelightSubsystem(LL_FR, LL_FL, LL_BR, LL_BL);
-
-
+    public static final LimelightSubsystem LLContainer = new LimelightSubsystem(LL_BF, LL_BR, LL_BL);
 
     private final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
@@ -74,15 +82,16 @@ public class RobotContainer {
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
     
+    private final LimelightAssistance limelightAssistance = new LimelightAssistance(swerveDriveSubsystem);
 
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem();
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance,swerveDriveSubsystem);
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
-    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -129,6 +138,7 @@ public class RobotContainer {
     // 4. Rotate wrist
     private Command getGoToLockedPresetCommand() {
         return new InstantCommand(() -> {
+            //coralSubsystem.autoSetMirror();
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
@@ -141,10 +151,53 @@ public class RobotContainer {
                 }));
     }
 
+    private Command getGoToLockedPresetCommandV2() {
+        return new InstantCommand(() -> {
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
+                coralSubsystem.autoSetMirrorIntake();
+            } else {
+                coralSubsystem.autoSetMirrorScoring();
+            }
+
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(coralSubsystem))
+                .andThen(new ParallelCommandGroup(
+                        new MoveElevator(coralSubsystem, currentLockedPresetSupplier),
+                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
+                        new WaitArmClearance(coralSubsystem)
+                                .andThen(new MoveRoll(coralSubsystem, currentLockedPresetSupplier)),
+                        new WaitRollFinished(coralSubsystem).andThen(new WaitElevatorApproach(coralSubsystem, 0.5))
+                                .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
+    // Goes to a preset more quickly by moving pitch+pivot+roll at the same time,
+    // but can throw coral. Good for intaking
+    private Command getGoToLockedPresetFASTCommand() {
+        return new InstantCommand(() -> {
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
+                coralSubsystem.autoSetMirrorIntake();
+            } else {
+                coralSubsystem.autoSetMirrorScoring();
+            }
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(coralSubsystem))
+                .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
+                .andThen(new ParallelCommandGroup(
+                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
+                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier),
+                        new MovePitch(coralSubsystem, currentLockedPresetSupplier)))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
     private Command getStowCommand() {
         return new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.STOW);
-        }).andThen(getGoToLockedPresetCommand());
+        }).andThen(getGoToLockedPresetFASTCommand());
     }
 
     /**
@@ -197,7 +250,7 @@ public class RobotContainer {
             lockCoralArmPreset(selectedScoringPreset);
             if (!coralSubsystem.isHolding())
                 isScoring = true;
-        }).andThen(getGoToLockedPresetCommand().andThen(
+        }).andThen(getGoToLockedPresetCommandV2().andThen(
                 new InstantCommand(() -> {
                     operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
                 }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
@@ -218,8 +271,9 @@ public class RobotContainer {
         // }
         // }).whileTrue(new CoralWristFollowCommand(coralSubsystem, operatorXbox));
 
-        operatorXbox.rightBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
+        driverXbox.rightBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
         operatorXbox.rightBumper().whileFalse(getStowCommand());
+        driverXbox.rightBumper().whileFalse(getStowCommand());
 
         // Intake coral
         operatorXbox.rightTrigger().and(new BooleanSupplier() {
@@ -230,16 +284,21 @@ public class RobotContainer {
         }).whileTrue(new InstantCommand(() -> {
             System.out.println("Intaking");
             lockCoralArmPreset(CoralPresets.INTAKE);
-        }).andThen(getGoToLockedPresetCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
+        }).andThen(getGoToLockedPresetFASTCommand()).andThen(new IntakeCoralCommand(coralSubsystem))
                 .andThen(getStowCommand())).whileFalse(getStowCommand());
 
         // purge coral
         operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));
+        operatorXbox.button(8).onTrue(new InstantCommand(() -> {
+            climberSubsystem.resetClimberDeploy();
+        }));
 
         coralAquisition.onChange(new InstantCommand(() -> {
             operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
+            driverXbox.setRumble(RumbleType.kBothRumble, 1.0);
         }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
             operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
+            driverXbox.setRumble(RumbleType.kBothRumble, 0.0);
         })));
 
         operatorXbox.leftBumper().onTrue(new InstantCommand(() -> {
@@ -278,7 +337,7 @@ public class RobotContainer {
         }));
 
         // TODO: test and implement on (comp) robot
-        driverXbox.leftTrigger().whileTrue(
+        driverXbox.a().whileTrue(
             PathfindingHelpers.generatePathToReefCommand(
                 PathfindingHelpers.getNearestReefFace(swerveDriveSubsystem.getPose()).Left, 
                 swerveDriveSubsystem.getPose()

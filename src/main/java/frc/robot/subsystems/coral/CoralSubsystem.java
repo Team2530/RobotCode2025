@@ -1,7 +1,14 @@
 package frc.robot.subsystems.coral;
 
+import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -10,27 +17,47 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
-
+import frc.robot.util.LimelightAssistance;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.subsystems.limelights.Limelight;
+import frc.robot.subsystems.limelights.LimelightSubsystem;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.util.LimelightAssistance;
 
 public class CoralSubsystem extends SubsystemBase {
 
     private final CoralArm arm = new CoralArm();
     private final CoralIntake intake = new CoralIntake();
+
     private final CoralElevator elevator = new CoralElevator();
 
+    private final SwerveSubsystem swerveSubsystem;
+
     private final Mechanism2d coralMechanism = new Mechanism2d(2, 3);
-    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 0.0, 0.0);
+    private final MechanismRoot2d rootMechanism = coralMechanism.getRoot("Coral", 1.0, 0.0);
     private final MechanismLigament2d elevatorMechanism = rootMechanism.append(
-            new MechanismLigament2d("Elevator", Constants.Elevator.PhysicalParameters.BOTTOM_TO_FLOOR, 0));
+            new MechanismLigament2d("Elevator", Constants.Elevator.PhysicalParameters.BOTTOM_TO_FLOOR, 90));
     private final MechanismLigament2d pivotMechanism = elevatorMechanism.append(
             new MechanismLigament2d("Coral", Constants.Coral.Pivot.PhysicalConstants.JOINT_LENGTH_METERS, 0));
+    private final MechanismLigament2d pitchMechanism = pivotMechanism.append(
+            new MechanismLigament2d("Pitch", Constants.Coral.Pitch.PhysicalConstants.JOINT_LENGTH_METERS, 0));
+    private final MechanismLigament2d rollMechanism = pivotMechanism.append(
+            new MechanismLigament2d("Roll", Constants.Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS, 90));
+
+    private LimelightAssistance llAssist = null;
+
+    private final AnalogPotentiometer leftUltrasonic = new AnalogPotentiometer(Constants.Coral.LEFT_ULTRASONIC_PORT,
+            254.0, 0.0);
+    private final AnalogPotentiometer rightUltrasonic = new AnalogPotentiometer(Constants.Coral.RIGHT_ULTRASONIC_PORT,
+            254.0, 0.0);
 
     public enum CoralPresets {
-        LEVEL_1(1.0, 20.0, 0.0, 0.0), // TODO: Figure out level 1, TBD
-        LEVEL_2(0.247, 19.032, 90, 98.968),
-        LEVEL_3(0.650, 19.032, 90, 98.968),
-        LEVEL_4(1.342, 21.238, 90, 111.762),
-        INTAKE(0.05, 18.0, 90, 35.0),
+        LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636)),
+        LEVEL_2(0.247-0.02, 16.532, 90, 98.068),
+        LEVEL_3(0.650-0.02, 16.532, 90, 98.068),
+        LEVEL_4(1.342, 20.0, 90, 110.062),
+        INTAKE(0.05, 18.0, 90, 30.0),
         STOW(0.05, 0.0, 0.0, 0.0),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
@@ -50,7 +77,9 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public CoralSubsystem() {
+    public CoralSubsystem(LimelightAssistance llAssist, SwerveSubsystem swerveSubsystem) {
+        this.llAssist = llAssist;
+        this.swerveSubsystem = swerveSubsystem;
         // Epilogue.bind(this);
     }
 
@@ -68,27 +97,35 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public enum CoralIntakePresets {
-        INTAKE(1),
-        HOLD(0.4),
-        PURGE(-1),
-        SCORE(-1),
-        STOP(0),
+        INTAKE(1, 40.0),
+        HOLD(0.4, 12.5),
+        PURGE(-1, 40.0),
+        SCORE(-1, 30.0),
+        STOP(0, 12.5),
 
-        CUSTOM(Double.NaN);
+        CUSTOM(Double.NaN, 40.0);
 
         double intakePercentage;
+        double intakeCurrent;
 
-        private CoralIntakePresets(double intakePercentage) {
+        private CoralIntakePresets(double intakePercentage, double intakeCurrent) {
             this.intakePercentage = intakePercentage;
+            this.intakeCurrent = intakeCurrent;
         }
     }
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Ultra Left", this.leftUltrasonic.get());
+        SmartDashboard.putNumber("Ultra Right", this.rightUltrasonic.get());
+
         // i have no idea what any of the getPositions output
         elevatorMechanism
                 .setLength(elevator.getPosition() + Constants.Elevator.PhysicalParameters.CORAL_PIVOT_VERTICAL_OFFSET);
         pivotMechanism.setAngle(arm.getPivotPositionDegrees());
+        pitchMechanism.setAngle(arm.getPitchPositionDegrees());
+        rollMechanism.setLength(Math.cos(Units.degreesToRadians(arm.getRollPositionDegrees()))
+                * Constants.Coral.Roll.PhysicalConstants.JOINT_LENGTH_METERS);
 
         SmartDashboard.putData("Coral Mechanism", coralMechanism);
         SmartDashboard.putBoolean("Elevator in position", isElevatorInPosition());
@@ -219,21 +256,49 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void mirrorArm() {
-        if(mirrorSetting.isMirrored) {
-            mirrorSetting = MirrorPresets.LEFT;
-        } else {
+        SmartDashboard.putBoolean("Called", true);
+        if (llAssist.isTagOnRight()) {
             mirrorSetting = MirrorPresets.RIGHT;
-        }
+        } else if (!llAssist.isTagOnRight())
+            mirrorSetting = MirrorPresets.LEFT;
     }
 
     public void mirrorArm(MirrorPresets preset) {
         mirrorSetting = preset;
     }
 
+    public void autoSetMirrorIntake() {
+        Pose2d robotPose = swerveSubsystem.getPose();
+        Pose2d closestSource = robotPose.nearest(FieldConstants.getSourcePoses());
+        Pose2d left = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
+        Pose2d right = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
+
+        this.mirrorSetting = left.getTranslation().getDistance(closestSource.getTranslation()) < right.getTranslation()
+                .getDistance(closestSource.getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
+
+        System.out.println("Mirror Side" + mirrorSetting.name());
+        
+        // this.mirrorSetting = (this.leftUltrasonic.get() < this.rightUltrasonic.get())
+        // ? MirrorPresets.LEFT
+        // : MirrorPresets.RIGHT;
+    }
+
+    public void autoSetMirrorScoring() {
+        Pose2d robotPose = swerveSubsystem.getPose();
+        Pose2d left = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
+        Pose2d right = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
+
+        this.mirrorSetting = left.getTranslation().getDistance(FieldConstants.getReefPose().getTranslation()) < right.getTranslation()
+                .getDistance(FieldConstants.getReefPose().getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
+
+        System.out.println("Mirror Side" + mirrorSetting.name());
+    }
+
     public void setCoralIntakePreset(CoralIntakePresets preset) {
         SmartDashboard.putString("Coral Intake Preset", preset.toString());
         if (preset != currentIntakePreset) {
             intake.setOutputPercentage(preset.intakePercentage);
+            intake.setStatorLimit(preset.intakeCurrent);
             currentIntakePreset = preset;
         }
     }
@@ -241,6 +306,7 @@ public class CoralSubsystem extends SubsystemBase {
     public void setCustomIntakePercent(double percentage) {
         currentIntakePreset = CoralIntakePresets.CUSTOM;
         intake.setOutputPercentage(percentage);
+        intake.setStatorLimit(currentIntakePreset.intakeCurrent);
     }
 
     public double getPivotPositionDegrees() {
@@ -266,5 +332,17 @@ public class CoralSubsystem extends SubsystemBase {
     public boolean isSupposedToBeInPosition() {
         return isPivotSupposedToBeInPosition() && isRollSupposedToBeInPosition() && isElevatorSupposedToBeInPosition()
                 && isPitchSupposedToBeInPosition();
+    }
+
+    public CoralArm getCoralArm() {
+        return arm;
+    }
+
+    public CoralIntake getIntake() {
+        return intake;
+    }
+
+    public CoralElevator getElevator() {
+        return elevator;
     }
 }

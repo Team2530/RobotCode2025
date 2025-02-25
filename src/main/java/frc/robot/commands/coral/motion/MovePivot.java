@@ -15,7 +15,7 @@ public class MovePivot extends Command {
     public MovePivot(CoralSubsystem coralSub, Supplier<CoralPresets> presetSupplier) {
         this.coralSub = coralSub;
         this.presetSupplier = presetSupplier;
-        addRequirements(coralSub);
+        // addRequirements(coralSub);
     }
 
     @Override

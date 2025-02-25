@@ -9,9 +9,11 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,7 +25,13 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.subsystems.swerve.SwerveSubsystem.DriveStyle;
+import frc.robot.util.AllianceFlipUtil;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 
@@ -56,6 +64,10 @@ public final class Constants {
 
   public static final class FieldConstants {
     public static final double GRAVITY = 9.81;
+    public static final double SPEAKER_HEIGHT = 2.05; // Meters
+
+    public static final double FIELD_LENGTH = Units.inchesToMeters(690.876);
+    public static final double FIELD_WIDTH = Units.inchesToMeters(317);
 
     public static Alliance getAlliance() {
       if (DriverStation.getAlliance().isPresent()) {
@@ -65,17 +77,36 @@ public final class Constants {
       return Alliance.Blue;
     }
 
-    public static final Pose2d REEF_POSITION = getAlliance() == Alliance.Blue
-      ? new Pose2d(
-        Units.feetToMeters(12),
-        Units.feetToMeters(13) + Units.inchesToMeters(2.5),
-        new Rotation2d(Math.PI)
-      )
-      : new Pose2d(
-        Units.feetToMeters(45) + Units.inchesToMeters(6 + (7/8)),
-        Units.feetToMeters(13) + Units.inchesToMeters(2.5),
-        new Rotation2d()
-      );
+    public static ArrayList<Pose2d> getSourcePoses() {
+      Pose2d leftCenterFace = new Pose2d(
+          Units.inchesToMeters(33.526),
+          Units.inchesToMeters(291.176),
+          Rotation2d.fromDegrees(90 - 144.011));
+      Pose2d rightCenterFace = new Pose2d(
+          Units.inchesToMeters(33.526),
+          Units.inchesToMeters(25.824),
+          Rotation2d.fromDegrees(144.011 - 90));
+
+      if (getAlliance() == Alliance.Red) {
+        leftCenterFace = AllianceFlipUtil.flip(leftCenterFace);
+        rightCenterFace = AllianceFlipUtil.flip(rightCenterFace);
+      }
+
+      ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
+
+      poses.add(leftCenterFace);
+      poses.add(rightCenterFace);
+
+      return poses;
+    }
+
+    public static Pose2d getReefPose() {
+      Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d(Math.PI));
+      if (getAlliance() == Alliance.Red) {
+        AllianceFlipUtil.flip(reef);
+      }
+      return reef;
+    }
   }
 
   public static class SwerveModuleConstants {
@@ -142,10 +173,15 @@ public final class Constants {
     public static final double MAX_ROBOT_RAD_VELOCITY = 12.0; // Approx. Measured rads/sec
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double MAX_MODULE_CURRENT = 10;
+    public static final double MAX_MODULE_CURRENT = 30;
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.75);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.75);
+
+    public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.520);
+    public static final PIDController TRANSLATION_ASSIST = new PIDController(6, 0, 0.01);
+    public static final PIDController ROTATION_ASSIST = new PIDController(4, 0, 0.001);
+
     // TODO: Set this for FWERB V2
     public static final Rotation2d NAVX_ANGLE_OFFSET = Rotation2d.fromDegrees(-90);
     // TODO: I'm not going to touch this... but it seems important!
@@ -181,11 +217,19 @@ public final class Constants {
         0.0,
         new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
 
-    public static boolean DBG_DISABLED = true;
+    public static boolean DBG_DISABLED = false;
+    public static double GEAR_RATIO = 45.0;
+
+    public static double DEPLOY_SOFT_LIMIT = -6.0;
+    public static double CLIMB_SOFT_LIMIT = -3.10;
   }
 
-  // TODO: ##################### PLACEHOLDERS #####################
   public static class Coral {
+    public static int LEFT_ULTRASONIC_PORT = 0;
+    public static int RIGHT_ULTRASONIC_PORT = 1;
+
+    public static boolean DEBUG_PIDS = false;
+
     public static class Pivot {
       public static final int MOTOR_PORT = 14;
       public static final int ENCODER_PORT = 28;
@@ -194,20 +238,20 @@ public final class Constants {
       public static final boolean ENCODER_INVERTED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(80);
-      public static final double FRAME_BORDER_ANGLE = Units.degreesToRadians(30);
+      public static final double ELEVATOR_BORDER_ANGLE = Units.degreesToRadians(10);
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          18.0,
+          12.0,
           0.0,
-          0.1,
+          0.005,
           new TrapezoidProfile.Constraints(7.0, 15.0));
 
       // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
           0.0,
-          0.4, // V
-          0.35, // 1.0, // V*s/rad
+          0.0, // V
+          0.0, // 1.0, // V*s/rad
           0.00// V*s^2/rad
       );
 
@@ -229,11 +273,12 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          3.5,
+          6,
           0.0,
-          0.0,
-          new TrapezoidProfile.Constraints(10.0, 25.0));
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.1);
+          0.02,
+          new TrapezoidProfile.Constraints(15, 25.0));
+      // public static final SimpleMotorFeedforward FEEDFORWARD = new
+      // SimpleMotorFeedforward(0.0, 0.1);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
@@ -242,6 +287,7 @@ public final class Constants {
         public static final double NET_REDUCTION = 45.0;
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
+        public static final double JOINT_LENGTH_METERS = 0.10;
         public static final double MOI = 0.0403605447; // Kg*m^2
       }
     }
@@ -256,12 +302,13 @@ public final class Constants {
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          5.0,
+          7.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(10.0, 35.0)); // Radians
+          new TrapezoidProfile.Constraints(10.0, 30.0)); // Radians
 
-      public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(0.0, 0.45);
+      // public static final SimpleMotorFeedforward FEEDFORWARD = new
+      // SimpleMotorFeedforward(0.0, 0.45);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
@@ -360,10 +407,10 @@ public final class Constants {
       public static double kP = 28.0;
       public static double kI = 0.0;
       public static double kD = 0.01;
-      public static double MAX_VELOCITY = 2.75;
+      public static double MAX_VELOCITY = 2.80;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
-      public static double MAX_ACCELERATION = 10.0;
+      public static double MAX_ACCELERATION = 15.0;
     }
 
     // TODO: PAD THE ELEVATOR!!!!!!!
@@ -421,10 +468,7 @@ public final class Constants {
             DCMotor.getKrakenX60(1),
             DriveConstants.MAX_MODULE_CURRENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
             1),
-        new Translation2d(-0.5, 0.5),
-        new Translation2d(0.5, 0.5),
-        new Translation2d(-0.5, -0.5),
-        new Translation2d(0.5, -0.5));
+        DriveConstants.KINEMATICS.getModules());
 
     public static class Pathfinding {
       public static final PathConstraints CONSTRAINTS = new PathConstraints(
@@ -451,7 +495,7 @@ public final class Constants {
     private static AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
     public final static HashMap<Integer, Pose2d> tagPoses = new HashMap<Integer, Pose2d>() {
-    {
+      {
         for (int i = 0; i < 22; ++i) {
           if (tagLayout.getTagPose(i + 1).isPresent())
             put(i, tagLayout.getTagPose(i + 1).get().toPose2d());

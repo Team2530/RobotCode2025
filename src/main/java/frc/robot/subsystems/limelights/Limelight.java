@@ -1,9 +1,13 @@
 package frc.robot.subsystems.limelights;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.LimelightHelpers.RawFiducial;;
+import frc.robot.util.LimelightHelpers.RawFiducial;
 
 public class Limelight extends SubsystemBase {
     public enum LimelightType {
@@ -30,12 +34,20 @@ public class Limelight extends SubsystemBase {
     private boolean cropEnabled;
     private double lastPoseEstimate = 0;
     private int counter = 0;
+    private double lastFrame = 0;
+
+    private final StructPublisher<Pose2d> publisher;
+
 
     public Limelight(LimelightType limelightType, String name, boolean isEnabled, boolean cropEnabled) {
         this.limelightType = limelightType;
         this.name = name;
         this.isEnabled = isEnabled;
         this.cropEnabled = cropEnabled;
+
+        publisher =  NetworkTableInstance.getDefault().getStructTopic(name, Pose2d.struct).publish();
+
+        LimelightHelpers.SetIMUMode(name, 1);
     }
 
     @Override
@@ -57,7 +69,7 @@ public class Limelight extends SubsystemBase {
 
     public void smartCrop() {
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
-
+        if(poseEstimate == null){return;}
         if (lastPoseEstimate != poseEstimate.timestampSeconds){
             counter = ++counter % 50;
             if(counter > 40){ // For every 5 frames, out of 50, check the entire screen for apriltags
@@ -150,6 +162,10 @@ public class Limelight extends SubsystemBase {
         }
     }
 
+    public void setIMUMode(int mode) {
+        LimelightHelpers.SetIMUMode(name, mode);
+    }
+
     public void restoreCrop() {
         LimelightHelpers.setCropWindow(name, -1, 1, -1, 1);
     }
@@ -171,6 +187,14 @@ public class Limelight extends SubsystemBase {
         return cropEnabled;
     }
 
+    public double getLastFrameTime(){
+        return lastFrame;
+    }
+
+    public void setLastFrame(double lastFrameTime){
+        lastFrame = lastFrameTime;
+    }
+
     public double getVFOV() {
         return limelightType.VFOV;
     }
@@ -186,5 +210,16 @@ public class Limelight extends SubsystemBase {
     public String getName() {
         return name;
     }
+
+    /**
+   * Used to put a pose on Shuffleboard for debugging - Don't repeatadly call
+   * this!
+   * 
+   * @param name Name of pose
+   * @param pose Pose2d pose
+   */
+  public void pushPoseToShuffleboard(String name, Pose2d pose) {
+    publisher.set(pose);
+  }
 
 }

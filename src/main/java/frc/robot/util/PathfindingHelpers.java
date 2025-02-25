@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Elevator;
 import frc.robot.Constants.FieldConstants;
@@ -95,7 +96,7 @@ public class PathfindingHelpers {
                         target.parallelAdjustment
                         + ( // mirror side adjustment
                             Elevator.PhysicalParameters.CORAL_PIVOT_HORIZONTAL_OFFSET
-                            * (optimalMirror.isMirrored ? -1 : 1)
+                            * (optimalMirror.isMirrored ? 0 :0)
                         ),
                         apriltagDirection.plus(new Rotation2d(90))
                     ),
@@ -103,6 +104,11 @@ public class PathfindingHelpers {
                     new Rotation2d(Math.PI * (optimalMirror.isMirrored ? -1 : 1))
                 )
             );
+            
+            SmartDashboard.putString(
+              "Target Reef Face",
+              target.toString()
+            ); 
             
             return AutoBuilder.pathfindToPose(
                 targetPose, 
@@ -115,7 +121,7 @@ public class PathfindingHelpers {
     }
 
     public static ReefFaces getNearestReefFace(Pose2d robotPosition) {
-        Pose2d relativePosition = robotPosition.relativeTo(FieldConstants.REEF_POSITION);
+        Pose2d relativePosition = robotPosition.relativeTo(FieldConstants.getReefPose());
         // this is terrible
         // get the angle of a line drawn from the center of the reef to the robot,
         // oriented so that an angle of 0 points to reef face ONE, moving 
@@ -123,20 +129,25 @@ public class PathfindingHelpers {
         // in radians
         double orientedRelativeAngle = (
             (Math.PI * 2) + Math.atan2(relativePosition.getY(), relativePosition.getX()) 
-            - FieldConstants.REEF_POSITION.getRotation().getRadians()
+            + FieldConstants.getReefPose().getRotation().getRadians()
         ) % (Math.PI * 2);
+
+        SmartDashboard.putNumber(
+            "Reef angle",
+            orientedRelativeAngle
+        );
         // this is barely better
         return ReefFaces.values()[
             ((int) 
-                Math.round(
-                    orientedRelativeAngle / (Math.PI / 3)
+                Math.floor(
+                    (orientedRelativeAngle + (Math.PI/2)) / (Math.PI / 3)
                 )
-            ) - 1
+            )
         ];
     }
 
     public static MirrorPresets optimalMirrorToReef(Pose2d robotPosition) {
-        Pose2d relativePose = FieldConstants.REEF_POSITION.relativeTo(robotPosition);
+        Pose2d relativePose = FieldConstants.getReefPose().relativeTo(robotPosition);
         // angle of a line from the robot to the reef, relative to the heading of the robot
         // in radians
         double orientedRelativeAngle = (
