@@ -272,8 +272,6 @@ public final class Constants {
           0.0,
           0.02,
           new TrapezoidProfile.Constraints(15, 25.0));
-      // public static final SimpleMotorFeedforward FEEDFORWARD = new
-      // SimpleMotorFeedforward(0.0, 0.1);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
@@ -301,9 +299,6 @@ public final class Constants {
           0.0,
           0.0,
           new TrapezoidProfile.Constraints(10.0, 30.0)); // Radians
-
-      // public static final SimpleMotorFeedforward FEEDFORWARD = new
-      // SimpleMotorFeedforward(0.0, 0.45);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
