@@ -68,16 +68,6 @@ public class CoralIntake extends SubsystemBase {
                 intakeMotor.set(Math.min(0.1, outputPercentage));
         }
 
-        // if (lastHolding != curHolding) {
-        // intakeMotor.getConfigurator().apply(new
-        // CurrentLimitsConfigs().withStatorCurrentLimit(
-        // (curHolding && (outputPercentage > 0.0)) ?
-        // Constants.Coral.Intake.HOLD_CURRENT_LIMIT
-        // : Constants.Coral.Intake.IN_OUT_CURRENT_LIMIT));
-        // }
-
-        // lastHolding = curHolding;
-
         SmartDashboard.putBoolean("Holding Coral", curHolding);
     }
 
