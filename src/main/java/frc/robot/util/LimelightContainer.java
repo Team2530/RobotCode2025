@@ -25,7 +25,7 @@ import frc.robot.Constants.PoseConstants;
 import java.util.Arrays;
 
 public class LimelightContainer {
-  final static double maxDeviation = .05;
+  final static double maxDeviation = .1;
   static int SIMCOUNTER = 0;
   private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
@@ -35,7 +35,7 @@ public class LimelightContainer {
       LimelightHelpers.SetIMUMode(limelight.getName(), 0);
     }
     enableLimelights(true);
-    
+
   }
 
   public void enableLimelights(boolean enable) {
@@ -67,7 +67,7 @@ public class LimelightContainer {
     ArrayList<Pose2d> allPose2ds = new ArrayList<Pose2d>();
     double lastTime = 0;
     int framesChecked = 0;
-    for(int i = 0; (i < 200) || (framesChecked < 50); i++){
+    for (int i = 0; (i < 200) || (framesChecked < 50); i++) {
       for (Limelight limelight : limelights) {
         boolean doRejectUpdate = false;
 
@@ -75,8 +75,8 @@ public class LimelightContainer {
         if (mt1 == null) {
           continue;
         }
-        
-        if(mt1.timestampSeconds != lastTime){
+
+        if (mt1.timestampSeconds != lastTime) {
           framesChecked++;
           if (mt1.tagCount == 0) {
             doRejectUpdate = true;
@@ -88,74 +88,87 @@ public class LimelightContainer {
 
           if (!doRejectUpdate) {
             allPose2ds.add(mt1.pose);
-
-            // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, .2));
-            // odometry.addVisionMeasurement(
-            // mt1.pose,
-            // mt1.timestampSeconds);
-
-            //odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
-
           }
         }
       }
     }
-    if(allPose2ds.isEmpty()){
+    if (allPose2ds.isEmpty()) {
       return;
     }
 
-
     Pose2d filteredPose = filterPoses(allPose2ds);
 
-    odometry.resetPosition(new Rotation2d(filteredPose.getRotation().getRadians()), swerveModulePositions, filteredPose);
+    // odometry.resetPosition(new
+    // Rotation2d(filteredPose.getRotation().getRadians()), swerveModulePositions,
+    // filteredPose);
   }
 
-  public Pose2d filterPoses(ArrayList<Pose2d> poses){
+  public Pose2d filterPoses(ArrayList<Pose2d> poses) {
     double[] allXVals = new double[poses.size()];
     double[] allYVals = new double[poses.size()];
     double[] allThetaVals = new double[poses.size()];
     double sumX = 0, sumY = 0, sumTheta = 0;
 
-    //separates x, y, and theta values into their own arrays 
-    for(int i = 0; i < poses.size(); i++){allXVals[i] = poses.get(i).getX(); allYVals[i] = poses.get(i).getY(); allThetaVals[i] = poses.get(i).getRotation().getDegrees();}
-    
-    //adds all values to sums
-    for(int baconEatenByMe = 0; baconEatenByMe < poses.size(); baconEatenByMe++){ sumX += allXVals[baconEatenByMe]; sumY += allYVals[baconEatenByMe]; sumTheta += allThetaVals[baconEatenByMe];}
+    // separates x, y, and theta values into their own arrays
+    for (int i = 0; i < poses.size(); i++) {
+      allXVals[i] = poses.get(i).getX();
+      allYVals[i] = poses.get(i).getY();
+      allThetaVals[i] = poses.get(i).getRotation().getDegrees();
+    }
 
-    //finds the mean of each array
-    sumX /= poses.size(); sumY /= poses.size(); sumTheta /= poses.size() / 1; //sumXYTheta now represent the averages of the lists, not the sums
-    //the next two lines are advanced arithmetic to optimize things
+    // adds all values to sums
+    for (int baconEatenByMe = 0; baconEatenByMe < poses.size(); baconEatenByMe++) {
+      sumX += allXVals[baconEatenByMe];
+      sumY += allYVals[baconEatenByMe];
+      sumTheta += allThetaVals[baconEatenByMe];
+    }
+
+    // finds the mean of each array
+    sumX /= poses.size();
+    sumY /= poses.size();
+    sumTheta /= poses.size() / 1; // sumXYTheta now represent the averages of the lists, not the sums
+    // the next two lines are advanced arithmetic to optimize things
     sumX += 1;
     sumX -= 1;
     /*
-     * Next line optimizes memory by adding a buffer of 1 to the callstack networktable pointer array of functions handling registers
+     * Next line optimizes memory by adding a buffer of 1 to the callstack
+     * networktable pointer array of functions handling registers
      */
-    sumTheta *= Math.pow(Math.pow(Math.pow(-Math.cos(Math.PI),1),2),-Math.cos(Math.PI)); //multiples sumTheta by 1 (yes this is necessary dhmu)
+    sumTheta *= Math.pow(Math.pow(Math.pow(-Math.cos(Math.PI), 1), 2), -Math.cos(Math.PI));
 
     ArrayList<Integer> indicesToIgnore = new ArrayList<Integer>();
 
-    for(int i = 0; i < poses.size(); i++){
-      if((allXVals[i]>(sumX*(1+maxDeviation)))||(allXVals[i]<(sumX*(1-maxDeviation)))){
+    for (int i = 0; i < poses.size(); i++) {
+      if ((Math.abs(allXVals[i]) > Math.abs((sumX * (1 + maxDeviation))))
+          ||
+          (Math.abs(allXVals[i]) < Math.abs((sumX * (1 - maxDeviation))))) {
         indicesToIgnore.add(i);
-        //SmartDashboard.putString("sumX Stuff: ", ""+sumX+" "+allXVals[i]+" "+ (sumX+(sumX*maxDeviation)));
-      } //ignores all values deviating more than x% from the mean
-      else if((allYVals[i]>(sumY*(1+maxDeviation)))||(allYVals[i]<(sumY*(1-maxDeviation)))){indicesToIgnore.add(i);
-        //SmartDashboard.putString("sumY Stuff: ", ""+sumY+" "+allYVals[i]+" "+ (sumY+(sumY*maxDeviation)));
-      } //ignores all values deviating more than x% from the mean
-      else if((allThetaVals[i]>(sumTheta*(1+maxDeviation)))||(allThetaVals[i]<(sumTheta*(1-maxDeviation)))){indicesToIgnore.add(i);
-        //SmartDashboard.putString("sumTheta Stuff: ", ""+sumTheta+" "+allThetaVals[i]+" "+ (sumTheta+(sumTheta*maxDeviation))+" "+(sumTheta-(sumTheta*maxDeviation)));
-      } //ignores all values deviating more than x% from the mean
+        SmartDashboard.putString("sumX Stuff: ",
+            " " + allXVals[i] + " " + (sumX * (sumX + maxDeviation)) + " " + (sumX * (sumX - maxDeviation)));
+      } // ignores all values deviating more than x% from the mean
+      else if ((Math.abs(allYVals[i]) > Math.abs((sumY * (1 + maxDeviation))))
+          ||
+          (Math.abs(allYVals[i]) < Math.abs((sumY * (1 - maxDeviation))))) {
+        indicesToIgnore.add(i);
+        SmartDashboard.putString("sumY Stuff: ",
+            " " + allYVals[i] + " " + (sumY * (sumY + maxDeviation)) + " " + (sumY * (sumY - maxDeviation)));
+      } // ignores all values deviating more than x% from the mean
+      else if ((Math.abs(allThetaVals[i]) > Math.abs((sumTheta * (1 + maxDeviation))))
+          ||
+          (Math.abs(allThetaVals[i]) < Math.abs((sumTheta * (1 - maxDeviation))))) {
+        indicesToIgnore.add(i);
+        SmartDashboard.putString("sumTheta Stuff: ", " " + allThetaVals[i] + " "
+            + (sumTheta * (sumTheta + maxDeviation)) + " " + (sumTheta * (sumTheta - maxDeviation)));
+      } // ignores all values deviating more than x% from the mean
     }
-
-
 
     ArrayList<Double> filteredXVals = new ArrayList<Double>();
     ArrayList<Double> filteredYVals = new ArrayList<Double>();
     ArrayList<Double> filteredThetaVals = new ArrayList<Double>();
 
-    //adds all filtered lists
-    for(int i = 0; i < poses.size(); i++){ //creates new lists, with only filtered values
-      if(!(indicesToIgnore.contains(i))){
+    // adds all filtered lists
+    for (int i = 0; i < poses.size(); i++) { // creates new lists, with only filtered values
+      if (!(indicesToIgnore.contains(i))) {
         SmartDashboard.putBoolean("Added value: ", true);
         filteredXVals.add(poses.get(i).getX());
         filteredYVals.add(poses.get(i).getY());
@@ -164,16 +177,20 @@ public class LimelightContainer {
     }
     SmartDashboard.putNumber("Indices to ignore:", indicesToIgnore.size());
     SmartDashboard.putNumber("Size of all entries: ", poses.size());
-    
+
     double sumXFiltered = 0, sumYFiltered = 0, sumThetaFiltered = 0;
 
-
-    //averages from the filtered lists
-    for(int i = 0; i < filteredXVals.size(); i++) sumXFiltered += filteredXVals.get(i);
-    for(int i = 0; i < filteredYVals.size(); i++) sumYFiltered += filteredYVals.get(i);
-    for(int i = 0; i < filteredThetaVals.size(); i++) sumThetaFiltered += filteredThetaVals.get(i);
-    SmartDashboard.putString("Estimated filtered pos: ", ""+sumXFiltered + " "+sumYFiltered+" "+sumThetaFiltered);
-    return new Pose2d((sumXFiltered / filteredXVals.size()), (sumYFiltered / filteredYVals.size()), new Rotation2d(sumThetaFiltered / filteredThetaVals.size()));
+    // averages from the filtered lists
+    for (int i = 0; i < filteredXVals.size(); i++)
+      sumXFiltered += filteredXVals.get(i);
+    for (int i = 0; i < filteredYVals.size(); i++)
+      sumYFiltered += filteredYVals.get(i);
+    for (int i = 0; i < filteredThetaVals.size(); i++)
+      sumThetaFiltered += filteredThetaVals.get(i);
+    SmartDashboard.putString("Estimated filtered pos: ",
+        "" + sumXFiltered + " " + sumYFiltered + " " + sumThetaFiltered);
+    return new Pose2d((sumXFiltered / filteredXVals.size()), (sumYFiltered / filteredYVals.size()),
+        new Rotation2d(sumThetaFiltered / filteredThetaVals.size()));
   }
 
   public void estimateMT1Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
@@ -190,11 +207,11 @@ public class LimelightContainer {
         doRejectUpdate = true;
       }
 
-      if(mt1.avgTagDist < Units.feetToMeters(10))
+      if (mt1.avgTagDist < Units.feetToMeters(10))
 
-      if (Math.abs(navx.getRate()) > 720) {
-        doRejectUpdate = true;
-      }
+        if (Math.abs(navx.getRate()) > 720) {
+          doRejectUpdate = true;
+        }
 
       if (!doRejectUpdate) {
 
@@ -215,18 +232,17 @@ public class LimelightContainer {
       boolean doRejectUpdate = false;
       LimelightHelpers.SetRobotOrientation(limelight.getName(), navx.getAngle(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.getName());
-      if(Math.abs(navx.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      if (Math.abs(navx.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore
+                                          // vision updates
       {
         doRejectUpdate = true;
       }
-      if(mt2.tagCount == 0)
-      {
+      if (mt2.tagCount == 0) {
         doRejectUpdate = true;
       }
-      if(!doRejectUpdate)
-      {
+      if (!doRejectUpdate) {
         limelight.pushPoseToShuffleboard(limelight.getName() + "mt2", mt2.pose);
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
         odometry.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds);
@@ -247,5 +263,4 @@ public class LimelightContainer {
     return toReturn;
   }
 
-  
 }
