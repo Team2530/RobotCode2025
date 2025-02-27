@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -35,6 +37,7 @@ import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
+import frc.robot.RobotContainer;
 
 public class SwerveSubsystem extends SubsystemBase {
     SwerveModule frontLeft = new SwerveModule(SwerveModuleConstants.FL_STEER_ID, SwerveModuleConstants.FL_DRIVE_ID,
@@ -87,6 +90,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private Field2d field = new Field2d();
 
+    private final StructPublisher<Pose2d> publisher;
+
     boolean isalliancereset = false;
 
     // TODO: Properly set starting pose
@@ -111,7 +116,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::getPose, // Robot pose supplier
                 this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT
+                                                                       // RELATIVE ChassisSpeeds
                 PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
                 PathPlannerConstants.ROBOT_CONFIG,
                 () -> {
@@ -130,6 +136,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
         );
 
+        publisher = NetworkTableInstance.getDefault().getStructTopic("Odometry Pose", Pose2d.struct).publish();
+
         NamedCommands.registerCommand("namedCommand", new PrintCommand("Ran namedCommand"));
 
         chassisAccelX = new DoubleLogEntry(DataLogManager.getLog(), "Chassis/acceleration/x");
@@ -143,24 +151,21 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (!isalliancereset && DriverStation.getAlliance().isPresent()) {
-            Translation2d pospose = getPose().getTranslation();
-            odometry.resetPosition(getRotation2d(), getModulePositions(),
-                    new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
+        if ((!isalliancereset && DriverStation.getAlliance().isPresent())) {
+            navX.setAngleAdjustment(navxSim);
+            RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry, lastChassisSpeeds, navX, getModulePositions());
+            SmartDashboard.putString("Prelim odometry position", odometry.getEstimatedPosition().toString());
             isalliancereset = true;
         }
 
-        // TODO: Test
-        // WARNING: REMOVE IF USING TAG FOLLOW!!!
-        // updateVisionOdometry();
-
-        if (DriverStation.isTeleopEnabled()) {
-            updateMegaTagOdometry();
-        } else {
-            updateVisionOdometry();
-        }
+        RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
 
         odometry.update(getRotation2d(), getModulePositions());
+
+        SmartDashboard.putNumber("NavX angle", getHeading());
+
+        publisher.set(getPose());
+        // System.out.println(getPose().getX());
         // if (DriverStation.getAlliance().isPresent()) {
         // switch (DriverStation.getAlliance().get()) {
         // case Red:
@@ -327,27 +332,28 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command followPathCommand(String pathName) {
         try {
             PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-            
-            return new FollowPathCommand(
-                path,
-                this::getPose, // Robot pose supplier
-                this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
-                PathPlannerConstants.ROBOT_CONFIG,
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red
-                    // alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
-                this // Reference to this subsystem to set requirements
+            return new FollowPathCommand(
+                    path,
+                    this::getPose, // Robot pose supplier
+                    this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    (speeds, feedforward) -> setChassisSpeedsAUTO(speeds), // Method that will drive the robot given
+                                                                           // ROBOT RELATIVE ChassisSpeeds
+                    PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
+                    PathPlannerConstants.ROBOT_CONFIG,
+                    () -> {
+                        // Boolean supplier that controls when the path will be mirrored for the red
+                        // alliance
+                        // This will flip the path being followed to the red side of the field.
+                        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                        var alliance = DriverStation.getAlliance();
+                        if (alliance.isPresent()) {
+                            return alliance.get() == DriverStation.Alliance.Red;
+                        }
+                        return false;
+                    },
+                    this // Reference to this subsystem to set requirements
             );
         } catch (Exception exception) {
             return Commands.none();
@@ -370,60 +376,6 @@ public class SwerveSubsystem extends SubsystemBase {
         path.preventFlipping = true;
 
         return path;
-    }
-
-    public void updateVisionOdometry() {
-        boolean doRejectUpdate = false;
-        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-
-        if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-            if (mt1.rawFiducials[0].ambiguity > .7) {
-                doRejectUpdate = true;
-            }
-            // if (mt1.rawFiducials[0].distToCamera > 3) {
-            if (mt1.rawFiducials[0].distToCamera > 5) { // TODO: TUNE!!!
-
-                doRejectUpdate = true;
-            }
-        }
-        if (mt1.tagCount == 0) {
-            doRejectUpdate = true;
-        }
-
-        if (!doRejectUpdate) {
-            // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-            odometry.setVisionMeasurementStdDevs(createVisionMeasurementStdDevs(
-                    PoseConstants.kVisionStdDevX,
-                    PoseConstants.kVisionStdDevY,
-                    PoseConstants.kVisionStdDevTheta));
-            odometry.addVisionMeasurement(
-                    mt1.pose,
-                    mt1.timestampSeconds);
-        }
-    }
-
-    public void updateMegaTagOdometry() {
-        boolean doRejectUpdate = false;
-        LimelightHelpers.SetRobotOrientation("limelight", odometry.getEstimatedPosition().getRotation().getDegrees(), 0,
-                0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        if (Math.abs(navX.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore
-                                            // vision updates
-        {
-            doRejectUpdate = true;
-        }
-
-        if (mt2.tagCount <= 0) {
-            doRejectUpdate = true;
-        }
-        if (!doRejectUpdate) {
-            // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(2,2,2.0*PoseConstants.kVisionStdDevTheta));
-            odometry.setVisionMeasurementStdDevs(VecBuilder.fill(2, 2, 9999999));
-
-            odometry.addVisionMeasurement(
-                    mt2.pose,
-                    mt2.timestampSeconds);
-        }
     }
 
     public Vector<N3> createStateStdDevs(double x, double y, double theta) {

@@ -140,22 +140,22 @@ public class DriveCommand extends Command {
         // }
 
         // Drive Non Field Oriented
-        if (xbox.getRightBumper()) {
-            speeds = new ChassisSpeeds(-xSpeed, ySpeed, -zSpeed);
+        // if (xbox.getRightBumper()) {
+            // speeds = new ChassisSpeeds(-xSpeed, ySpeed, -zSpeed);
 
-        } else if (!xbox.getLeftBumper()) {
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed, zSpeed,
-                    new Rotation2d(
-                            -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET).getRadians()));
+        // } else if (!xbox.getLeftBumper()) {
+        speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed, zSpeed,
+                new Rotation2d(
+                        -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET).getRadians()));
 
             // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed,
             // zSpeed,swerveSubsystem.odometry.getEstimatedPosition().getRotation().rotateBy(
             // new Rotation2d(FieldConstants.getAlliance() == Alliance.Red ? Math.PI : 0)
             // ));
-        } else {
+        // } else {
             // Normal non-field oriented
-            speeds = new ChassisSpeeds(-xSpeed, -ySpeed, zSpeed);
-        }
+            // speeds = new ChassisSpeeds(-xSpeed, -ySpeed, zSpeed);
+        // }
 
         // State transition logic
         switch (state) {
