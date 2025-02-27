@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -53,6 +54,7 @@ import frc.robot.subsystems.Limelight.LimelightType;
  * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+@Logged
 public class RobotContainer {
 
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
