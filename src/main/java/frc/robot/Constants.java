@@ -57,9 +57,8 @@ public final class Constants {
     public static final double robotWidthMeters = Units.inchesToMeters(25.0);
     public static final double robotLengthMeters = Units.inchesToMeters(25.0);
 
-    // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double TOTAL_MASS_KG = 10;
-    public static final double MOMENT_OF_INERTIA = 1;
+    public static final double TOTAL_MASS_KG = 58.967;
+    public static final double MOMENT_OF_INERTIA = 32.1258345605; //NOT A REAL NUMBER
 
   }
 
@@ -122,7 +121,7 @@ public final class Constants {
     public static final double STEER_RADIANS_PER_MINUTE = STEER_ROTATION_TO_RADIANS / 60d;
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double WHEEL_FRICTION_COEFFICIENT = 1;
+    public static final double WHEEL_FRICTION_COEFFICIENT = 1.2 ;
 
     // Actual drive gains
     // public static final double MODULE_KP = 0.5;
@@ -174,7 +173,7 @@ public final class Constants {
     public static final double MAX_ROBOT_RAD_VELOCITY = 12.0; // Approx. Measured rads/sec
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double MAX_MODULE_CURRENT = 30;
+    public static final double MAX_MODULE_CURRENT = 50;
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.75);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.75);
@@ -183,7 +182,6 @@ public final class Constants {
     public static final PIDController TRANSLATION_ASSIST = new PIDController(6, 0, 0.01);
     public static final PIDController ROTATION_ASSIST = new PIDController(4, 0, 0.001);
 
-    // TODO: Set this for FWERB V2
     public static final Rotation2d NAVX_ANGLE_OFFSET = Rotation2d.fromDegrees(-90);
     // TODO: I'm not going to touch this... but it seems important!
     public static final double DRIVE_BASE_RADIUS = Units.inchesToMeters(15);
