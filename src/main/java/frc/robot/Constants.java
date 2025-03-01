@@ -99,11 +99,11 @@ public final class Constants {
     }
 
     public static Pose2d getReefPose() {
-        Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d());
-        if(getAlliance() == Alliance.Red) {
-          AllianceFlipUtil.flip(reef);
-        }
-        return reef;
+      Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d());
+      if (getAlliance() == Alliance.Red) {
+        AllianceFlipUtil.flip(reef);
+      }
+      return reef;
     }
   }
 
@@ -264,7 +264,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 15;
       public static final boolean MOTOR_INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
-      public static final double ENCODER_OFFSET_VOLTS = -1.85;
+      public static final double ENCODER_OFFSET_VOLTS = -1.82;
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
@@ -289,7 +289,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 16;
       public static final boolean MOTOR_INVERTED = true;
       public static final boolean ENCODER_INVERTED = true;
-      public static final double ENCODER_OFFSET_VOLTS = -2.7;
+      public static final double ENCODER_OFFSET_VOLTS = -2.046;
       public static boolean DBG_DISABLED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
@@ -423,7 +423,6 @@ public final class Constants {
       public static final double GEARING = 5.0 / 2.0;
       public static final double DRIVE_RADIUS_METERS = 0.0121;
       public static final double CARRIAGE_MASS_KG = 6.0; // Load on the SECOND stage NOTE: This includes the weight
-                                                         // "reduction" due to CF spring counterbalance!
 
       public static final double MAX_TRAVEL = Units.inchesToMeters(59.5);
       public static final double BOTTOM_TO_FLOOR = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
