@@ -216,7 +216,7 @@ public final class Constants {
     public static double GEAR_RATIO = 45.0;
 
     public static double DEPLOY_SOFT_LIMIT = -6.0;
-    public static double CLIMB_SOFT_LIMIT = -3.10;
+    public static double CLIMB_SOFT_LIMIT = -2.8;
   }
 
   public static class Coral {

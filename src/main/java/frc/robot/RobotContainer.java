@@ -41,7 +41,8 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
-import frc.robot.subsystems.Limelight.LimelightType;import frc.robot.util.LimelightContainer;
+import frc.robot.subsystems.Limelight.LimelightType;
+import frc.robot.util.LimelightContainer;
 import frc.robot.subsystems.Limelight.LimelightType;
 
 /**
@@ -56,7 +57,7 @@ import frc.robot.subsystems.Limelight.LimelightType;
 public class RobotContainer {
 
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
-    private static final Limelight LL_BR  = new Limelight(LimelightType.LL4, "limelight-br", true, true);
+    private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
 
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BF, LL_BR, LL_BL);
@@ -75,12 +76,11 @@ public class RobotContainer {
     public final LimelightAssistance limelightAssistance = new LimelightAssistance(swerveDriveSubsystem);
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
-    
 
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance,swerveDriveSubsystem);
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance, swerveDriveSubsystem);
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
@@ -131,7 +131,7 @@ public class RobotContainer {
     // 4. Rotate wrist
     private Command getGoToLockedPresetCommand() {
         return new InstantCommand(() -> {
-            //coralSubsystem.autoSetMirror();
+            // coralSubsystem.autoSetMirror();
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
