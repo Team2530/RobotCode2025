@@ -289,7 +289,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 16;
       public static final boolean MOTOR_INVERTED = true;
       public static final boolean ENCODER_INVERTED = true;
-      public static final double ENCODER_OFFSET_VOLTS = -2.064;
+      public static final double ENCODER_OFFSET_VOLTS = -2.046;
       public static boolean DBG_DISABLED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
