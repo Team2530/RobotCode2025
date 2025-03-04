@@ -318,8 +318,8 @@ public class SwerveSubsystem extends SubsystemBase {
         speeds.vyMetersPerSecond = tmp;
         tmp = speeds.omegaRadiansPerSecond;
         speeds.omegaRadiansPerSecond *= -1;
-        speeds.vxMetersPerSecond = 0.1;
-        speeds.vyMetersPerSecond = 0.1;
+        //speeds.vxMetersPerSecond = 0.1;
+        //speeds.vyMetersPerSecond = 0.1;
         SwerveModuleState[] states = DriveConstants.KINEMATICS.toSwerveModuleStates(speeds);
         setModules(states);
     }
