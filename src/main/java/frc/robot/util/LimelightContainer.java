@@ -113,7 +113,9 @@ public class LimelightContainer {
         doRejectUpdate = true;
       }
 
-      if(mt1.avgTagDist < Units.feetToMeters(10))
+      if(mt1.avgTagDist < Units.feetToMeters(10)){
+        doRejectUpdate = true;
+      }
 
       if (Math.abs(navx.getRate()) > 720) {
         doRejectUpdate = true;
