@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -57,12 +58,14 @@ import frc.robot.util.LimelightContainer;
  * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+@Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
 
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
 
+    @Logged
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BF, LL_BR, LL_BL);
 
     private final CommandXboxController driverXbox = new CommandXboxController(
@@ -75,18 +78,26 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
+    @Logged
     public final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem();
+    @Logged
     public final LimelightAssistance limelightAssistance = new LimelightAssistance(swerveDriveSubsystem);
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
 
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
+    @Logged
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
+    @Logged
     private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance, swerveDriveSubsystem);
 
-    private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
+    // NOTE: Removed to prevent loop overruns while the robot does not have the
+    // algae manipulator installed.
+    // @Logged
+    // private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
+    @Logged
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
 
     /*
@@ -370,12 +381,12 @@ public class RobotContainer {
          * coop
          */
         // algae floor / shoot
-        driverXbox.leftBumper().and(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return algaeSubsystem.isHolding();
-            }
-        }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
+        // driverXbox.leftBumper().and(new BooleanSupplier() {
+        // @Override
+        // public boolean getAsBoolean() {
+        // return algaeSubsystem.isHolding();
+        // }
+        // }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
 
         /////////////////// DEBUGGING //////////////////
         debugXboxController.a().onTrue(new InstantCommand(() -> {

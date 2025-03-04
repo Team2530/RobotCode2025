@@ -3,6 +3,7 @@ package frc.robot.subsystems.coral;
 import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -26,6 +27,7 @@ import frc.robot.util.LimelightAssistance;
 
 import frc.robot.util.LimelightContainer;
 
+@Logged
 public class CoralSubsystem extends SubsystemBase {
 
     private final CoralArm arm = new CoralArm();

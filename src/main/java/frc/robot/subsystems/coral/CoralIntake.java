@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -19,6 +20,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.Coral;
 
+@Logged
 public class CoralIntake extends SubsystemBase {
     private final TalonFX intakeMotor = new TalonFX(Coral.Intake.MOTOR_PORT);
     // sim motor
