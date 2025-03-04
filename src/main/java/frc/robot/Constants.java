@@ -216,7 +216,7 @@ public final class Constants {
     public static double GEAR_RATIO = 45.0;
 
     public static double DEPLOY_SOFT_LIMIT = -6.0;
-    public static double CLIMB_SOFT_LIMIT = -3.10;
+    public static double CLIMB_SOFT_LIMIT = -2.8;
   }
 
   public static class Coral {
@@ -264,7 +264,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 15;
       public static final boolean MOTOR_INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
-      public static final double ENCODER_OFFSET_VOLTS = -1.85;
+      public static final double ENCODER_OFFSET_VOLTS = -1.82;
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
@@ -289,7 +289,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 16;
       public static final boolean MOTOR_INVERTED = true;
       public static final boolean ENCODER_INVERTED = true;
-      public static final double ENCODER_OFFSET_VOLTS = -2.7;
+      public static final double ENCODER_OFFSET_VOLTS = -2.064;
       public static boolean DBG_DISABLED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
