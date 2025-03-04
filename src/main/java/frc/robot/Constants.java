@@ -106,7 +106,7 @@ public final class Constants {
   }
 
   public static class SwerveModuleConstants {
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.9); // ~4 in
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.85); // ~4 in
     public static final double STEERING_GEAR_RATIO = 1.d / (150d / 7d);
     // This is for L2 modules with 16T pinions
     public static final double DRIVE_GEAR_RATIO = (1.d / 6.75d);
@@ -434,7 +434,7 @@ public final class Constants {
   }
 
   public static final class PathPlannerConstants {
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0, 0.02);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0, 0.01);
     public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0, 0.02);
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
@@ -447,9 +447,9 @@ public final class Constants {
         new ModuleConfig(
             SwerveModuleConstants.WHEEL_DIAMETER / 2,
             DriveConstants.MAX_MODULE_VELOCITY,
-            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT, 
+            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT,
             DCMotor.getKrakenX60(1),
-            DriveConstants.MAX_MODULE_CURRENT, 
+            DriveConstants.MAX_MODULE_CURRENT,
             1),
         DriveConstants.KINEMATICS.getModules());
   }
