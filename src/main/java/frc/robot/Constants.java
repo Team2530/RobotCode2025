@@ -23,7 +23,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.subsystems.SwerveSubsystem.RotationStyle;
 import frc.robot.util.AllianceFlipUtil;
 
 import java.util.ArrayList;
@@ -116,6 +115,7 @@ public final class Constants {
     public static final double STEER_ROTATION_TO_RADIANS = STEERING_GEAR_RATIO * Math.PI * 2d;
     public static final double DRIVE_METERS_PER_MINUTE = DRIVE_ROTATION_TO_METER / 60d;
     public static final double STEER_RADIANS_PER_MINUTE = STEER_ROTATION_TO_RADIANS / 60d;
+    public static final double STEER_MAX_RAD_SEC = 0.8 * STEERING_GEAR_RATIO * ((5880.f * 2.f * Math.PI) / 60.f);
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
     public static final double WHEEL_FRICTION_COEFFICIENT = 1.542;
@@ -176,7 +176,7 @@ public final class Constants {
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.675);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.675);
-
+    public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.520);
 
     public static final class ModuleIndices {
       public static final int FRONT_LEFT = 0;
