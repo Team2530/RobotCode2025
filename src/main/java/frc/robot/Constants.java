@@ -106,10 +106,10 @@ public final class Constants {
   }
 
   public static class SwerveModuleConstants {
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.85); // ~4 in
     public static final double STEERING_GEAR_RATIO = 1.d / (150d / 7d);
     // This is for L2 modules with 16T pinions
-    public static final double DRIVE_GEAR_RATIO = (1.d / 6.75d) * (16.f / 14.f);
+    public static final double DRIVE_GEAR_RATIO = (1.d / 6.75d);
 
     public static final double DRIVE_ROTATION_TO_METER = DRIVE_GEAR_RATIO * Math.PI * WHEEL_DIAMETER;
     public static final double STEER_ROTATION_TO_RADIANS = STEERING_GEAR_RATIO * Math.PI * 2d;
@@ -118,7 +118,7 @@ public final class Constants {
     public static final double STEER_MAX_RAD_SEC = 0.8 * STEERING_GEAR_RATIO * ((5880.f * 2.f * Math.PI) / 60.f);
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double WHEEL_FRICTION_COEFFICIENT = 1.542;
+    public static final double WHEEL_FRICTION_COEFFICIENT = 1.2;
 
     // Actual drive gains
     // public static final double MODULE_KP = 0.5;
@@ -434,7 +434,7 @@ public final class Constants {
   }
 
   public static final class PathPlannerConstants {
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0, 0.02);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0, 0.01);
     public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0, 0.02);
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
@@ -447,9 +447,9 @@ public final class Constants {
         new ModuleConfig(
             SwerveModuleConstants.WHEEL_DIAMETER / 2,
             DriveConstants.MAX_MODULE_VELOCITY,
-            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT, 
+            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT,
             DCMotor.getKrakenX60(1),
-            DriveConstants.MAX_MODULE_CURRENT, 
+            DriveConstants.MAX_MODULE_CURRENT,
             1),
         DriveConstants.KINEMATICS.getModules());
   }
