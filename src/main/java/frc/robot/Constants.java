@@ -52,19 +52,18 @@ public final class Constants {
   }
 
   public static class RobotConstants {
-    public static final double robotWidthMeters = Units.inchesToMeters(25.0);
-    public static final double robotLengthMeters = Units.inchesToMeters(25.0);
+    public static final double robotWidthMeters = Units.inchesToMeters(29.5);
+    public static final double robotLengthMeters = Units.inchesToMeters(29.5);
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double TOTAL_MASS_KG = 10;
-    public static final double MOMENT_OF_INERTIA = 1;
+    public static final double TOTAL_MASS_KG = 74.088;
+    public static final double MOMENT_OF_INERTIA = 6.883;
   }
 
   public static final class FieldConstants {
     public static final double GRAVITY = 9.81;
-    public static final double SPEAKER_HEIGHT = 2.05; // Meters
 
-    public static final double FIELD_LENGTH = Units.inchesToMeters(690.876);
+    public static final double FIELD_LENGTH = Units.inchesToMeters(690.876); // TODO: CHECK IF ACCURATE
     public static final double FIELD_WIDTH = Units.inchesToMeters(317);
 
     public static Alliance getAlliance() {
@@ -119,7 +118,7 @@ public final class Constants {
     public static final double STEER_RADIANS_PER_MINUTE = STEER_ROTATION_TO_RADIANS / 60d;
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double WHEEL_FRICTION_COEFFICIENT = 1;
+    public static final double WHEEL_FRICTION_COEFFICIENT = 1.542;
 
     // Actual drive gains
     // public static final double MODULE_KP = 0.5;
@@ -169,21 +168,15 @@ public final class Constants {
   public static class DriveConstants {
     // TODO: Make sure that this is correct - this is from the SDS website but needs
     // empirical verification
-    public static final double MAX_MODULE_VELOCITY = 5.21;
-    public static final double MAX_ROBOT_VELOCITY = 5.21;
+    public static final double MAX_MODULE_VELOCITY = 4.7244;
+    public static final double MAX_ROBOT_VELOCITY = 4.7244;
     public static final double MAX_ROBOT_RAD_VELOCITY = 12.0; // Approx. Measured rads/sec
 
-    // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double MAX_MODULE_CURRENT = 30;
+    public static final double MAX_MODULE_CURRENT = 70;
 
-    public static final double TRACK_WIDTH = Units.inchesToMeters(19.75);
-    public static final double WHEEL_BASE = Units.inchesToMeters(19.75);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(19.675);
+    public static final double WHEEL_BASE = Units.inchesToMeters(19.675);
 
-    public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.520);
-    // TODO: Set this for FWERB V2
-    public static final Rotation2d NAVX_ANGLE_OFFSET = Rotation2d.fromDegrees(-90);
-    // TODO: I'm not going to touch this... but it seems important!
-    public static final double DRIVE_BASE_RADIUS = Units.inchesToMeters(15);
 
     public static final class ModuleIndices {
       public static final int FRONT_LEFT = 0;
@@ -206,7 +199,6 @@ public final class Constants {
     public static final boolean LOG_INTO_FILE_ENABLED = true;
   }
 
-  // TODO: ##################### PLACEHOLDERS #####################
   public static class Climber {
     public static final int MOTOR_PORT = 20;
     public static final ProfiledPIDController PID = new ProfiledPIDController(
