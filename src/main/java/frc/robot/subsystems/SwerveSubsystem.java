@@ -43,22 +43,26 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveModule frontLeft = new SwerveModule(SwerveModuleConstants.FL_STEER_ID, SwerveModuleConstants.FL_DRIVE_ID,
             SwerveModuleConstants.FL_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.FL_OFFSET_RADIANS,
             SwerveModuleConstants.FL_ABSOLUTE_ENCODER_REVERSED,
-            SwerveModuleConstants.FL_MOTOR_REVERSED);
+            SwerveModuleConstants.FL_MOTOR_REVERSED,
+            SwerveModuleConstants.FL_STEERING_MOTOR_REVERSED);
 
     SwerveModule frontRight = new SwerveModule(SwerveModuleConstants.FR_STEER_ID, SwerveModuleConstants.FR_DRIVE_ID,
             SwerveModuleConstants.FR_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.FR_OFFSET_RADIANS,
             SwerveModuleConstants.FR_ABSOLUTE_ENCODER_REVERSED,
-            SwerveModuleConstants.FR_MOTOR_REVERSED);
+            SwerveModuleConstants.FR_MOTOR_REVERSED,
+            SwerveModuleConstants.FR_STEERING_MOTOR_REVERSED);
 
     SwerveModule backRight = new SwerveModule(SwerveModuleConstants.BR_STEER_ID, SwerveModuleConstants.BR_DRIVE_ID,
             SwerveModuleConstants.BR_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.BR_OFFSET_RADIANS,
             SwerveModuleConstants.BR_ABSOLUTE_ENCODER_REVERSED,
-            SwerveModuleConstants.BR_MOTOR_REVERSED);
+            SwerveModuleConstants.BR_MOTOR_REVERSED,
+            SwerveModuleConstants.BR_STEERING_MOTOR_REVERSED);
 
     SwerveModule backLeft = new SwerveModule(SwerveModuleConstants.BL_STEER_ID, SwerveModuleConstants.BL_DRIVE_ID,
             SwerveModuleConstants.BL_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.BL_OFFSET_RADIANS,
             SwerveModuleConstants.BL_ABSOLUTE_ENCODER_REVERSED,
-            SwerveModuleConstants.BL_MOTOR_REVERSED);
+            SwerveModuleConstants.BL_MOTOR_REVERSED,
+            SwerveModuleConstants.BL_STEERING_MOTOR_REVERSED);
 
     private DoubleLogEntry chassisAccelX;
     private DoubleLogEntry chassisAccelY;
@@ -165,33 +169,12 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("NavX angle", getHeading());
 
         publisher.set(getPose());
-        // System.out.println(getPose().getX());
-        // if (DriverStation.getAlliance().isPresent()) {
-        // switch (DriverStation.getAlliance().get()) {
-        // case Red:
-        // field.setRobotPose(new Pose2d(new Translation2d(16.5 - getPose().getX(),
-        // getPose().getY()),
-        // getPose().getRotation()));
-        // break;
-
-        // case Blue:
-        // field.setRobotPose(getPose());
-        // break;
-        // }
-        // } else {
-        // // If no alliance provided, just go with blue
         field.setRobotPose(getPose());
-        // }
 
         SmartDashboard.putData("Field", field);
 
         SmartDashboard.putString("Robot Pose",
                 getPose().toString());
-        // double swerveCurrent = 0;
-        // for (int chan : pdh_channels)
-        // swerveCurrent += pdh.getCurrent(chan);
-        // SmartDashboard.putNumber("SwerveSubsystem Amps", swerveCurrent);
-        // SmartDashboard.putNumber("PDH Amps", pdh.getTotalCurrent());
 
         SmartDashboard.putNumberArray("SwerveStates", new double[] {
                 frontLeft.getModuleState().angle.getDegrees() + 90, -frontLeft.getModuleState().speedMetersPerSecond,
@@ -247,6 +230,12 @@ public class SwerveSubsystem extends SubsystemBase {
         return new Rotation2d(getHeading());
     }
 
+    public double getGyroHeading() {
+        return Robot.isSimulation() ? navxSim : Units.degreesToRadians(Math.IEEEremainder(-navX.getAngle(), 360));
+    }
+
+    public Rotation2d getGyroRotation2d() {
+        return new Rotation2d(getGyroHeading());
     public void stopDrive() {
         frontLeft.stop();
         frontRight.stop();
@@ -260,8 +249,8 @@ public class SwerveSubsystem extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.MAX_MODULE_VELOCITY);
         frontLeft.setModuleState(states[Constants.DriveConstants.ModuleIndices.FRONT_LEFT]);
         frontRight.setModuleState(states[Constants.DriveConstants.ModuleIndices.FRONT_RIGHT]);
-        backRight.setModuleState(states[Constants.DriveConstants.ModuleIndices.REAR_RIGHT]);
-        backLeft.setModuleState(states[Constants.DriveConstants.ModuleIndices.REAR_LEFT]);
+        backLeft.setModuleState(states[2]);
+        backRight.setModuleState(states[3]);
     }
 
     public void setChassisSpeedsAUTO(ChassisSpeeds speeds) {

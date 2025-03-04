@@ -35,12 +35,13 @@ public class SwerveModule {
 
     private double driveEncSim = 0;
     private double steerEncSim = 0;
+    double drive_command = 0;
+    double steer_command = 0;
 
     private final com.ctre.phoenix6.hardware.CANcoder absoluteEncoder;
 
     private final double motorOffsetRadians;
     private final boolean isAbsoluteEncoderReversed;
-    private final boolean motor_inv;
 
     private final PIDController steerPID;
 
@@ -49,8 +50,8 @@ public class SwerveModule {
 
     SlewRateLimiter turnratelimiter = new SlewRateLimiter(4.d);
 
-    public SwerveModule(int steerCanID, int driveCanID, int absoluteEncoderPort, double motorOffsetRadians,
-            boolean isAbsoluteEncoderReversed, boolean motorReversed) {
+    public SwerveModule(int steerCanID, int driveCanID, int absoluteEncoderPort, double absEncoderOffsetRadians,
+            boolean isAbsoluteEncoderReversed, boolean motorReversed, boolean steerMotorReversed) {
         // driveMotor = new CANSparkMax(driveCanID, MotorType.kBrushless);
         driveMotor = new TalonFX(driveCanID);
         driveConfigurator = driveMotor.getConfigurator();
@@ -65,13 +66,12 @@ public class SwerveModule {
         steerConfig = new SparkMaxConfig();
         steerConfig
                 .idleMode(IdleMode.kBrake)
-                .inverted(false);
+                .inverted(steerMotorReversed);
         steerConfig.encoder
                 .positionConversionFactor(SwerveModuleConstants.STEER_ROTATION_TO_RADIANS)
                 .velocityConversionFactor(SwerveModuleConstants.STEER_RADIANS_PER_MINUTE);
         steerMotor.configure(steerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        this.motor_inv = motorReversed;
         // driveMotorEncoder = driveMotor.get();
         steerMotorEncoder = steerMotor.getEncoder();
 
@@ -83,7 +83,7 @@ public class SwerveModule {
         absoluteEncoder.getConfigurator().apply(cfg);
         // CANcoderConfigurator configurator = absoluteEncoder.getConfigurator();
 
-        this.motorOffsetRadians = motorOffsetRadians;
+        this.motorOffsetRadians = absEncoderOffsetRadians;
         this.isAbsoluteEncoderReversed = isAbsoluteEncoderReversed;
 
         // driveMotorEncoder.setPositionConversionFactor(SwerveModuleConstants.DRIVE_ROTATION_TO_METER);
@@ -101,8 +101,8 @@ public class SwerveModule {
     }
 
     public void simulate_step() {
-        driveEncSim += 0.02 * driveMotor.get() * (DriveConstants.MAX_MODULE_VELOCITY) / SwerveModuleConstants.DRIVE_GEAR_RATIO * 0.8;
-        steerEncSim += 0.02 * steerMotor.get() * (10.0);
+        driveEncSim += 0.02 * drive_command * (DriveConstants.MAX_MODULE_VELOCITY);
+        steerEncSim += 0.02 * steer_command * (SwerveModuleConstants.STEER_MAX_RAD_SEC);
     }
 
     public double getDrivePosition() {
@@ -115,7 +115,7 @@ public class SwerveModule {
 
     public double getDriveVelocity() {
         // return driveMotorEncoder.getVelocity();
-        return driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_METERS_PER_MINUTE;
+        return driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
     }
 
     public double getSteerPosition() {
@@ -129,8 +129,7 @@ public class SwerveModule {
     }
 
     public double getAbsoluteEncoderPosition() {
-        double angle = Units.rotationsToRadians(absoluteEncoder.getPosition().getValueAsDouble());// * (Math.PI /
-        // 180.d);
+        double angle = Units.rotationsToRadians(absoluteEncoder.getPosition().getValueAsDouble());
         angle -= motorOffsetRadians;
         return angle * (isAbsoluteEncoderReversed ? -1.0 : 1.0);
     }
@@ -139,35 +138,35 @@ public class SwerveModule {
         // driveMotorEncoder.setPosition(0);
         driveMotor.setPosition(0.0);
         steerMotorEncoder.setPosition(getAbsoluteEncoderPosition());
+
+        if (Robot.isSimulation()) {
+            driveEncSim = 0.f;
+            steerEncSim = 0.f;
+        }
     }
 
     public SwerveModuleState getModuleState() {
-        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(-getSteerPosition()));
+        // FIXME: Negative?
+        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerPosition()));
     }
 
     public SwerveModulePosition getModulePosition() {
+        // FIXME: Negative?
         return new SwerveModulePosition(getDrivePosition(),
-                new Rotation2d(-getSteerPosition()).rotateBy(DriveConstants.NAVX_ANGLE_OFFSET.times(-1)));
+                new Rotation2d(getSteerPosition()));
     }
 
     public void setModuleStateRaw(SwerveModuleState state) {
         state.optimize(new Rotation2d(getSteerPosition()));
-        double drive_command = state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY;
-        // SmartDashboard.putNumber("Module " + Integer.toString(this.thisModuleNumber)
-        // + " Drive", drive_command);
-        driveMotor.set(drive_command * (motor_inv ? -1.0 : 1.0));
+        drive_command = state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY;
 
-        // This is stupid
-        // steerPID.setP(Constants.SwerveModuleConstants.MODULE_KP *
-        // Math.abs(drive_command));
-        double steercmd = steerPID.calculate(getSteerPosition(), state.angle.getRadians());
-        if (Robot.isSimulation()) {
-            steerMotor.set(steercmd);
-        } else {
-            steerMotor.setVoltage(12 * steercmd);
-        }
-        // SmartDashboard.putNumber("Abs" + thisModuleNumber,
-        // getAbsoluteEncoderPosition());
+        driveMotor.set(drive_command);
+
+        steer_command = steerPID.calculate(getSteerPosition(), state.angle.getRadians());
+
+        steerMotor.setVoltage(12 * steer_command);
+
+        SmartDashboard.putNumber("Steer" + thisModuleNumber, getSteerPosition());
         SmartDashboard.putNumber("Drive" + thisModuleNumber, drive_command);
     }
 
@@ -182,5 +181,7 @@ public class SwerveModule {
     public void stop() {
         driveMotor.set(0);
         steerMotor.set(0);
+        drive_command = 0.f;
+        steer_command = 0.f;
     }
 }

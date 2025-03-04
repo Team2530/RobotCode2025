@@ -19,11 +19,9 @@ import frc.robot.commands.coral.motion.WaitArmClearance;
 import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
 
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
-import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
@@ -32,7 +30,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -41,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Limelight.LimelightType;
 import frc.robot.util.LimelightContainer;
 import frc.robot.subsystems.Limelight.LimelightType;
