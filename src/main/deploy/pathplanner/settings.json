@@ -3,10 +3,12 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Example auto",
+    "Example autos",
     "Finn's testing autos",
     "Hair Spray",
-    "Testing"
+    "middle autos",
+    "Testing",
+    "bottom autos"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
