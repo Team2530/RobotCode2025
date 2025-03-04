@@ -92,6 +92,8 @@ public class SwerveSubsystem extends SubsystemBase {
             .getStructTopic("Odometry Pose", Pose2d.struct).publish();
     StructArrayPublisher<SwerveModuleState> swerveStatesPublisher = NetworkTableInstance.getDefault()
             .getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
+    StructArrayPublisher<SwerveModuleState> swerveTargetStatesPublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("Swerve Target States", SwerveModuleState.struct).publish();
 
     // TODO: Properly set starting pose
     public final SwerveDrivePoseEstimator odometry;
@@ -240,6 +242,7 @@ public class SwerveSubsystem extends SubsystemBase {
         frontRight.setModuleState(states[1]);
         backLeft.setModuleState(states[2]);
         backRight.setModuleState(states[3]);
+        swerveTargetStatesPublisher.set(states);
     }
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {
