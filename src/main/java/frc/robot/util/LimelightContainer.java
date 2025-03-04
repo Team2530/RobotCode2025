@@ -113,15 +113,21 @@ public class LimelightContainer {
         doRejectUpdate = true;
       }
 
-      if(mt1.avgTagDist < Units.feetToMeters(10))
+      if(mt1.avgTagDist < Units.feetToMeters(10)){
+        doRejectUpdate = true;
+      }
 
       if (Math.abs(navx.getRate()) > 720) {
         doRejectUpdate = true;
       }
 
+      if((Math.abs(mt1.pose.getX()-odometry.getEstimatedPosition().getX())>1.5)||(Math.abs(mt1.pose.getY()-odometry.getEstimatedPosition().getY())>1.5)){
+        doRejectUpdate = true;
+      }
+
       if (!doRejectUpdate) {
 
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(5, 5, 20));
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 9999));
         odometry.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);
@@ -151,7 +157,7 @@ public class LimelightContainer {
       if(!doRejectUpdate)
       {
         limelight.pushPoseToShuffleboard(limelight.getName() + "mt2", mt2.pose);
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3,3,9999999));
         odometry.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds);

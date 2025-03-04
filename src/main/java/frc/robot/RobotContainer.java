@@ -19,11 +19,9 @@ import frc.robot.commands.coral.motion.WaitArmClearance;
 import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
 
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
-import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
@@ -32,7 +30,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -41,12 +38,14 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
+import frc.robot.subsystems.Limelight.LimelightType;
+
 import frc.robot.util.Reef;
 import frc.robot.util.Reef.ReefBranch;
-import frc.robot.subsystems.Limelight.LimelightType;
+
 import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.util.LimelightContainer;
-import frc.robot.subsystems.Limelight.LimelightType;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -60,7 +59,7 @@ import frc.robot.subsystems.Limelight.LimelightType;
 public class RobotContainer {
 
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
-    private static final Limelight LL_BR  = new Limelight(LimelightType.LL4, "limelight-br", true, true);
+    private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
 
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BF, LL_BR, LL_BL);
@@ -79,12 +78,11 @@ public class RobotContainer {
     public final LimelightAssistance limelightAssistance = new LimelightAssistance(swerveDriveSubsystem);
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
-    
 
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance,swerveDriveSubsystem);
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance, swerveDriveSubsystem);
 
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
@@ -137,7 +135,7 @@ public class RobotContainer {
     // 4. Rotate wrist
     private Command getGoToLockedPresetCommand() {
         return new InstantCommand(() -> {
-            //coralSubsystem.autoSetMirror();
+            // coralSubsystem.autoSetMirror();
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(coralSubsystem))
                 .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))

@@ -1,11 +1,14 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,8 +38,6 @@ public class DriveCommand extends Command {
     public DriveCommand(SwerveSubsystem swerveSubsystem, XboxController xbox) {
         this.swerveSubsystem = swerveSubsystem;
         this.xbox = xbox;
-
-        DriveConstants.ROTATION_ASSIST.enableContinuousInput(-Math.PI / 2, Math.PI / 2);
 
         dsratelimiter.reset(SLOWMODE_MULT);
 
@@ -68,107 +69,53 @@ public class DriveCommand extends Command {
 
     @Override
     public void execute() {
-        Translation2d xyRaw = new Translation2d(xbox.getLeftX(), xbox.getLeftY());
-        Translation2d xySpeed = DeadBand(xyRaw, 0.15 / 2.f);
-        double zSpeed = DeadBand(xbox.getRightX(), 0.1);
-        double xSpeed = xySpeed.getX(); // xbox.getLeftX();
-        double ySpeed = xySpeed.getY(); // xbox.getLeftY();
+        Translation2d xyRaw = new Translation2d(-xbox.getLeftY(), -xbox.getLeftX());
+        double zSpeed = -MathUtil.applyDeadband(xbox.getRightX(), 0.1);
+        double xSpeed = MathUtil.applyDeadband(xyRaw.getX(), 0.08); // xbox.getLeftX();
+        double ySpeed = MathUtil.applyDeadband(xyRaw.getY(), 0.08); // xbox.getLeftY();
 
-        // System.out.println("DRIVE!!");
-
-        // double mag_xy = Math.sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
-
-        // xSpeed = mag_xy > 0.15 ? xSpeed : 0.0;
-        // ySpeed = mag_xy > 0.15 ? ySpeed : 0.0;
-        // zSpeed = Math.abs(zSpeed) > 0.15 ? zSpeed : 0.0;
+        SmartDashboard.putString("Drive XY", xyRaw.toString());
+        SmartDashboard.putNumber("Drive Z", zSpeed);
 
         xSpeed *= DriveConstants.XY_SPEED_LIMIT * DriveConstants.MAX_ROBOT_VELOCITY;
         ySpeed *= DriveConstants.XY_SPEED_LIMIT * DriveConstants.MAX_ROBOT_VELOCITY;
         zSpeed *= DriveConstants.Z_SPEED_LIMIT * DriveConstants.MAX_ROBOT_RAD_VELOCITY;
 
-        // double dmult = dsratelimiter.calculate(xbox.getRightBumper() ? 1.0 :
-        // SLOWMODE_MULT);
         double dmult = dsratelimiter
                 .calculate((DRIVE_MULT - SLOWMODE_MULT) * xbox.getRightTriggerAxis() + SLOWMODE_MULT);
         xSpeed *= dmult;
         ySpeed *= dmult;
         zSpeed *= dmult;
+        SmartDashboard.putNumber("Drive Multiplier", dmult);
 
         if (xbox.getXButton()) {
             swerveSubsystem.zeroHeading();
-            Translation2d pospose = swerveSubsystem.getPose().getTranslation();
-            swerveSubsystem.odometry.resetPosition(swerveSubsystem.getRotation2d(),
+            Translation2d pospose = swerveSubsystem.getOdometryPose().getTranslation();
+            swerveSubsystem.odometry.resetPosition(swerveSubsystem.getGyroRotation2d(),
                     swerveSubsystem.getModulePositions(),
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
-            // swerveSubsystem.resetOdometry(new Pose2d(1.38, 5.55, new Rotation2d()));
-            // swerveSubsystem.zeroHeading();
         }
 
-        ChassisSpeeds speeds;
 
-        switch (swerveSubsystem.getDriveStyle()) {
-            case FIELD_ORIENTED:
-                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed, zSpeed,
-                        new Rotation2d(
-                                -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET)
-                                        .getRadians()));
-                break;
-            case ROBOT_ORIENTED:
-                speeds = new ChassisSpeeds(-xSpeed, ySpeed, -zSpeed);
-                break;
-            case ROTATION_ASSIST:
-                // ? X/Y have been left in here as comments in case you find that you want them!
-                Pose2d closestPose = swerveSubsystem.getPose().nearest(AllianceFlipUtil.flip(new ArrayList<Pose2d>(Reef.branches.values())));
-
-                double zError = swerveSubsystem.getPose().minus(closestPose).getRotation().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET).getRadians();
-                // double xError = swerveSubsystem.getPose().getX() -
-                // swerveSubsystem.getTargetPose().getX();
-                // double yError = swerveSubsystem.getPose().getY() -
-                // swerveSubsystem.getTargetPose().getY();
-
-                // double yAssist = DriveConstants.TRANSLATION_ASSIST.calculate(-xError) *
-                // xbox.getLeftTriggerAxis();
-                // double xAssist = DriveConstants.TRANSLATION_ASSIST.calculate(yError) *
-                // xbox.getLeftTriggerAxis();
-                double zAssist = DriveConstants.ROTATION_ASSIST.calculate(zError);// * xbox.getLeftTriggerAxis();
-                // speeds = new ChassisSpeeds(-xSpeed + xAssist, ySpeed + yAssist, -zSpeed +
-                // zAssist);
-
-                // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed + yAssist, xSpeed +
-                // xAssist,
-                // zSpeed + zAssist,
-                // new Rotation2d(
-                // -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET)
-                // .getRadians()));
-
-                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-ySpeed, xSpeed,
-                        zSpeed - zAssist,
-                        new Rotation2d(
-                                -swerveSubsystem.getRotation2d().rotateBy(DriveConstants.NAVX_ANGLE_OFFSET)
-                                        .getRadians()));
-
-                break;
-
-            default:
-                speeds = null;
-                break;
-        }
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                xSpeed, ySpeed, zSpeed,
+                swerveSubsystem.getGyroRotation2d());
 
         // State transition logic
+        state = DriveState.Free;
         switch (state) {
             case Free:
                 // state = xbox.getRightBumper() ? DriveState.Locked : DriveState.Free;
                 break;
             case Locked:
-                state = ((xyRaw.getNorm() > 0.15) && !xbox.getBButton()) ? DriveState.Free : DriveState.Locked;
+                state = ((xyRaw.getNorm() > 0.08) && !xbox.getBButton()) ? DriveState.Free : DriveState.Locked;
                 break;
         }
 
         // Drive execution logic
         switch (state) {
             case Free:
-                SwerveModuleState[] calculatedModuleStates = DriveConstants.KINEMATICS.toSwerveModuleStates(speeds);
-                swerveSubsystem.setModules(calculatedModuleStates);
+                swerveSubsystem.setChassisSpeeds(speeds);
                 break;
             case Locked:
                 swerveSubsystem.setXstance();

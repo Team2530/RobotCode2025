@@ -24,7 +24,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
 import frc.robot.util.AllianceFlipUtil;
 
 import java.util.ArrayList;
@@ -53,19 +52,18 @@ public final class Constants {
   }
 
   public static class RobotConstants {
-    public static final double robotWidthMeters = Units.inchesToMeters(25.0);
-    public static final double robotLengthMeters = Units.inchesToMeters(25.0);
+    public static final double robotWidthMeters = Units.inchesToMeters(29.5);
+    public static final double robotLengthMeters = Units.inchesToMeters(29.5);
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double TOTAL_MASS_KG = 10;
-    public static final double MOMENT_OF_INERTIA = 1;
+    public static final double TOTAL_MASS_KG = 74.088;
+    public static final double MOMENT_OF_INERTIA = 6.883;
   }
 
   public static final class FieldConstants {
     public static final double GRAVITY = 9.81;
-    public static final double SPEAKER_HEIGHT = 2.05; // Meters
 
-    public static final double FIELD_LENGTH = Units.inchesToMeters(690.876);
+    public static final double FIELD_LENGTH = Units.inchesToMeters(690.876); // TODO: CHECK IF ACCURATE
     public static final double FIELD_WIDTH = Units.inchesToMeters(317);
 
     public static Alliance getAlliance() {
@@ -109,18 +107,19 @@ public final class Constants {
   }
 
   public static class SwerveModuleConstants {
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.85); // ~4 in
     public static final double STEERING_GEAR_RATIO = 1.d / (150d / 7d);
     // This is for L2 modules with 16T pinions
-    public static final double DRIVE_GEAR_RATIO = (1.d / 6.75d) * (16.f / 14.f);
+    public static final double DRIVE_GEAR_RATIO = (1.d / 6.75d);
 
     public static final double DRIVE_ROTATION_TO_METER = DRIVE_GEAR_RATIO * Math.PI * WHEEL_DIAMETER;
     public static final double STEER_ROTATION_TO_RADIANS = STEERING_GEAR_RATIO * Math.PI * 2d;
     public static final double DRIVE_METERS_PER_MINUTE = DRIVE_ROTATION_TO_METER / 60d;
     public static final double STEER_RADIANS_PER_MINUTE = STEER_ROTATION_TO_RADIANS / 60d;
+    public static final double STEER_MAX_RAD_SEC = 0.8 * STEERING_GEAR_RATIO * ((5880.f * 2.f * Math.PI) / 60.f);
 
     // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double WHEEL_FRICTION_COEFFICIENT = 1;
+    public static final double WHEEL_FRICTION_COEFFICIENT = 1.2;
 
     // Actual drive gains
     // public static final double MODULE_KP = 0.5;
@@ -134,57 +133,51 @@ public final class Constants {
     public static final int FL_DRIVE_ID = 34;
     public static final int FL_STEER_ID = 4;
     public static final int FL_ABSOLUTE_ENCODER_PORT = 54;
-    public static final double FL_OFFSET_RADIANS = Units.rotationsToRadians(-0.310303) + Math.PI * 0.5 + Math.PI;
-    public static final boolean FL_ABSOLUTE_ENCODER_REVERSED = true;
+    public static final double FL_OFFSET_RADIANS = Units.rotationsToRadians(-0.310303);
+    public static final boolean FL_ABSOLUTE_ENCODER_REVERSED = false;
     public static final boolean FL_MOTOR_REVERSED = true;
+    public static final boolean FL_STEERING_MOTOR_REVERSED = true;
 
     // --------- Front Right Module --------- \\
     public static final int FR_DRIVE_ID = 31;
     public static final int FR_STEER_ID = 1;
     public static final int FR_ABSOLUTE_ENCODER_PORT = 51;
-    public static final double FR_OFFSET_RADIANS = Units.rotationsToRadians(-0.253906) + Math.PI * 0.5 + Math.PI;
-    public static final boolean FR_ABSOLUTE_ENCODER_REVERSED = true;
+    public static final double FR_OFFSET_RADIANS = Units.rotationsToRadians(-0.253906);
+    public static final boolean FR_ABSOLUTE_ENCODER_REVERSED = false;
     public static final boolean FR_MOTOR_REVERSED = true;
+    public static final boolean FR_STEERING_MOTOR_REVERSED = true;
 
     // --------- Back Right Module --------- \\
     public static final int BR_DRIVE_ID = 32;
     public static final int BR_STEER_ID = 2;
     public static final int BR_ABSOLUTE_ENCODER_PORT = 52;
-    public static final double BR_OFFSET_RADIANS = Units.rotationsToRadians(0.353027) + Math.PI * 0.5 + Math.PI;
-    public static final boolean BR_ABSOLUTE_ENCODER_REVERSED = true;
+    public static final double BR_OFFSET_RADIANS = Units.rotationsToRadians(0.353027);
+    public static final boolean BR_ABSOLUTE_ENCODER_REVERSED = false;
     public static final boolean BR_MOTOR_REVERSED = true;
+    public static final boolean BR_STEERING_MOTOR_REVERSED = true;
 
     // --------- Back Left Module --------- \\
     public static final int BL_DRIVE_ID = 33;
     public static final int BL_STEER_ID = 3;
     public static final int BL_ABSOLUTE_ENCODER_PORT = 53;
-    public static final double BL_OFFSET_RADIANS = Units.rotationsToRadians(-0.134033) + Math.PI * 0.5 + Math.PI;
-    public static final boolean BL_ABSOLUTE_ENCODER_REVERSED = true;
+    public static final double BL_OFFSET_RADIANS = Units.rotationsToRadians(-0.134033);
+    public static final boolean BL_ABSOLUTE_ENCODER_REVERSED = false;
     public static final boolean BL_MOTOR_REVERSED = true;
-
+    public static final boolean BL_STEERING_MOTOR_REVERSED = true;
   }
 
   public static class DriveConstants {
     // TODO: Make sure that this is correct - this is from the SDS website but needs
     // empirical verification
-    public static final double MAX_MODULE_VELOCITY = 5.21;
-    public static final double MAX_ROBOT_VELOCITY = 5.21;
+    public static final double MAX_MODULE_VELOCITY = 4.7244;
+    public static final double MAX_ROBOT_VELOCITY = 4.7244;
     public static final double MAX_ROBOT_RAD_VELOCITY = 12.0; // Approx. Measured rads/sec
 
-    // TODO: ############## REPLACE PLACEHOLDERS ##############
-    public static final double MAX_MODULE_CURRENT = 30;
+    public static final double MAX_MODULE_CURRENT = 70;
 
-    public static final double TRACK_WIDTH = Units.inchesToMeters(19.75);
-    public static final double WHEEL_BASE = Units.inchesToMeters(19.75);
-
+    public static final double TRACK_WIDTH = Units.inchesToMeters(19.675);
+    public static final double WHEEL_BASE = Units.inchesToMeters(19.675);
     public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.520);
-    public static final PIDController TRANSLATION_ASSIST = new PIDController(6, 0, 0.01);
-    public static final PIDController ROTATION_ASSIST = new PIDController(4, 0, 0.001);
-
-    // TODO: Set this for FWERB V2
-    public static final Rotation2d NAVX_ANGLE_OFFSET = Rotation2d.fromDegrees(-90);
-    // TODO: I'm not going to touch this... but it seems important!
-    public static final double DRIVE_BASE_RADIUS = Units.inchesToMeters(15);
 
     public static final class ModuleIndices {
       public static final int FRONT_LEFT = 0;
@@ -207,7 +200,6 @@ public final class Constants {
     public static final boolean LOG_INTO_FILE_ENABLED = true;
   }
 
-  // TODO: ##################### PLACEHOLDERS #####################
   public static class Climber {
     public static final int MOTOR_PORT = 20;
     public static final ProfiledPIDController PID = new ProfiledPIDController(
@@ -220,7 +212,7 @@ public final class Constants {
     public static double GEAR_RATIO = 45.0;
 
     public static double DEPLOY_SOFT_LIMIT = -6.0;
-    public static double CLIMB_SOFT_LIMIT = -3.10;
+    public static double CLIMB_SOFT_LIMIT = -2.8;
   }
 
   public static class Coral {
@@ -268,7 +260,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 15;
       public static final boolean MOTOR_INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
-      public static final double ENCODER_OFFSET_VOLTS = -1.85;
+      public static final double ENCODER_OFFSET_VOLTS = -1.82;
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
@@ -276,8 +268,6 @@ public final class Constants {
           0.0,
           0.02,
           new TrapezoidProfile.Constraints(15, 25.0));
-      // public static final SimpleMotorFeedforward FEEDFORWARD = new
-      // SimpleMotorFeedforward(0.0, 0.1);
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
@@ -295,7 +285,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 16;
       public static final boolean MOTOR_INVERTED = true;
       public static final boolean ENCODER_INVERTED = true;
-      public static final double ENCODER_OFFSET_VOLTS = -2.7;
+      public static final double ENCODER_OFFSET_VOLTS = -2.046;
       public static boolean DBG_DISABLED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
@@ -305,9 +295,6 @@ public final class Constants {
           0.0,
           0.0,
           new TrapezoidProfile.Constraints(10.0, 30.0)); // Radians
-
-      // public static final SimpleMotorFeedforward FEEDFORWARD = new
-      // SimpleMotorFeedforward(0.0, 0.45);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
@@ -432,7 +419,6 @@ public final class Constants {
       public static final double GEARING = 5.0 / 2.0;
       public static final double DRIVE_RADIUS_METERS = 0.0121;
       public static final double CARRIAGE_MASS_KG = 1.0; // Load on the SECOND stage NOTE: This includes the weight
-                                                         // "reduction" due to CF spring counterbalance!
 
       public static final double MAX_TRAVEL = Units.inchesToMeters(59.5);
       public static final double BOTTOM_TO_FLOOR = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
@@ -449,8 +435,8 @@ public final class Constants {
   }
 
   public static final class PathPlannerConstants {
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(5, 0, 0.2);
-    public static final PIDConstants ROTATION_PID = new PIDConstants(5, 0, 0.2);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0, 0.01);
+    public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0, 0.02);
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
         TRANSLATION_PID,
@@ -462,10 +448,9 @@ public final class Constants {
         new ModuleConfig(
             SwerveModuleConstants.WHEEL_DIAMETER / 2,
             DriveConstants.MAX_MODULE_VELOCITY,
-            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT, // TODO: ############## REPLACE PLACEHOLDERS
-                                                              // ##############
+            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT,
             DCMotor.getKrakenX60(1),
-            DriveConstants.MAX_MODULE_CURRENT, // TODO: ############## REPLACE PLACEHOLDERS ##############
+            DriveConstants.MAX_MODULE_CURRENT,
             1),
         DriveConstants.KINEMATICS.getModules());
   }
