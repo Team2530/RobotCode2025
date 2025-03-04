@@ -18,6 +18,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -54,6 +55,7 @@ import frc.robot.Constants.SwerveModuleConstants;
 import frc.robot.RobotContainer;
 import frc.robot.Robot;
 
+@Logged
 public class SwerveSubsystem extends SubsystemBase {
 
     boolean isalliancereset = false;
