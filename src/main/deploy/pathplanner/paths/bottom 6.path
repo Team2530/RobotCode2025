@@ -12,16 +12,16 @@
         "y": 1.8604999999999996
       },
       "isLocked": false,
-      "linkedName": "bottom 3 end"
+      "linkedName": "Low Source"
     },
     {
       "anchor": {
-        "x": 5.031000000000001,
-        "y": 2.767249999999999
+        "x": 4.88475,
+        "y": 2.699
       },
       "prevControl": {
-        "x": 4.474929368807343,
-        "y": 2.446202471392473
+        "x": 4.328679368807343,
+        "y": 2.377952471392474
       },
       "nextControl": null,
       "isLocked": false,
