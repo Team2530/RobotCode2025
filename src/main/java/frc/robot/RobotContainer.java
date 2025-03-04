@@ -4,8 +4,27 @@
 
 package frc.robot;
 
-import frc.robot.Constants.*;
-import frc.robot.commands.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
@@ -18,30 +37,15 @@ import frc.robot.commands.coral.motion.StowArm;
 import frc.robot.commands.coral.motion.WaitArmClearance;
 import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Limelight.LimelightType;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.Limelight.LimelightType;
-import frc.robot.util.LimelightContainer;
-import frc.robot.subsystems.Limelight.LimelightType;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -98,6 +102,31 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
+
+        NamedCommands.registerCommand("L2", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_2);
+                })));
+
+        NamedCommands.registerCommand("L3", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_3);
+                })));
+
+        NamedCommands.registerCommand("L4", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_4);
+                })));
+
+        NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.INTAKE);
+                })));
+                
+        NamedCommands.registerCommand("Stow", new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.STOW);
+                })));
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
