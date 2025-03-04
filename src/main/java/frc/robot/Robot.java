@@ -43,7 +43,6 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
 
     public static SendableChooser<String> autoChooser = new SendableChooser<>();
-    // LEDstripOne m_stripOne = new LEDstripOne(9);
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -114,6 +113,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
+
     }
 
     /**

@@ -42,7 +42,8 @@ public class ScoreCoralCommand extends Command {
 
         // Just keep going at it!
         // For autos, might want a different command?
-        return Robot.isSimulation();
+        // return Robot.isSimulation();
+        return false;
     }
 
 }
