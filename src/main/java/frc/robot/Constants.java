@@ -475,6 +475,19 @@ public final class Constants {
     public final static HashMap<Integer, Pose2d> tagPoses = new HashMap<Integer, Pose2d>() {
       {
         for (int i = 0; i < 22; ++i) {
+
+          // This has not been tested
+
+          // Assumptions:
+          //  - Units are in inches
+          //  - 'i' is the tag index, and is indexed correctly according to the field diagram
+          //  - Adding a transform2d will change the tag location as expected
+          if(i == 3 || i == 16) {
+            if (tagLayout.getTagPose(i + 1).isPresent()) {
+              put(i, tagLayout.getTagPose(i + 1).get().toPose2d().plus(new Transform2d(2.7, 0, new Rotation2d())));
+            }
+            continue;
+          }
           if (tagLayout.getTagPose(i + 1).isPresent())
             put(i, tagLayout.getTagPose(i + 1).get().toPose2d());
         }
