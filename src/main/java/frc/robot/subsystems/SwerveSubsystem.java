@@ -57,7 +57,7 @@ import frc.robot.Robot;
 public class SwerveSubsystem extends SubsystemBase {
 
     boolean isalliancereset = false;
-    
+
     SwerveModule frontLeft = new SwerveModule(SwerveModuleConstants.FL_STEER_ID, SwerveModuleConstants.FL_DRIVE_ID,
             SwerveModuleConstants.FL_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.FL_OFFSET_RADIANS,
             SwerveModuleConstants.FL_ABSOLUTE_ENCODER_REVERSED,
@@ -170,6 +170,7 @@ public class SwerveSubsystem extends SubsystemBase {
         RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds, navX);
 
         odometry.update(getGyroRotation2d(), getModulePositions());
+        SmartDashboard.putString("Odometry current pos", getOdometryPose().toString());
 
         field.setRobotPose(getOdometryPose());
         posePublisher.set(getOdometryPose());
