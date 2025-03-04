@@ -41,6 +41,7 @@ import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.RobotMechanismLogger;
 import frc.robot.subsystems.Limelight.LimelightType;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
@@ -48,6 +49,9 @@ import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
+
+import frc.robot.util.Reef;
+import frc.robot.util.Reef.ReefBranch;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -99,6 +103,8 @@ public class RobotContainer {
 
     @Logged
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
+
+    private final RobotMechanismLogger robotLogger = new RobotMechanismLogger(coralSubsystem);
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
