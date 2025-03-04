@@ -18,6 +18,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -54,6 +55,7 @@ import frc.robot.Constants.SwerveModuleConstants;
 import frc.robot.RobotContainer;
 import frc.robot.Robot;
 
+@Logged
 public class SwerveSubsystem extends SubsystemBase {
 
     boolean isalliancereset = false;
@@ -92,6 +94,8 @@ public class SwerveSubsystem extends SubsystemBase {
             .getStructTopic("Odometry Pose", Pose2d.struct).publish();
     StructArrayPublisher<SwerveModuleState> swerveStatesPublisher = NetworkTableInstance.getDefault()
             .getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
+    StructArrayPublisher<SwerveModuleState> swerveTargetStatesPublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("Swerve Target States", SwerveModuleState.struct).publish();
 
     // TODO: Properly set starting pose
     public final SwerveDrivePoseEstimator odometry;
@@ -112,6 +116,25 @@ public class SwerveSubsystem extends SubsystemBase {
                         PoseConstants.kVisionStdDevTheta));
 
         // --------- Path Planner Init ---------- \\
+        RobotConfig config = Constants.PathPlannerConstants.ROBOT_CONFIG;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            // Handle exception as needed
+            e.printStackTrace();
+        }
+
+        NamedCommands.registerCommand("namedCommand", new PrintCommand("Ran namedCommand"));
+
+        setpointGenerator = new SwerveSetpointGenerator(
+                config,
+                Constants.SwerveModuleConstants.STEER_MAX_RAD_SEC);
+
+        previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
+                DriveFeedforwards.zeros(config.numModules));
+    }
+
+    public void configurePathplanner() {
         RobotConfig config = Constants.PathPlannerConstants.ROBOT_CONFIG;
         try {
             config = RobotConfig.fromGUISettings();
@@ -148,15 +171,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
-
-        NamedCommands.registerCommand("namedCommand", new PrintCommand("Ran namedCommand"));
-
-        setpointGenerator = new SwerveSetpointGenerator(
-                config,
-                Constants.SwerveModuleConstants.STEER_MAX_RAD_SEC);
-
-        previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
-                DriveFeedforwards.zeros(config.numModules));
     }
 
     @Override
@@ -240,6 +254,7 @@ public class SwerveSubsystem extends SubsystemBase {
         frontRight.setModuleState(states[1]);
         backLeft.setModuleState(states[2]);
         backRight.setModuleState(states[3]);
+        swerveTargetStatesPublisher.set(states);
     }
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {

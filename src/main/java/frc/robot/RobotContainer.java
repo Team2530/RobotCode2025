@@ -4,8 +4,29 @@
 
 package frc.robot;
 
-import frc.robot.Constants.*;
-import frc.robot.commands.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
@@ -18,27 +39,15 @@ import frc.robot.commands.coral.motion.StowArm;
 import frc.robot.commands.coral.motion.WaitArmClearance;
 import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Limelight.LimelightType;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
-import frc.robot.subsystems.Limelight.LimelightType;
 
 import frc.robot.util.Reef;
 import frc.robot.util.Reef.ReefBranch;
@@ -46,6 +55,7 @@ import frc.robot.util.Reef.ReefBranch;
 import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.util.LimelightContainer;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -56,12 +66,14 @@ import frc.robot.util.LimelightContainer;
  * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+@Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
 
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
 
+    @Logged
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BF, LL_BR, LL_BL);
 
     private final CommandXboxController driverXbox = new CommandXboxController(
@@ -74,18 +86,26 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
+    @Logged
     public final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem();
+    @Logged
     public final LimelightAssistance limelightAssistance = new LimelightAssistance(swerveDriveSubsystem);
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
 
     private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
+    @Logged
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
+    @Logged
     private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance, swerveDriveSubsystem);
 
-    private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
+    // NOTE: Removed to prevent loop overruns while the robot does not have the
+    // algae manipulator installed.
+    // @Logged
+    // private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
+    @Logged
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
 
     private final RobotLogger robotLogger = new RobotLogger(coralSubsystem);
@@ -100,10 +120,54 @@ public class RobotContainer {
         DataLogManager.logNetworkTables(true);
         DataLogManager.start();
 
+        swerveDriveSubsystem.setDefaultCommand(normalDrive);
+
+        NamedCommands.registerCommand("L1",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.LEVEL_1);
+                }).andThen(getGoToLockedPresetCommandV2()));
+
+        NamedCommands.registerCommand("L2",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.LEVEL_2);
+                }).andThen(getGoToLockedPresetCommandV2()));
+
+        NamedCommands.registerCommand("L3",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.LEVEL_3);
+                }).andThen(getGoToLockedPresetCommandV2()));
+
+        NamedCommands.registerCommand("L4",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.LEVEL_4);
+                }).andThen(getGoToLockedPresetCommandV2()));
+
+        NamedCommands.registerCommand("Score",
+                new ScoreCoralCommand(coralSubsystem).withTimeout(Constants.AutoConstants.SCORE_WAIT_SECONDS));
+
+        NamedCommands.registerCommand("Intake",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.INTAKE);
+                })
+                        .andThen(getGoToLockedPresetFASTCommand())
+                        .andThen(new IntakeCoralCommand(coralSubsystem))
+                        .andThen(getStowCommand()));
+
+        NamedCommands.registerCommand("Start Intake",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.INTAKE);
+                })
+                        .andThen(getGoToLockedPresetFASTCommand())
+                        .andThen(new IntakeCoralCommand(coralSubsystem)));
+
+        NamedCommands.registerCommand("Wait Intake",
+                new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(getStowCommand()));
+
+        NamedCommands.registerCommand("Stow", getStowCommand());
+
+        swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
-
-        swerveDriveSubsystem.setDefaultCommand(normalDrive);
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
@@ -127,26 +191,6 @@ public class RobotContainer {
             return lockedPreset;
         };
     };
-
-    // go to preset position:
-    // 1. Stow arm & wrist
-    // 2. Move elevator
-    // 3. Deploy arm
-    // 4. Rotate wrist
-    private Command getGoToLockedPresetCommand() {
-        return new InstantCommand(() -> {
-            // coralSubsystem.autoSetMirror();
-            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
-        }).andThen(new StowArm(coralSubsystem))
-                .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
-                .andThen(new ParallelCommandGroup(
-                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
-                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier)))
-                .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))
-                .andThen(new InstantCommand(() -> {
-                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
-                }));
-    }
 
     private Command getGoToLockedPresetCommandV2() {
         return new InstantCommand(() -> {
@@ -360,12 +404,12 @@ public class RobotContainer {
          * coop
          */
         // algae floor / shoot
-        driverXbox.leftBumper().and(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return algaeSubsystem.isHolding();
-            }
-        }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
+        // driverXbox.leftBumper().and(new BooleanSupplier() {
+        // @Override
+        // public boolean getAsBoolean() {
+        // return algaeSubsystem.isHolding();
+        // }
+        // }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
 
         /////////////////// DEBUGGING //////////////////
         debugXboxController.a().onTrue(new InstantCommand(() -> {

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1148565573770493,
-        "y": 1.0400614754098354
+        "x": 1.6063524590163931,
+        "y": 0.734375
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.846106557377049,
-        "y": 2.0230532786885247
+        "x": 2.13525,
+        "y": 1.8604999999999996
       },
       "isLocked": false,
-      "linkedName": "At CS"
+      "linkedName": "bottom 3 end"
     },
     {
       "anchor": {
-        "x": 3.848053278688525,
-        "y": 2.86219262295082
+        "x": 5.031000000000001,
+        "y": 2.767249999999999
       },
       "prevControl": {
-        "x": 3.2606557377049183,
-        "y": 1.9631147540983616
+        "x": 4.474929368807343,
+        "y": 2.446202471392473
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,19 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "L4",
-      "waypointRelativePos": 0.270087778528024,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "L4"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 2.0,
@@ -54,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -29.999999999999996
+    "rotation": 29.999999999999996
   },
   "reversed": false,
-  "folder": "Finn's testing autos",
+  "folder": "bottom autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -35.21759296819251
+    "rotation": -35.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

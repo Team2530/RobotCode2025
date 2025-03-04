@@ -198,6 +198,7 @@ public final class Constants {
 
   public static class CommonConstants {
     public static final boolean LOG_INTO_FILE_ENABLED = true;
+    public static final boolean LOG_TO_NETWORKTABLES = true;
   }
 
   public static class Climber {
@@ -453,6 +454,10 @@ public final class Constants {
             DriveConstants.MAX_MODULE_CURRENT,
             1),
         DriveConstants.KINEMATICS.getModules());
+  }
+
+  public static final class AutoConstants {
+    public static final double SCORE_WAIT_SECONDS = 0.4;
   }
 
   public static final class PoseConstants {

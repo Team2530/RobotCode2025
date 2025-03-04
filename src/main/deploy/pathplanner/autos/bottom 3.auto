@@ -7,49 +7,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Reef EF"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
+            "pathName": "bottom 0"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "To CS"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait Intake"
+            "pathName": "bottom 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "To CD"
+            "pathName": "bottom 2"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Score"
+            "pathName": "bottom 3"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Stow"
+            "pathName": "bottom 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "bottom 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "bottom 6"
           }
         }
       ]
