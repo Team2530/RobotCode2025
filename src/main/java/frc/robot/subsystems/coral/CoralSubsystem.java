@@ -278,7 +278,6 @@ public class CoralSubsystem extends SubsystemBase {
                 .getDistance(closestSource.getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
 
         System.out.println("Mirror Side" + mirrorSetting.name());
-        
         // this.mirrorSetting = (this.leftUltrasonic.get() < this.rightUltrasonic.get())
         // ? MirrorPresets.LEFT
         // : MirrorPresets.RIGHT;
@@ -288,7 +287,7 @@ public class CoralSubsystem extends SubsystemBase {
         Pose2d robotPose = swerveSubsystem.getPose();
         Pose2d left = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
         Pose2d right = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
-
+      
         this.mirrorSetting = left.getTranslation().getDistance(FieldConstants.getReefPose().getTranslation()) < right.getTranslation()
                 .getDistance(FieldConstants.getReefPose().getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
 

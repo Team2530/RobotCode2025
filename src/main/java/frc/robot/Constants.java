@@ -387,7 +387,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 11;
       public static final boolean INVERTED = true;
     }
-
+    
     public static boolean DBG_DISABLED = false;
 
     public static double MOTOR_REVOLUTIONS_PER_METER = 32.81;
@@ -423,7 +423,6 @@ public final class Constants {
       public static final double GEARING = 5.0 / 2.0;
       public static final double DRIVE_RADIUS_METERS = 0.0121;
       public static final double CARRIAGE_MASS_KG = 6.0; // Load on the SECOND stage NOTE: This includes the weight
-                                                         // "reduction" due to CF spring counterbalance!
 
       public static final double MAX_TRAVEL = Units.inchesToMeters(59.5);
       public static final double BOTTOM_TO_FLOOR = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
