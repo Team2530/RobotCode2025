@@ -121,6 +121,10 @@ public class LimelightContainer {
         doRejectUpdate = true;
       }
 
+      if((Math.abs(mt1.pose.getX()-odometry.getEstimatedPosition().getX())>1.5)||(Math.abs(mt1.pose.getY()-odometry.getEstimatedPosition().getY())>1.5)){
+        doRejectUpdate = true;
+      }
+
       if (!doRejectUpdate) {
 
         odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 9999));
