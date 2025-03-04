@@ -70,10 +70,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 30.579226872489098
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Finn's testing autos",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
