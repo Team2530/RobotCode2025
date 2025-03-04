@@ -454,6 +454,10 @@ public final class Constants {
         DriveConstants.KINEMATICS.getModules());
   }
 
+  public static final class AutoConstants {
+    public static final double SCORE_WAIT_SECONDS = 0.4;
+  }
+
   public static final class PoseConstants {
 
     public static final double kPositionStdDevX = 0.1;

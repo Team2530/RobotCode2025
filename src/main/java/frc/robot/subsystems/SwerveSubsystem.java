@@ -122,6 +122,25 @@ public class SwerveSubsystem extends SubsystemBase {
             e.printStackTrace();
         }
 
+        NamedCommands.registerCommand("namedCommand", new PrintCommand("Ran namedCommand"));
+
+        setpointGenerator = new SwerveSetpointGenerator(
+                config,
+                Constants.SwerveModuleConstants.STEER_MAX_RAD_SEC);
+
+        previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
+                DriveFeedforwards.zeros(config.numModules));
+    }
+
+    public void configurePathplanner() {
+        RobotConfig config = Constants.PathPlannerConstants.ROBOT_CONFIG;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            // Handle exception as needed
+            e.printStackTrace();
+        }
+
         AutoBuilder.configure(
                 this::getOdometryPose, // Robot pose supplier
                 this::resetOdometryAndGyro, // Method to reset odometry (will be called if your auto has a starting
@@ -150,15 +169,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
-
-        NamedCommands.registerCommand("namedCommand", new PrintCommand("Ran namedCommand"));
-
-        setpointGenerator = new SwerveSetpointGenerator(
-                config,
-                Constants.SwerveModuleConstants.STEER_MAX_RAD_SEC);
-
-        previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
-                DriveFeedforwards.zeros(config.numModules));
     }
 
     @Override

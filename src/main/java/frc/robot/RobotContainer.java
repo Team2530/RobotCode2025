@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
@@ -98,35 +99,54 @@ public class RobotContainer {
         DataLogManager.logNetworkTables(true);
         DataLogManager.start();
 
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
 
-        NamedCommands.registerCommand("L2", new SequentialCommandGroup(
+        NamedCommands.registerCommand("L1",
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_2);
-                })));
+                    lockCoralArmPreset(CoralPresets.LEVEL_1);
+                }).andThen(getGoToLockedPresetCommandV2()));
 
-        NamedCommands.registerCommand("L3", new SequentialCommandGroup(
+        NamedCommands.registerCommand("L2",
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_3);
-                })));
+                    lockCoralArmPreset(CoralPresets.LEVEL_2);
+                }).andThen(getGoToLockedPresetCommandV2()));
 
-        NamedCommands.registerCommand("L4", new SequentialCommandGroup(
+        NamedCommands.registerCommand("L3",
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.LEVEL_4);
-                })));
+                    lockCoralArmPreset(CoralPresets.LEVEL_3);
+                }).andThen(getGoToLockedPresetCommandV2()));
 
-        NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
+        NamedCommands.registerCommand("L4",
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.INTAKE);
-                })));
-                
-        NamedCommands.registerCommand("Stow", new SequentialCommandGroup(
+                    lockCoralArmPreset(CoralPresets.LEVEL_4);
+                }).andThen(getGoToLockedPresetCommandV2()));
+
+        NamedCommands.registerCommand("Score",
+                new ScoreCoralCommand(coralSubsystem).withTimeout(Constants.AutoConstants.SCORE_WAIT_SECONDS));
+
+        NamedCommands.registerCommand("Intake",
                 new InstantCommand(() -> {
-                    coralSubsystem.setCoralPresetDIRECT(CoralPresets.STOW);
-                })));
+                    lockCoralArmPreset(CoralPresets.INTAKE);
+                })
+                        .andThen(getGoToLockedPresetFASTCommand())
+                        .andThen(new IntakeCoralCommand(coralSubsystem))
+                        .andThen(getStowCommand()));
+
+        NamedCommands.registerCommand("Start Intake",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.INTAKE);
+                })
+                        .andThen(getGoToLockedPresetFASTCommand())
+                        .andThen(new IntakeCoralCommand(coralSubsystem)));
+
+        NamedCommands.registerCommand("Wait Intake",
+                new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(getStowCommand()));
+
+        NamedCommands.registerCommand("Stow", getStowCommand());
+
+        swerveDriveSubsystem.configurePathplanner();
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
@@ -150,26 +170,6 @@ public class RobotContainer {
             return lockedPreset;
         };
     };
-
-    // go to preset position:
-    // 1. Stow arm & wrist
-    // 2. Move elevator
-    // 3. Deploy arm
-    // 4. Rotate wrist
-    private Command getGoToLockedPresetCommand() {
-        return new InstantCommand(() -> {
-            // coralSubsystem.autoSetMirror();
-            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
-        }).andThen(new StowArm(coralSubsystem))
-                .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
-                .andThen(new ParallelCommandGroup(
-                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
-                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier)))
-                .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))
-                .andThen(new InstantCommand(() -> {
-                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
-                }));
-    }
 
     private Command getGoToLockedPresetCommandV2() {
         return new InstantCommand(() -> {
