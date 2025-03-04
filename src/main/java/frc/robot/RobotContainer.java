@@ -41,6 +41,7 @@ import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.RobotMechanismLogger;
 import frc.robot.subsystems.Limelight.LimelightType;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
@@ -51,11 +52,6 @@ import frc.robot.util.LimelightContainer;
 
 import frc.robot.util.Reef;
 import frc.robot.util.Reef.ReefBranch;
-
-import frc.robot.subsystems.SwerveSubsystem.DriveStyle;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.util.LimelightContainer;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -108,7 +104,7 @@ public class RobotContainer {
     @Logged
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
 
-    private final RobotLogger robotLogger = new RobotLogger(coralSubsystem);
+    private final RobotMechanismLogger robotLogger = new RobotMechanismLogger(coralSubsystem);
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -385,19 +381,6 @@ public class RobotContainer {
         // set field orientation
         driverXbox.button(7).onTrue(new InstantCommand(() -> {
             swerveDriveSubsystem.setHeading(0);
-        }));
-
-        driverXbox.leftTrigger().and(new BooleanSupplier() {
-
-            @Override
-            public boolean getAsBoolean() {
-                return driverXbox.getLeftTriggerAxis() > 0.05;
-            }
-            
-        }).onTrue(new InstantCommand(() -> {
-            swerveDriveSubsystem.setDriveStyle(DriveStyle.ROTATION_ASSIST);
-        })).onFalse(new InstantCommand(() -> {
-            swerveDriveSubsystem.setDriveStyle(DriveStyle.FIELD_ORIENTED);
         }));
 
         /*
