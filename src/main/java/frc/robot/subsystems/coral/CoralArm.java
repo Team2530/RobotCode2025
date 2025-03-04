@@ -449,7 +449,7 @@ public class CoralArm extends SubsystemBase {
 
         public double readPivotEncoderPosition() {
                 return Robot.isSimulation() ? (simPivotPhysics.getAngleRads() - Math.PI * 0.5)
-                                : Units.rotationsToRadians((pivotEncoder.getPosition().getValueAsDouble()
+                                : Units.rotationsToRadians((pivotEncoder.getAbsolutePosition().getValueAsDouble()
                                                 * (Constants.Coral.Pivot.ENCODER_INVERTED ? -1.0 : 1.0)));
         }
 
