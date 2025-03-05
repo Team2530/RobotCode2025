@@ -342,7 +342,7 @@ public final class Constants {
           0.0,
           0.0,
           // RADIANS
-          new TrapezoidProfile.Constraints(12.f, 100.f));
+          new TrapezoidProfile.Constraints(12.f, 20.f));
       // public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
       // 1,
       // 1,

@@ -9,6 +9,7 @@ import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -93,8 +95,24 @@ public class CoralElevator extends SubsystemBase {
     private double lastVelocity = 0.0;
     private double lastTime = 0.0;
 
+    private boolean testModeConfigured = false;
+
     @Override
     public void periodic() {
+        if (DriverStation.isTest() && !testModeConfigured) {
+            leaderMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            followerMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            testModeConfigured = true;
+        } else if (!DriverStation.isTest() && testModeConfigured) {
+            leaderMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            followerMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            testModeConfigured = false;
+        }
+
         // check if needs to be zeroed and is at zero
         // TODO: ######################### PLACEHOLDERS AGAIN #########################
         if (!isZeroed
