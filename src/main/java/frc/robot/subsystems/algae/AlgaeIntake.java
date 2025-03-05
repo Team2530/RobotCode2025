@@ -2,22 +2,29 @@ package frc.robot.subsystems.algae;
 
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
+import au.grapplerobotics.LaserCan;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Algae;
+import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaeIntakePresets;
+import frc.robot.Constants;
 import frc.robot.Robot;
 
 @Logged
 public class AlgaeIntake extends SubsystemBase {
     private final SparkMax intakeMotor = new SparkMax(Algae.Intake.MOTOR_PORT, MotorType.kBrushless);
+    private SparkBaseConfig intakeMotorConfig = new SparkMaxConfig();
     // sim motor
     private final SparkMaxSim simIntakeMotor = new SparkMaxSim(intakeMotor, Algae.Intake.PhysicalConstants.MOTOR);
 
@@ -29,29 +36,23 @@ public class AlgaeIntake extends SubsystemBase {
                     Algae.Intake.PhysicalConstants.GEARING),
             Algae.Intake.PhysicalConstants.MOTOR);
 
-    private final DigitalInput intakeBeambreak = new DigitalInput(Algae.Intake.BEAMBREAK_PORT);
+    // private final DigitalInput intakeBeambreak = new
+    // DigitalInput(Algae.Intake.BEAMBREAK_PORT);
+    private final LaserCan intakeSensor = new LaserCan(Constants.Algae.Intake.LASERCAN_ID);
 
-    private final SlewRateLimiter intakeProfile = new SlewRateLimiter(
-            Algae.Intake.POSITIVE_RATE_LIMIT,
-            Algae.Intake.NEGATIVE_RATE_LIMIT,
-            0);
+    private AlgaeIntakePresets currentPreset = AlgaeIntakePresets.STOP;
 
-    private double outputPercentage = 0.0;
+    public AlgaeIntake() {
+        intakeMotorConfig = intakeMotorConfig.inverted(Constants.Algae.Intake.MOTOR_INVERTED);
+        intakeMotor.configure(intakeMotorConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+    }
 
     @Override
     public void periodic() {
-        double output;
-        // if no algae
-        if (intakeBeambreak.get()) {
-            output = intakeProfile.calculate(outputPercentage);
-        } else {
-            // hold
-            output = Math.min(0.05, outputPercentage);
-        }
-
-        intakeMotor.set(output);
+        intakeMotor.set(currentPreset.outputPercentage);
         if (Robot.isSimulation())
-            simIntakeMotor.setAppliedOutput(output);
+            simIntakeMotor.setAppliedOutput(currentPreset.outputPercentage);
     }
 
     @Override
@@ -67,15 +68,18 @@ public class AlgaeIntake extends SubsystemBase {
                 0.02);
     }
 
-    public void setOutputPercentage(double outputPercentage) {
-        this.outputPercentage = MathUtil.clamp(outputPercentage, -1, 1);
+    public void setIntakePreset(AlgaeIntakePresets preset) {
+        this.currentPreset = preset;
+        this.intakeMotorConfig = intakeMotorConfig.smartCurrentLimit(currentPreset.currentLimitA);
+        this.intakeMotor.configure(intakeMotorConfig, ResetMode.kNoResetSafeParameters,
+                PersistMode.kNoPersistParameters);
     }
 
-    public double getOutputPercentage() {
-        return outputPercentage;
+    public AlgaeIntakePresets getIntakePresets() {
+        return currentPreset;
     }
 
     public boolean isHolding() {
-        return intakeBeambreak.get();
+        return (intakeSensor.getMeasurement().distance_mm / 1000.0) < Constants.Algae.Intake.LASERCAN_THRESHOLD;
     }
 }

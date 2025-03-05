@@ -116,9 +116,10 @@ public class CoralArm extends SubsystemBase {
                                                                                 (1.0 * 2.0 * Math.PI)
                                                                                                 / Constants.Coral.Pivot.PhysicalConstants.NET_REDUCTION)
                                                                 .velocityConversionFactor(
-                                                                                (60.0 * 2.0 * Math.PI)
-                                                                                                / Constants.Coral.Pivot.PhysicalConstants.NET_REDUCTION)), // Encoder
-                                                                                                                                                           // ->
+                                                                                (2.0 * Math.PI)
+                                                                                                / Constants.Coral.Pivot.PhysicalConstants.NET_REDUCTION
+                                                                                                * 60.0f)), // Encoder
+                                // ->
                                 // Rotations &
                                 // Seconds
                                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

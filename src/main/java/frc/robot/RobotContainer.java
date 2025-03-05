@@ -45,6 +45,7 @@ import frc.robot.subsystems.RobotMechanismLogger;
 import frc.robot.subsystems.Limelight.LimelightType;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
+import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.util.LimelightAssistance;
@@ -98,8 +99,8 @@ public class RobotContainer {
 
     // NOTE: Removed to prevent loop overruns while the robot does not have the
     // algae manipulator installed.
-    // @Logged
-    // private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
+    @Logged
+    private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
 
     @Logged
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
@@ -421,6 +422,14 @@ public class RobotContainer {
 
         debugXboxController.rightBumper().whileTrue(new IntakeCoralCommand(coralSubsystem));
         debugXboxController.leftBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
+
+        debugXboxController.povUp().onTrue(new InstantCommand(() -> {
+            algaeSubsystem.setAlgaePreset(AlgaePresets.REMOVE);
+        }));
+
+        debugXboxController.povDown().onTrue(new InstantCommand(() -> {
+            algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
+        }));
     }
 
     /**
