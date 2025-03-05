@@ -365,7 +365,7 @@ public class CoralArm extends SubsystemBase {
 
         public void setPitchGoalDegrees(double goal) {
                 double goalRads = Units.degreesToRadians(goal);
-                pitchGoal = MathUtil.clamp(goalRads, Coral.Pitch.MAXIMUM_ANGLE * -1, Coral.Pitch.MAXIMUM_ANGLE);
+                pitchGoal = MathUtil.clamp(goalRads, Coral.Pitch.MINIMUM_ANGLE, Coral.Pitch.MAXIMUM_ANGLE);
                 /*
                  * // if outside the frame border
                  * if (Math.abs(this.getPivotPositionDegrees()) >

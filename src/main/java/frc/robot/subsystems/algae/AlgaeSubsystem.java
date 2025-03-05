@@ -9,7 +9,8 @@ public class AlgaeSubsystem extends SubsystemBase {
     public enum AlgaePresets {
         STOW(0.0),
         REMOVE(90.0),
-        INTAKE(75.0);
+        INTAKE(75.0),
+        HOLD(75.0);
 
         public double armAngle;
 
@@ -37,6 +38,14 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     private final AlgaeArm arm = new AlgaeArm();
     private final AlgaeIntake intake = new AlgaeIntake();
+
+    public AlgaeArm getArm() {
+        return arm;
+    }
+
+    public AlgaeIntake getIntake() {
+        return intake;
+    }
 
     private AlgaePresets currentPreset = AlgaePresets.STOW;
     private AlgaeIntakePresets currentIntakePreset = AlgaeIntakePresets.STOP;

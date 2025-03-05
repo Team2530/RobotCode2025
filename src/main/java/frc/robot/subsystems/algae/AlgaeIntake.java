@@ -1,5 +1,7 @@
 package frc.robot.subsystems.algae;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -80,6 +82,19 @@ public class AlgaeIntake extends SubsystemBase {
     }
 
     public boolean isHolding() {
-        return (intakeSensor.getMeasurement().distance_mm / 1000.0) < Constants.Algae.Intake.LASERCAN_THRESHOLD;
+        return getSensorDistance() < Constants.Algae.Intake.HOLDING_THRESHOLD;
+    }
+
+    public BooleanSupplier getHoldingSupplier() {
+        return new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return isHolding();
+            }
+        };
+    }
+
+    public double getSensorDistance() {
+        return intakeSensor.getMeasurement().distance_mm / 1000.0;
     }
 }

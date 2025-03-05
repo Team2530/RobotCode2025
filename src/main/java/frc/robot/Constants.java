@@ -290,6 +290,7 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
+      public static final double MINIMUM_ANGLE = Units.degreesToRadians(-20.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
           7.0,
@@ -364,7 +365,8 @@ public final class Constants {
       public static final boolean MOTOR_INVERTED = false;
       public static final int LASERCAN_ID = 1; // NOTE: Beambreak will *probably* be a rockwell proximity sensor
                                                // wired into the SPARK max
-      public static final double LASERCAN_THRESHOLD = Units.feetToMeters(1.0);
+      public static final double HOLDING_THRESHOLD = Units.feetToMeters(1.0);
+      public static final double SHOT_THRESHOLD = Units.feetToMeters(1.4);
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
       public static final double NEGATIVE_RATE_LIMIT = -5.0;

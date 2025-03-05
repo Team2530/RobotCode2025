@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.algae.IntakeAlgaeCommand;
+import frc.robot.commands.algae.RemoveAlgaeCommand;
 import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
@@ -423,6 +425,7 @@ public class RobotContainer {
         debugXboxController.rightBumper().whileTrue(new IntakeCoralCommand(coralSubsystem));
         debugXboxController.leftBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
 
+        // Algae debugging!!!
         debugXboxController.povUp().onTrue(new InstantCommand(() -> {
             algaeSubsystem.setAlgaePreset(AlgaePresets.REMOVE);
         }));
@@ -430,6 +433,9 @@ public class RobotContainer {
         debugXboxController.povDown().onTrue(new InstantCommand(() -> {
             algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
         }));
+
+        debugXboxController.povLeft().whileTrue(new RemoveAlgaeCommand(algaeSubsystem));
+        debugXboxController.povRight().whileTrue(new IntakeAlgaeCommand(algaeSubsystem));
     }
 
     /**
