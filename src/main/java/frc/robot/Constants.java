@@ -457,7 +457,8 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double SCORE_WAIT_SECONDS = 0.4;
+    public static final double SCORE_WAIT_BEFORE_SECONDS = 0.2;
+    public static final double SCORE_WAIT_AFTER_SECONDS = 0.4;
   }
 
   public static final class PoseConstants {

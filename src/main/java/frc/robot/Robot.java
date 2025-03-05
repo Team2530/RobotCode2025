@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
 
     private Command m_autonomousCommand;
 
+    @Logged
     private RobotContainer m_robotContainer;
 
     public static SendableChooser<String> autoChooser = new SendableChooser<>();

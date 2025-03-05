@@ -139,7 +139,8 @@ public class RobotContainer {
                 }).andThen(getGoToLockedPresetCommandV2()));
 
         NamedCommands.registerCommand("Score",
-                new ScoreCoralCommand(coralSubsystem).withTimeout(Constants.AutoConstants.SCORE_WAIT_SECONDS));
+                new WaitCommand(Constants.AutoConstants.SCORE_WAIT_BEFORE_SECONDS).andThen(new ScoreCoralCommand(
+                        coralSubsystem).withTimeout(Constants.AutoConstants.SCORE_WAIT_AFTER_SECONDS)));
 
         NamedCommands.registerCommand("Intake",
                 new InstantCommand(() -> {
