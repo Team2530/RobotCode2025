@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
         }
 
         Epilogue.bind(this);
-
+        
         // Put git/code version metadata on networktables
         NetworkTable versionTable = NetworkTableInstance.getDefault().getTable("Version");
         versionTable.putValue("GIT_SHA", NetworkTableValue.makeString(BuildConstants.GIT_SHA));
