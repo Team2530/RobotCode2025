@@ -11,6 +11,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -112,6 +113,11 @@ public class AlgaeIntake extends SubsystemBase {
     }
 
     public double getSensorDistance() {
-        return intakeSensor.getMeasurement().distance_mm / 1000.0;
+        Measurement meas = intakeSensor.getMeasurement();
+        if (meas == null) {
+            return 0.0;
+        } else {
+            return meas.distance_mm / 1000.0;
+        }
     }
 }
