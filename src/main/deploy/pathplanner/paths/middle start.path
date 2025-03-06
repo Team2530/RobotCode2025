@@ -3,35 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.055737704918034,
-        "y": 4.019006147540983
+        "x": 8.04375,
+        "y": 4.07
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.192622950819672,
-        "y": 4.030993852459016
+        "x": 7.180635245901637,
+        "y": 4.081987704918033
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.802049180327868,
-        "y": 4.186834016393442
+        "x": 5.874,
+        "y": 4.07
       },
       "prevControl": {
-        "x": 6.8848360655737695,
-        "y": 4.207786885245901
+        "x": 6.956786885245901,
+        "y": 4.090952868852459
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "middle start end"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "L4",
+      "waypointRelativePos": 0.9082020640955962,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 2.0,
@@ -42,7 +49,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -88.26429541107154
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "middle autos",
