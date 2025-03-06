@@ -9,6 +9,7 @@ import org.littletonrobotics.urcl.URCL;
 import com.ctre.phoenix6.SignalLogger;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
@@ -52,6 +53,8 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         m_robotContainer = new RobotContainer();
+
+        CanBridge.runTCP();
 
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our

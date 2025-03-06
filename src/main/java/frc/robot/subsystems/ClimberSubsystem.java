@@ -73,7 +73,7 @@ public class ClimberSubsystem extends SubsystemBase {
         }
 
         if (!Constants.Climber.DBG_DISABLED)
-            climberMotor.set(operator.getLeftBumper()
+            climberMotor.set(operator.getLeftStickButton()
                     ? (MathUtil.applyDeadband(
                             operator.getLeftY(), 0.05)
                             * (operator.getLeftY() < 0.0 ? 0.7 : 1.0))

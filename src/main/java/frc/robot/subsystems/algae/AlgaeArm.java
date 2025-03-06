@@ -18,6 +18,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,6 +50,8 @@ public class AlgaeArm extends SubsystemBase {
     private final ProfiledPIDController pivotPID = Algae.Pivot.PID;
     // private final ArmFeedforward pivotFeedforward = Algae.Pivot.FEEDFORWARD;
 
+    private boolean testModeConfigured = false;
+
     public AlgaeArm() {
         pivotConfig.idleMode(IdleMode.kBrake).inverted(Constants.Algae.Pivot.MOTOR_INVERTED).apply(
                 new EncoderConfig()
@@ -70,6 +73,19 @@ public class AlgaeArm extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        if (DriverStation.isTest() && !testModeConfigured) {
+            pivotMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            testModeConfigured = true;
+        } else if (!DriverStation.isTest() && testModeConfigured) {
+            pivotMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            testModeConfigured = false;
+        }
+
         if (Constants.Algae.DEBUG_PIDS) {
             pivotPID.setP(SmartDashboard.getNumber("Algae/Pivot/PID/P", pivotPID.getP()));
             pivotPID.setI(SmartDashboard.getNumber("Algae/Pivot/PID/I", pivotPID.getI()));

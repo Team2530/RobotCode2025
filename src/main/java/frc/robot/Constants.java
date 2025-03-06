@@ -330,26 +330,26 @@ public final class Constants {
 
   // TODO: ##################### PLACEHOLDERS #####################
   public static final class Algae {
-    public static final boolean DEBUG_PIDS = true;
+    public static final boolean DEBUG_PIDS = false;
 
     public static final class Pivot {
       public static final int MOTOR_PORT = 18;
-      public static final boolean MOTOR_INVERTED = false;
+      public static final boolean MOTOR_INVERTED = true;
       public static final int ENCODER_PORT = 27;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          1,
+          1.0,
           0.0,
           0.0,
           // RADIANS
-          new TrapezoidProfile.Constraints(12.f, 20.f));
+          new TrapezoidProfile.Constraints(20.f, 20.f));
       // public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
       // 1,
       // 1,
       // 1);
 
       public static final double RETRACTED_LIMIT = Units.degreesToRadians(0.0);
-      public static final double EXTENDED_LIMIT = Units.degreesToRadians(90.0);
+      public static final double EXTENDED_LIMIT = Units.degreesToRadians(100.0);
 
       public static class PhysicalConstants {
         public static final DCMotor MOTOR = DCMotor.getNeo550(1);
@@ -362,10 +362,10 @@ public final class Constants {
 
     public static final class Intake {
       public static final int MOTOR_PORT = 19;
-      public static final boolean MOTOR_INVERTED = false;
-      public static final int LASERCAN_ID = 1; // NOTE: Beambreak will *probably* be a rockwell proximity sensor
+      public static final boolean MOTOR_INVERTED = true;
+      public static final int LASERCAN_ID = 4; // NOTE: Beambreak will *probably* be a rockwell proximity sensor
                                                // wired into the SPARK max
-      public static final double HOLDING_THRESHOLD = Units.feetToMeters(1.0);
+      public static final double HOLDING_THRESHOLD = Units.inchesToMeters(6.0);
       public static final double SHOT_THRESHOLD = Units.feetToMeters(1.4);
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
@@ -401,10 +401,10 @@ public final class Constants {
       public static double kP = 28.0;
       public static double kI = 0.0;
       public static double kD = 0.01;
-      public static double MAX_VELOCITY = 2.80;
+      public static double MAX_VELOCITY = 2.60;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
-      public static double MAX_ACCELERATION = 15.0;
+      public static double MAX_ACCELERATION = 12.0;
     }
 
     // TODO: PAD THE ELEVATOR!!!!!!!

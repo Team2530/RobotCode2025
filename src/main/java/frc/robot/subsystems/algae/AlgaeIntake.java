@@ -44,6 +44,8 @@ public class AlgaeIntake extends SubsystemBase {
 
     private AlgaeIntakePresets currentPreset = AlgaeIntakePresets.STOP;
 
+    private boolean holding_internal = false;
+
     public AlgaeIntake() {
         intakeMotorConfig = intakeMotorConfig.inverted(Constants.Algae.Intake.MOTOR_INVERTED);
         intakeMotor.configure(intakeMotorConfig, ResetMode.kResetSafeParameters,
@@ -55,6 +57,12 @@ public class AlgaeIntake extends SubsystemBase {
         intakeMotor.set(currentPreset.outputPercentage);
         if (Robot.isSimulation())
             simIntakeMotor.setAppliedOutput(currentPreset.outputPercentage);
+
+        if (currentPreset == AlgaeIntakePresets.HOLD || currentPreset == AlgaeIntakePresets.INTAKING) {
+            holding_internal = getSensorDistance() < Constants.Algae.Intake.HOLDING_THRESHOLD;
+        } else {
+            holding_internal = false;
+        }
     }
 
     @Override
@@ -82,7 +90,7 @@ public class AlgaeIntake extends SubsystemBase {
     }
 
     public boolean isHolding() {
-        return getSensorDistance() < Constants.Algae.Intake.HOLDING_THRESHOLD;
+        return holding_internal;
     }
 
     public BooleanSupplier getHoldingSupplier() {
@@ -90,6 +98,15 @@ public class AlgaeIntake extends SubsystemBase {
             @Override
             public boolean getAsBoolean() {
                 return isHolding();
+            }
+        };
+    }
+
+    public BooleanSupplier getNotHoldingSupplier() {
+        return new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return !isHolding();
             }
         };
     }
