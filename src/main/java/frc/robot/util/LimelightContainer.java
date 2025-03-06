@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -21,6 +22,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants.PoseConstants;
 
+@Logged
 public class LimelightContainer {
   static int SIMCOUNTER = 0;
   static int RLCOUNTER = 0;
@@ -33,7 +35,7 @@ public class LimelightContainer {
       LimelightHelpers.SetIMUMode(limelight.getName(), 0);
     }
     enableLimelights(true);
-    
+
   }
 
   public void enableLimelights(boolean enable) {
@@ -113,7 +115,7 @@ public class LimelightContainer {
         doRejectUpdate = true;
       }
 
-      if(mt1.avgTagDist < Units.feetToMeters(10)){
+      if (mt1.avgTagDist < Units.feetToMeters(10)) {
         doRejectUpdate = true;
       }
 
@@ -121,7 +123,8 @@ public class LimelightContainer {
         doRejectUpdate = true;
       }
 
-      if((Math.abs(mt1.pose.getX()-odometry.getEstimatedPosition().getX())>1.5)||(Math.abs(mt1.pose.getY()-odometry.getEstimatedPosition().getY())>1.5)){
+      if ((Math.abs(mt1.pose.getX() - odometry.getEstimatedPosition().getX()) > 1.5)
+          || (Math.abs(mt1.pose.getY() - odometry.getEstimatedPosition().getY()) > 1.5)) {
         doRejectUpdate = true;
       }
 
@@ -146,18 +149,17 @@ public class LimelightContainer {
       boolean doRejectUpdate = false;
       LimelightHelpers.SetRobotOrientation(limelight.getName(), navx.getAngle(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.getName());
-      if(Math.abs(navx.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      if (Math.abs(navx.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore
+                                          // vision updates
       {
         doRejectUpdate = true;
       }
-      if(mt2.tagCount == 0)
-      {
+      if (mt2.tagCount == 0) {
         doRejectUpdate = true;
       }
-      if(!doRejectUpdate)
-      {
+      if (!doRejectUpdate) {
         limelight.pushPoseToShuffleboard(limelight.getName() + "mt2", mt2.pose);
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3,3,9999999));
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 9999999));
         odometry.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds);
@@ -178,5 +180,4 @@ public class LimelightContainer {
     return toReturn;
   }
 
-  
 }

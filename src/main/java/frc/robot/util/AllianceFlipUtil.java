@@ -7,6 +7,9 @@
 
 package frc.robot.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -46,6 +49,16 @@ public class AllianceFlipUtil
   public static Pose2d flip(Pose2d pose)
   {
     return new Pose2d(apply(pose.getTranslation()), apply(pose.getRotation()));
+  }
+
+  public static ArrayList<Pose2d> flip(List<Pose2d> poses) {
+    ArrayList<Pose2d> flippedPoses = new ArrayList<Pose2d>();
+
+    for (Pose2d pose : poses) {
+      flippedPoses.add(flip(pose));
+    }
+
+    return flippedPoses;
   }
 
   public static boolean shouldFlip()

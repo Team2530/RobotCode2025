@@ -12,6 +12,7 @@ import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -106,7 +107,7 @@ public final class Constants {
   }
 
   public static class SwerveModuleConstants {
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.9); // ~4 in
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.85); // ~4 in
     public static final double STEERING_GEAR_RATIO = 1.d / (150d / 7d);
     // This is for L2 modules with 16T pinions
     public static final double DRIVE_GEAR_RATIO = (1.d / 6.75d);
@@ -197,6 +198,7 @@ public final class Constants {
 
   public static class CommonConstants {
     public static final boolean LOG_INTO_FILE_ENABLED = true;
+    public static final boolean LOG_TO_NETWORKTABLES = true;
   }
 
   public static class Climber {
@@ -276,7 +278,7 @@ public final class Constants {
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
         public static final double JOINT_LENGTH_METERS = 0.10;
-        public static final double MOI = 0.0403605447; // Kg*m^2
+        public static final double MOI = 0.403605447; // Kg*m^2
       }
     }
 
@@ -417,7 +419,7 @@ public final class Constants {
     public static class PhysicalParameters {
       public static final double GEARING = 5.0 / 2.0;
       public static final double DRIVE_RADIUS_METERS = 0.0121;
-      public static final double CARRIAGE_MASS_KG = 6.0; // Load on the SECOND stage NOTE: This includes the weight
+      public static final double CARRIAGE_MASS_KG = 1.0; // Load on the SECOND stage NOTE: This includes the weight
 
       public static final double MAX_TRAVEL = Units.inchesToMeters(59.5);
       public static final double BOTTOM_TO_FLOOR = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
@@ -434,7 +436,7 @@ public final class Constants {
   }
 
   public static final class PathPlannerConstants {
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0, 0.02);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0, 0.01);
     public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0, 0.02);
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
@@ -447,11 +449,16 @@ public final class Constants {
         new ModuleConfig(
             SwerveModuleConstants.WHEEL_DIAMETER / 2,
             DriveConstants.MAX_MODULE_VELOCITY,
-            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT, 
+            SwerveModuleConstants.WHEEL_FRICTION_COEFFICIENT,
             DCMotor.getKrakenX60(1),
-            DriveConstants.MAX_MODULE_CURRENT, 
+            DriveConstants.MAX_MODULE_CURRENT,
             1),
         DriveConstants.KINEMATICS.getModules());
+  }
+
+  public static final class AutoConstants {
+    public static final double SCORE_WAIT_BEFORE_SECONDS = 0.2;
+    public static final double SCORE_WAIT_AFTER_SECONDS = 0.4;
   }
 
   public static final class PoseConstants {
