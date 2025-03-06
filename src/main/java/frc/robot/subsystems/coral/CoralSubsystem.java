@@ -50,20 +50,29 @@ public class CoralSubsystem extends SubsystemBase {
 
     private LimelightAssistance llAssist = null;
 
-    private final AnalogPotentiometer leftUltrasonic = new AnalogPotentiometer(Constants.Coral.LEFT_ULTRASONIC_PORT,
-            254.0, 0.0);
-    private final AnalogPotentiometer rightUltrasonic = new AnalogPotentiometer(Constants.Coral.RIGHT_ULTRASONIC_PORT,
-            254.0, 0.0);
-
     public enum CoralPresets {
-        LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636)),
-        LEVEL_2(0.247 - 0.085, 16.532, 90, 98.068),
-        LEVEL_3(0.650 - 0.085, 16.532, 90, 98.068),
-        LEVEL_4(1.342 - 0.04, 21.0, 90, 110.062),
-        INTAKE(0.03, 19.5, 90, 34.0),
-        STOW(0.03, 0.0, 0.0, 0.0),
+        LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636), true),
+        LEVEL_2(0.247 - 0.085, 16.532, 90, 98.068, true),
+        LEVEL_3(0.650 - 0.085, 16.532, 90, 98.068, true),
+        LEVEL_4(1.342 - 0.04, 21.0, 90, 110.062, true),
+        INTAKE(0.03, 19.5, 90, 34.0, true),
+        STOW(0.05, 0.0, 0.0, 0.0, true),
 
-        CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
+        ALGAE_REM_LOW(0.62, 32.0, 0.0, 0.0, false),
+        ALGAE_REM_HIGH(1.05, 32.0, 0.0, 0.0, false),
+
+        // TODO: Make same as the algae intaking preset
+        // So when it goes to stow it won't hit the reef
+        ALGAE_STOW_LOW(0.34, 28.0, 90.0, 42.0,
+                false),
+        ALGAE_STOW_HIGH(0.722, 28.0, 90.0, 42.0,
+                false),
+
+        // ALGAE_ACQUIRE_HIGH(0.03, 15.0, 90.0, 75.0, false),
+        ALGAE_ACQUIRE_LOW(0.322, 28.0, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_HIGH(0.702, 28.0, 90.0, 42.0, false),
+
+        CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 
         double elevatorHeightM; // Elevator height (relative to bottom of elevator/fully retracted)
         double pivotAngleDeg; // Looking at the robot from the FRONT (algae intake side), positive to the
@@ -71,12 +80,15 @@ public class CoralSubsystem extends SubsystemBase {
         double rollAngleDeg; // Wrist 1 angle, degrees from pointing at the bumpers on the CORAL ARM side of
                              // the robot. positive=CCW
         double pitchAngleDeg; // Wrist 2 angle, degrees from pointing straight up (max: 115deg)
+        boolean allowMirror;
 
-        private CoralPresets(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle) {
+        private CoralPresets(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle,
+                boolean allowMirror) {
             this.elevatorHeightM = elevatorHeight;
             this.pivotAngleDeg = pivotAngle;
             this.rollAngleDeg = rollAngle;
             this.pitchAngleDeg = pitchAngle;
+            this.allowMirror = allowMirror;
         }
     }
 
@@ -119,9 +131,6 @@ public class CoralSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Ultra Left", this.leftUltrasonic.get());
-        SmartDashboard.putNumber("Ultra Right", this.rightUltrasonic.get());
-
         // i have no idea what any of the getPositions output
         elevatorMechanism
                 .setLength(elevator.getPosition() + Constants.Elevator.PhysicalParameters.CORAL_PIVOT_VERTICAL_OFFSET);
@@ -154,8 +163,9 @@ public class CoralSubsystem extends SubsystemBase {
             elevator.setGoalPosition(preset.elevatorHeightM);
             arm.setPivotGoalDegrees(
                     preset.pivotAngleDeg
-                            * (mirrorSetting.isMirrored ? -1 : 1));
-            arm.setRollGoalDegrees(preset.rollAngleDeg);
+                            * (preset.allowMirror ? (mirrorSetting.isMirrored ? -1.0 : 1.0) : 1.0));
+            arm.setRollGoalDegrees(preset.rollAngleDeg
+                    * (preset.allowMirror ? (mirrorSetting.isMirrored ? -1.0 : 1.0) : 1.0));
             arm.setPitchGoalDegrees(preset.pitchAngleDeg);
 
             currentPreset = preset;
@@ -175,7 +185,7 @@ public class CoralSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Pivot Pre", preset.pivotAngleDeg);
         arm.setPivotGoalDegrees(
                 preset.pivotAngleDeg
-                        * (mirrorSetting.isMirrored ? -1 : 1));
+                        * (preset.allowMirror ? (mirrorSetting.isMirrored ? -1 : 1) : 1.0));
         currentPreset = preset;
     }
 
@@ -196,7 +206,7 @@ public class CoralSubsystem extends SubsystemBase {
     public void setCoralPresetRoll(CoralPresets preset) {
         arm.setRollGoalDegrees(
                 preset.rollAngleDeg
-                        * (mirrorSetting.isMirrored ? -1 : 1));
+                        * (preset.allowMirror ? (mirrorSetting.isMirrored ? -1 : 1) : 1.0));
         currentPreset = preset;
     }
 

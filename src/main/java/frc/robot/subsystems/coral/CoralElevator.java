@@ -8,7 +8,9 @@ import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
@@ -17,6 +19,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -64,16 +67,22 @@ public class CoralElevator extends SubsystemBase {
                     Elevator.PID.MAX_ACCELERATION));
 
     public CoralElevator() {
+        SoftLimitConfig limconfig = new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(true);
+        // .forwardSoftLimit(Constants.Elevator.PhysicalParameters.MAX_TRAVEL).forwardSoftLimitEnabled(true);
+
         leaderConfig
                 .idleMode(IdleMode.kBrake)
-                .inverted(Elevator.Leader.INVERTED);
+                .inverted(Elevator.Leader.INVERTED)
+                .apply(limconfig);
         leaderConfig.encoder
                 .positionConversionFactor(1 / Elevator.MOTOR_REVOLUTIONS_PER_METER)
                 .velocityConversionFactor(60.0 / Elevator.MOTOR_REVOLUTIONS_PER_METER); // Multiply by 60/RpM to get m/s
 
         followerConfig
                 .idleMode(IdleMode.kBrake)
-                .inverted(Elevator.Follower.INVERTED);
+                .inverted(Elevator.Follower.INVERTED)
+                .apply(limconfig);
+
         followerConfig.encoder
                 .positionConversionFactor(1 / Elevator.MOTOR_REVOLUTIONS_PER_METER)
                 .velocityConversionFactor(60.0 / Elevator.MOTOR_REVOLUTIONS_PER_METER);
@@ -88,21 +97,42 @@ public class CoralElevator extends SubsystemBase {
         elevatorPID.setTolerance(Units.inchesToMeters(0.5));
     }
 
-    private boolean isZeroed = false;
+    private boolean isZeroed = true;
 
     private double lastVelocity = 0.0;
     private double lastTime = 0.0;
 
+    private boolean testModeConfigured = false;
+
     @Override
     public void periodic() {
+        if (DriverStation.isTest() && !testModeConfigured) {
+            leaderMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            followerMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            testModeConfigured = true;
+        } else if (!DriverStation.isTest() && testModeConfigured) {
+            leaderMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            followerMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            testModeConfigured = false;
+        }
+
         // check if needs to be zeroed and is at zero
         // TODO: ######################### PLACEHOLDERS AGAIN #########################
-        if (!isZeroed
-                && (((leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2) > 20
-                        || Robot.isSimulation())) {
-            leaderEncoder.setPosition(0);
-            isZeroed = true;
-        }
+        // if (!isZeroed
+        // && (((leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2)
+        // > 20
+        // || Robot.isSimulation())) {
+        // leaderEncoder.setPosition(0);
+        // isZeroed = true;
+        // }
 
         // check if initial zero had been run
         if (isZeroed) {

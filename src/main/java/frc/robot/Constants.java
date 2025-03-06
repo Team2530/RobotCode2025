@@ -290,6 +290,7 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(115.0);
+      public static final double MINIMUM_ANGLE = Units.degreesToRadians(-20.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
           7.0,
@@ -329,37 +330,43 @@ public final class Constants {
 
   // TODO: ##################### PLACEHOLDERS #####################
   public static final class Algae {
+    public static final boolean DEBUG_PIDS = false;
+
     public static final class Pivot {
       public static final int MOTOR_PORT = 18;
+      public static final boolean MOTOR_INVERTED = true;
       public static final int ENCODER_PORT = 27;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          1,
+          1.0,
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(Double.MAX_VALUE, Double.MAX_VALUE));
-      public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
-          1,
-          1,
-          1);
+          // RADIANS
+          new TrapezoidProfile.Constraints(20.f, 20.f));
+      // public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
+      // 1,
+      // 1,
+      // 1);
 
-      public static final double RETRACTED_LIMIT_DEGREES = 10.0;
-      public static final double EXTENDED_LIMIT_DEGREES = 90.0;
+      public static final double RETRACTED_LIMIT = Units.degreesToRadians(0.0);
+      public static final double EXTENDED_LIMIT = Units.degreesToRadians(100.0);
 
       public static class PhysicalConstants {
-        public static final DCMotor MOTOR = DCMotor.getNeoVortex(1);
-        public static final double GEARING = 1; // TODO: this is the only placeholder
-        public static final double NET_REDUCTION = 42.66666667; // Yeah this is cursed
-        public static final double MASS_KG = 3.18;
-        public static final double ARM_LENGTH_METERS = 0.2349863728;
-        public static final double MOI = 0.1114866914; // Kg*m^2
+        public static final DCMotor MOTOR = DCMotor.getNeo550(1);
+        public static final double NET_REDUCTION = 83.3333333333; // Yeah this is cursed
+        public static final double MASS_KG = 1.36078;
+        public static final double ARM_LENGTH_METERS = 0.1620899476;
+        public static final double MOI = 0.0303284342; // Kg*m^2
       }
     }
 
     public static final class Intake {
       public static final int MOTOR_PORT = 19;
-      public static final int BEAMBREAK_PORT = 0; // NOTE: Beambreak will *probably* be a rockwell proximity sensor
-                                                  // wired into the SPARK max
+      public static final boolean MOTOR_INVERTED = true;
+      public static final int LASERCAN_ID = 4; // NOTE: Beambreak will *probably* be a rockwell proximity sensor
+                                               // wired into the SPARK max
+      public static final double HOLDING_THRESHOLD = Units.inchesToMeters(6.0);
+      public static final double SHOT_THRESHOLD = Units.feetToMeters(1.4);
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
       public static final double NEGATIVE_RATE_LIMIT = -5.0;
@@ -394,10 +401,10 @@ public final class Constants {
       public static double kP = 28.0;
       public static double kI = 0.0;
       public static double kD = 0.01;
-      public static double MAX_VELOCITY = 2.80;
+      public static double MAX_VELOCITY = 2.60;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
-      public static double MAX_ACCELERATION = 15.0;
+      public static double MAX_ACCELERATION = 12.0;
     }
 
     // TODO: PAD THE ELEVATOR!!!!!!!
