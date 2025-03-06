@@ -20,7 +20,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PoseConstants;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 @Logged
 public class LimelightContainer {
@@ -83,16 +85,6 @@ public class LimelightContainer {
 
             if (!doRejectUpdate) {
 
-                // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, .2));
-                // odometry.addVisionMeasurement(
-                // mt1.pose,
-                // mt1.timestampSeconds);
-
-                // odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, 20));
-                // odometry.addVisionMeasurement(
-                // mt1.pose,
-                // mt1.timestampSeconds);
-
                 odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
 
                 SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString() + " " + RLCountermt1);
@@ -133,34 +125,37 @@ public class LimelightContainer {
         }
     }
 
-    public void estimateMT2Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
+      public void estimateMT2Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
         for (Limelight limelight : limelights) {
-            boolean doRejectUpdate = false;
-            LimelightHelpers.SetRobotOrientation(limelight.getName(), navx.getAngle(), 0, 0, 0, 0, 0);
-            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers
-                    .getBotPoseEstimate_wpiBlue_MegaTag2(limelight.getName());
+          boolean doRejectUpdate = false;
+          LimelightHelpers.SetRobotOrientation(limelight.getName(), -navx.getAngle() + (FieldConstants.getAlliance() == Alliance.Red ? 180 : 0.0), -navx.getRate(), 0, 0, 0, 0);
+          LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.getName());
+          if (Math.abs(navx.getRate()) > 720) doRejectUpdate = true;// if our angular velocity is greater than 720 degrees per second, ignore
+                                              // vision updates
+          
+          if(mt2.tagCount == 1 && mt2.rawFiducials.length == 1){
+            if(mt2.rawFiducials[0].ambiguity > .7){
+              doRejectUpdate = true;
+            }
 
-            if (mt2 == null) {
-                continue;
+            if(mt2.rawFiducials[0].distToCamera > 3){
+              doRejectUpdate = true;
             }
-            if (Math.abs(navx.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second,
-                                                // ignore
-                                                // vision updates
-            {
-                doRejectUpdate = true;
-            }
-            if (mt2.tagCount == 0) {
-                doRejectUpdate = true;
-            }
-            if (!doRejectUpdate) {
-                limelight.pushPoseToShuffleboard(limelight.getName() + "mt2", mt2.pose);
-                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 9999999));
-                odometry.addVisionMeasurement(
-                        mt2.pose,
-                        mt2.timestampSeconds);
-            }
+          }
+
+          if(mt2.tagCount == 0){
+            doRejectUpdate = true;
+          }
+
+          if(!doRejectUpdate){
+            odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+            odometry.addVisionMeasurement(
+                mt2.pose,
+                mt2.timestampSeconds);
+          }
         }
-    }
+      
+      }
 
     public int findNearestTagPos(SwerveDrivePoseEstimator odometry) {
         double min = 43490824;
