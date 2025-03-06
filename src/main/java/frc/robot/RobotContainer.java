@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -285,9 +286,11 @@ public class RobotContainer {
                 return driverXbox.getLeftTriggerAxis() > 0.05;
             }
 
-        }).onTrue(new InstantCommand(() -> {
-            normalDrive.setDriveStyle(DriveStyle.ROTATION_ASSIST);
-        })).onFalse(new InstantCommand(() -> {
+        }).onTrue(new ConditionalCommand(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.REEF_ASSIST);
+        }), new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST);
+        }), coralSubsystem.isHoldingSupplier())).onFalse(new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED);
         }));
 

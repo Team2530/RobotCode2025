@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.CoralStation;
 import frc.robot.util.Reef;
 
 public class DriveCommand extends Command {
@@ -30,7 +31,8 @@ public class DriveCommand extends Command {
 
     public static enum DriveStyle {
         FIELD_ORIENTED,
-        ROTATION_ASSIST,
+        REEF_ASSIST,
+        INTAKE_ASSIST
     };
 
     private DriveStyle driveStyle = DriveStyle.FIELD_ORIENTED;
@@ -117,26 +119,53 @@ public class DriveCommand extends Command {
                         xSpeed, ySpeed, zSpeed,
                         swerveSubsystem.getGyroRotation2d());
                 break;
-            case ROTATION_ASSIST:
+            case REEF_ASSIST:
                 Translation2d reefCenter = AllianceFlipUtil.apply(Reef.center);
                 double reefAngleRot = swerveSubsystem.getOdometryPose().getTranslation().minus(
                         reefCenter).getAngle().getRotations();
 
                 double targetAngle = MathUtil
                         .angleModulus(Units.rotationsToRadians(Math.floor((reefAngleRot + 1.0 / 12.0) * 6.0) / 6.0))
-                        + Math.PI / 2.0;
+                        - Math.PI / 2.0;
 
                 SmartDashboard.putNumber("AutoRotate Target Angle", Units.radiansToDegrees(targetAngle));
 
-                SwerveModuleState rotationState = new SwerveModuleState(2.0, new Rotation2d(targetAngle));
-                rotationState.optimize(swerveSubsystem.getOdometryPose().getRotation());
+                SwerveModuleState rotationState = new SwerveModuleState(1.5, new Rotation2d(targetAngle));
+                // NOTE: Remove this to dedicate a scoring side
+                // rotationState.optimize(swerveSubsystem.getOdometryPose().getRotation());
 
-                double zAssist = rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
-                        rotationState.angle.getRadians());
+                double zAssist = MathUtil
+                        .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
+                                rotationState.angle.getRadians()), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.5
+                                        * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, zSpeed + zAssist,
                         swerveSubsystem.getGyroRotation2d());
                 break;
+            case INTAKE_ASSIST:
+                // double zTarget =
+                // if (AllianceFlipUtil.shouldFlip())
+                // zTarget += Math.PI;
+                Pose2d csRight = AllianceFlipUtil.apply(CoralStation.coralStations[0]);
+                Pose2d csLeft = AllianceFlipUtil.apply(CoralStation.coralStations[1]);
+                // CoralStation.putToShuffleboard();
+
+                Pose2d csTarget = (swerveSubsystem.getOdometryPose().getTranslation()
+                        .getDistance(csRight.getTranslation()) < swerveSubsystem.getOdometryPose().getTranslation()
+                                .getDistance(csLeft.getTranslation())) ? csRight : csLeft;
+
+                // TODO: Optimize if need be
+                double targetRotation = csTarget.getRotation().rotateBy(Rotation2d.fromDegrees(90.0)).getRadians();
+
+                double zPid = MathUtil
+                        .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
+                                targetRotation), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.5
+                                        * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeed, ySpeed, zSpeed + zPid,
+                        swerveSubsystem.getGyroRotation2d());
 
             default:
                 break;
