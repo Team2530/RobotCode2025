@@ -53,7 +53,7 @@
   "folder": "middle autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -88.26429541107154
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

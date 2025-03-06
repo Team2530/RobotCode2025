@@ -28,35 +28,9 @@
           "data": {
             "commands": [
               {
-                "type": "parallel",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "bottom 1"
-                      }
-                    },
-                    {
-                      "type": "sequential",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 0.2
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Start Intake"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
+                  "pathName": "bottom 1"
                 }
               },
               {
@@ -73,16 +47,9 @@
           "data": {
             "commands": [
               {
-                "type": "parallel",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "bottom 2"
-                      }
-                    }
-                  ]
+                  "pathName": "bottom 2"
                 }
               },
               {
@@ -99,41 +66,15 @@
           "data": {
             "commands": [
               {
-                "type": "parallel",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "bottom 3"
-                      }
-                    },
-                    {
-                      "type": "sequential",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 0.2
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Start Intake"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Wait Intake"
-                      }
-                    }
-                  ]
+                  "pathName": "bottom 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Wait Intake"
                 }
               }
             ]
@@ -163,35 +104,9 @@
           "data": {
             "commands": [
               {
-                "type": "parallel",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "bottom 5"
-                      }
-                    },
-                    {
-                      "type": "sequential",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 0.2
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Start Intake"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
+                  "pathName": "bottom 5"
                 }
               },
               {
