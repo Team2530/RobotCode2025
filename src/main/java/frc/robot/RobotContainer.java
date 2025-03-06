@@ -357,9 +357,7 @@ public class RobotContainer {
          * driver
          */
         // stop the climber
-        driverXbox.x().onTrue(new InstantCommand(() -> {
-            climberSubsystem.setOutput(0);
-        }));
+    
         // move the climber
         driverXbox.y().and(new BooleanSupplier() {
             private boolean deployed = true;
@@ -380,8 +378,9 @@ public class RobotContainer {
                     System.out.print("swaaws");
                 })));
         // set field orientation
-        driverXbox.button(7).onTrue(new InstantCommand(() -> {
+        driverXbox.button(7).onTrue(new InstantCommand(() -> { // windows button
             swerveDriveSubsystem.setHeading(0);
+            SmartDashboard.putBoolean("Pressed 7", true);
         }));
 
         /*
