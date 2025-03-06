@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.DriveCommand.DriveStyle;
 import frc.robot.commands.algae.IntakeAlgaeCommand;
 import frc.robot.commands.algae.RemoveAlgaeCommand;
 import frc.robot.commands.algae.ShootAlgaeCommand;
@@ -276,6 +277,20 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+
+        driverXbox.leftTrigger().and(new BooleanSupplier() {
+
+            @Override
+            public boolean getAsBoolean() {
+                return driverXbox.getLeftTriggerAxis() > 0.05;
+            }
+
+        }).onTrue(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.ROTATION_ASSIST);
+        })).onFalse(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED);
+        }));
+
         /*
          * operator
          */
@@ -411,7 +426,7 @@ public class RobotContainer {
          * driver
          */
         // stop the climber
-    
+
         // move the climber
         driverXbox.y().and(new BooleanSupplier() {
             private boolean deployed = true;

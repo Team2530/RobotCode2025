@@ -50,8 +50,9 @@ public class Reef {
                     Rotation2d.fromDegrees(240))
     };
 
-    public static final Translation2d center = new Translation2d(Units.inchesToMeters(176.746),
-            Units.inchesToMeters(158.501));
+    public static final Translation2d center = new Translation2d(
+            4.485,
+            4.025);
     // Starting off facing DS wall
     public static final double centerOffset = Units.inchesToMeters(32);
     public static final double faceOffset = Units.inchesToMeters(6.469);
@@ -62,9 +63,11 @@ public class Reef {
             for (int i = 0; i < 12; i += 2) {
                 Pose2d face = centerFaces[i / 2];
                 put(branchName[i], face.transformBy(
-                        new Transform2d(DriveConstants.FULL_ROBOT_WIDTH / 2.0, faceOffset, new Rotation2d())));
+                        new Transform2d(DriveConstants.FULL_ROBOT_WIDTH / 2.0, faceOffset,
+                                new Rotation2d())));
                 put(branchName[i + 1], face.transformBy(
-                        new Transform2d(DriveConstants.FULL_ROBOT_WIDTH / 2.0, -faceOffset, new Rotation2d())));
+                        new Transform2d(DriveConstants.FULL_ROBOT_WIDTH / 2.0, -faceOffset,
+                                new Rotation2d())));
             }
         }
     };
@@ -74,12 +77,15 @@ public class Reef {
     }
 
     /**
-     * Used to put a pose on Shuffleboard for debugging - Don't repeatadly call this!
+     * Used to put a pose on Shuffleboard for debugging - Don't repeatadly call
+     * this!
+     * 
      * @param name Name of pose
      * @param pose Pose2d pose
      */
     public static void pushPoseToShuffleboard(String name, Pose2d pose) {
-        StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructTopic(name, Pose2d.struct)
+        StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+                .getStructTopic(name, Pose2d.struct)
                 .publish();
         publisher.set(pose);
     }
