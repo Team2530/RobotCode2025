@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -10,6 +11,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.util.LimelightContainer;
 
+@Logged
 public class Limelight extends SubsystemBase {
     public enum LimelightType {
         // LL1 doesn't have specs listed, so these could be incorrect

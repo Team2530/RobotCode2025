@@ -105,42 +105,32 @@ public class LimelightContainer {
     for (Limelight limelight : limelights) {
       boolean doRejectUpdate = false;
 
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.getName());
-
-      if (mt1 == null) {
-        continue;
+       LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.getName());
+      
+      if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
+      {
+        if(mt1.rawFiducials[0].ambiguity > .7)
+        {
+          doRejectUpdate = true;
+        }
+        if(mt1.rawFiducials[0].distToCamera > 3)
+        {
+          doRejectUpdate = true;
+        }
       }
-
-      if (mt1.tagCount == 0) {
+      if(mt1.tagCount == 0)
+      {
         doRejectUpdate = true;
       }
 
-      if (mt1.avgTagDist < Units.feetToMeters(10)) {
-        doRejectUpdate = true;
-      }
-
-      if (Math.abs(navx.getRate()) > 720) {
-        doRejectUpdate = true;
-      }
-
-      if ((Math.abs(mt1.pose.getX() - odometry.getEstimatedPosition().getX()) > 1.5)
-          || (Math.abs(mt1.pose.getY() - odometry.getEstimatedPosition().getY()) > 1.5)) {
-        doRejectUpdate = true;
-      }
-
-      if (!doRejectUpdate) {
-
-        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 9999));
+      if(!doRejectUpdate)
+      {
+        odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
         odometry.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);
-
-        SmartDashboard.putString("Pos MT1: ", mt1.pose.toString() + " " + RLCountermt1);
-
-        limelight.pushPoseToShuffleboard(limelight.getName() + "mt1", mt1.pose);
       }
 
-      RLCountermt1++;
     }
   }
 

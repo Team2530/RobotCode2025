@@ -94,7 +94,7 @@ public class DriveCommand extends Command {
                     swerveSubsystem.getModulePositions(),
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
         }
-
+        if(xbox.getStartButton()){SmartDashboard.putBoolean("Ham called", true);}
 
 
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
