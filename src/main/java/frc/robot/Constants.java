@@ -177,7 +177,10 @@ public final class Constants {
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.675);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.675);
-    public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.520);
+    public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.50);
+
+    public static final PIDConstants TRANSLATION_ASSIST = new PIDConstants(8, 0, 0.01);
+    public static final PIDConstants ROTATION_ASSIST = new PIDConstants(5.0, 0, 0.02);
 
     public static final class ModuleIndices {
       public static final int FRONT_LEFT = 0;
@@ -217,9 +220,6 @@ public final class Constants {
   }
 
   public static class Coral {
-    public static int LEFT_ULTRASONIC_PORT = 0;
-    public static int RIGHT_ULTRASONIC_PORT = 1;
-
     public static boolean DEBUG_PIDS = false;
 
     public static class Pivot {

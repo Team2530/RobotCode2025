@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.DriveCommand.DriveStyle;
 import frc.robot.commands.algae.IntakeAlgaeCommand;
 import frc.robot.commands.algae.RemoveAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
@@ -64,11 +66,13 @@ import frc.robot.util.LimelightContainer;
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
 
+    @Logged
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
     private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
 
+    @Logged
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BF, LL_BR, LL_BL, LL_FR);
 
     private final CommandXboxController driverXbox = new CommandXboxController(
@@ -276,6 +280,22 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+
+        driverXbox.leftTrigger().and(new BooleanSupplier() {
+
+            @Override
+            public boolean getAsBoolean() {
+                return driverXbox.getLeftTriggerAxis() > 0.05;
+            }
+
+        }).onTrue(new ConditionalCommand(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.REEF_ASSIST);
+        }), new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST);
+        }), coralSubsystem.isHoldingSupplier())).onFalse(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED);
+        }));
+
         /*
          * operator
          */
@@ -411,7 +431,7 @@ public class RobotContainer {
          * driver
          */
         // stop the climber
-    
+
         // move the climber
         driverXbox.y().and(new BooleanSupplier() {
             private boolean deployed = true;

@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.CoralStation;
 import frc.robot.util.Reef;
 
 public class DriveCommand extends Command {
@@ -27,17 +29,29 @@ public class DriveCommand extends Command {
     private double DRIVE_MULT = 1.0;
     private final double SLOWMODE_MULT = 0.25;
 
-    private enum DriveState {
-        Free,
-        Locked,
+    public static enum DriveStyle {
+        FIELD_ORIENTED,
+        REEF_ASSIST,
+        INTAKE_ASSIST
     };
 
-    private DriveState state = DriveState.Free;
+    private DriveStyle driveStyle = DriveStyle.FIELD_ORIENTED;
+    private PIDController rotationAssist = new PIDController(
+            DriveConstants.ROTATION_ASSIST.kP,
+            DriveConstants.ROTATION_ASSIST.kI,
+            DriveConstants.ROTATION_ASSIST.kD);
+    private PIDController translationAssist = new PIDController(
+            DriveConstants.TRANSLATION_ASSIST.kP,
+            DriveConstants.TRANSLATION_ASSIST.kI,
+            DriveConstants.TRANSLATION_ASSIST.kD);
+
+    private boolean isXstance = false;
 
     public DriveCommand(SwerveSubsystem swerveSubsystem, XboxController xbox) {
         this.swerveSubsystem = swerveSubsystem;
         this.xbox = xbox;
 
+        rotationAssist.enableContinuousInput(-Math.PI, Math.PI);
         dsratelimiter.reset(SLOWMODE_MULT);
 
         addRequirements(swerveSubsystem);
@@ -94,33 +108,85 @@ public class DriveCommand extends Command {
                     swerveSubsystem.getModulePositions(),
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
         }
+        if (xbox.getStartButton()) {
+            SmartDashboard.putBoolean("Ham called", true);
+        }
 
+        ChassisSpeeds speeds = new ChassisSpeeds();
+        switch (driveStyle) {
+            case FIELD_ORIENTED:
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeed, ySpeed, zSpeed,
+                        swerveSubsystem.getGyroRotation2d());
+                break;
+            case REEF_ASSIST:
+                Translation2d reefCenter = AllianceFlipUtil.apply(Reef.center);
+                double reefAngleRot = swerveSubsystem.getOdometryPose().getTranslation().minus(
+                        reefCenter).getAngle().getRotations();
 
+                double targetAngle = MathUtil
+                        .angleModulus(Units.rotationsToRadians(Math.floor((reefAngleRot + 1.0 / 12.0) * 6.0) / 6.0))
+                        - Math.PI / 2.0;
 
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed, ySpeed, zSpeed,
-                swerveSubsystem.getGyroRotation2d());
+                SmartDashboard.putNumber("AutoRotate Target Angle", Units.radiansToDegrees(targetAngle));
+
+                SwerveModuleState rotationState = new SwerveModuleState(1.5, new Rotation2d(targetAngle));
+                // NOTE: Remove this to dedicate a scoring side
+                // rotationState.optimize(swerveSubsystem.getOdometryPose().getRotation());
+
+                double zAssist = MathUtil
+                        .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
+                                rotationState.angle.getRadians()), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.5
+                                        * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeed, ySpeed, zSpeed + zAssist,
+                        swerveSubsystem.getGyroRotation2d());
+                break;
+            case INTAKE_ASSIST:
+                // double zTarget =
+                // if (AllianceFlipUtil.shouldFlip())
+                // zTarget += Math.PI;
+                Pose2d csRight = AllianceFlipUtil.apply(CoralStation.coralStations[0]);
+                Pose2d csLeft = AllianceFlipUtil.apply(CoralStation.coralStations[1]);
+                // CoralStation.putToShuffleboard();
+
+                Pose2d csTarget = (swerveSubsystem.getOdometryPose().getTranslation()
+                        .getDistance(csRight.getTranslation()) < swerveSubsystem.getOdometryPose().getTranslation()
+                                .getDistance(csLeft.getTranslation())) ? csRight : csLeft;
+
+                // TODO: Optimize if need be
+                double targetRotation = csTarget.getRotation().rotateBy(Rotation2d.fromDegrees(90.0)).getRadians();
+
+                double zPid = MathUtil
+                        .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
+                                targetRotation), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.5
+                                        * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeed, ySpeed, zSpeed + zPid,
+                        swerveSubsystem.getGyroRotation2d());
+
+            default:
+                break;
+        }
 
         // State transition logic
-        state = DriveState.Free;
-        switch (state) {
-            case Free:
-                // state = xbox.getRightBumper() ? DriveState.Locked : DriveState.Free;
-                break;
-            case Locked:
-                state = ((xyRaw.getNorm() > 0.08) && !xbox.getBButton()) ? DriveState.Free : DriveState.Locked;
-                break;
-        }
+        isXstance = false;
+        if (isXstance)
+            isXstance = !((xyRaw.getNorm() > 0.08) && !xbox.getBButton());
 
         // Drive execution logic
-        switch (state) {
-            case Free:
-                swerveSubsystem.setChassisSpeeds(speeds);
-                break;
-            case Locked:
-                swerveSubsystem.setXstance();
-                break;
+
+        if (isXstance) {
+            swerveSubsystem.setXstance();
+        } else {
+            swerveSubsystem.setChassisSpeeds(speeds);
         }
+    }
+
+    public void setDriveStyle(DriveStyle style) {
+        this.driveStyle = style;
     }
 
     @Override
