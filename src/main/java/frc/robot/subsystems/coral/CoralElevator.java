@@ -16,6 +16,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -43,6 +44,8 @@ public class CoralElevator extends SubsystemBase {
     // sim encoders
     private final SparkRelativeEncoderSim simLeaderEncoder = new SparkRelativeEncoderSim(leaderMotor);
 
+    LinearFilter curFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+
     // physics simulations
     private final ElevatorSim simElevator = new ElevatorSim(
             Elevator.PhysicalParameters.MOTOR,
@@ -57,8 +60,8 @@ public class CoralElevator extends SubsystemBase {
     private final SparkFlexConfig leaderConfig = new SparkFlexConfig();
     private final SparkFlexConfig followerConfig = new SparkFlexConfig();
 
-    private final ElevatorFeedforward feedForward = Elevator.FEEDFORWARD;
-    private final ProfiledPIDController elevatorPID = new ProfiledPIDController(
+    private ElevatorFeedforward feedForward = Elevator.FEEDFORWARD;
+    private ProfiledPIDController elevatorPID = new ProfiledPIDController(
             Elevator.PID.kP,
             Elevator.PID.kI,
             Elevator.PID.kD,
@@ -67,7 +70,7 @@ public class CoralElevator extends SubsystemBase {
                     Elevator.PID.MAX_ACCELERATION));
 
     public CoralElevator() {
-        SoftLimitConfig limconfig = new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(true);
+        SoftLimitConfig limconfig = new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(false);
         // .forwardSoftLimit(Constants.Elevator.PhysicalParameters.MAX_TRAVEL).forwardSoftLimitEnabled(true);
 
         leaderConfig
@@ -95,9 +98,19 @@ public class CoralElevator extends SubsystemBase {
 
         // Add some tolerance to the elevator controller
         elevatorPID.setTolerance(Units.inchesToMeters(0.5));
+
+        if (Constants.Elevator.DEBUG_PIDS) {
+            SmartDashboard.putNumber("Elevator/PID/P", elevatorPID.getP());
+            SmartDashboard.putNumber("Elevator/PID/I", elevatorPID.getI());
+            SmartDashboard.putNumber("Elevator/PID/D", elevatorPID.getD());
+            SmartDashboard.putNumber("Elevator/FF/Kg", feedForward.getKg());
+            SmartDashboard.putNumber("Elevator/FF/Ks", feedForward.getKs());
+            SmartDashboard.putNumber("Elevator/FF/Kv", feedForward.getKv());
+            SmartDashboard.putNumber("Elevator/FF/Ka", feedForward.getKa());
+        }
     }
 
-    private boolean isZeroed = true;
+    private boolean isZeroed = false;
 
     private double lastVelocity = 0.0;
     private double lastTime = 0.0;
@@ -106,6 +119,19 @@ public class CoralElevator extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (Constants.Elevator.DEBUG_PIDS) {
+            elevatorPID.setP(SmartDashboard.getNumber("Algae/Pivot/PID/P", elevatorPID.getP()));
+            elevatorPID.setI(SmartDashboard.getNumber("Algae/Pivot/PID/I", elevatorPID.getI()));
+            elevatorPID.setD(SmartDashboard.getNumber("Algae/Pivot/PID/D", elevatorPID.getD()));
+            // feedForward = new ElevatorFeedforward(fee, lastVelocity, lastTime)
+            double Kg = SmartDashboard.getNumber("Elevator/FF/Kg", feedForward.getKg());
+            double Ks = SmartDashboard.getNumber("Elevator/FF/Ks", feedForward.getKs());
+            double Kv = SmartDashboard.getNumber("Elevator/FF/Kv", feedForward.getKv());
+            double Ka = SmartDashboard.getNumber("Elevator/FF/Ka", feedForward.getKa());
+
+            feedForward = new ElevatorFeedforward(Ks, Kg, Kv, Ka);
+        }
+
         if (DriverStation.isTest() && !testModeConfigured) {
             leaderMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
                     ResetMode.kNoResetSafeParameters,
@@ -126,13 +152,23 @@ public class CoralElevator extends SubsystemBase {
 
         // check if needs to be zeroed and is at zero
         // TODO: ######################### PLACEHOLDERS AGAIN #########################
-        // if (!isZeroed
-        // && (((leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2)
-        // > 20
-        // || Robot.isSimulation())) {
-        // leaderEncoder.setPosition(0);
-        // isZeroed = true;
-        // }
+        if (!isZeroed
+                && (curFilter.calculate((leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2) > 15
+                        || Robot.isSimulation())) {
+            leaderEncoder.setPosition(0.0);
+            followerEncoder.setPosition(0.0);
+            isZeroed = true;
+            leaderMotor.configure(leaderConfig.apply(
+                    new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
+                            true)),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            followerMotor.configure(leaderConfig.apply(
+                    new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
+                            true)),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+        }
 
         // check if initial zero had been run
         if (isZeroed) {
@@ -166,8 +202,8 @@ public class CoralElevator extends SubsystemBase {
         } else {
             if (!Constants.Elevator.DBG_DISABLED) {
                 // slowly move down to zero
-                leaderMotor.set(-0.05);
-                followerMotor.set(-0.05);
+                leaderMotor.set(-0.08);
+                followerMotor.set(-0.08);
             }
         }
     }
@@ -194,6 +230,20 @@ public class CoralElevator extends SubsystemBase {
         elevatorPID.setGoal(MathUtil.clamp(position, 0.0, Elevator.PhysicalParameters.MAX_TRAVEL));
     }
 
+    public void zeroElevator() {
+        isZeroed = false;
+        leaderMotor.configure(leaderConfig.apply(
+                new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
+                        false)),
+                ResetMode.kNoResetSafeParameters,
+                PersistMode.kNoPersistParameters);
+        followerMotor.configure(leaderConfig.apply(
+                new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
+                        false)),
+                ResetMode.kNoResetSafeParameters,
+                PersistMode.kNoPersistParameters);
+    }
+
     public double getGoalPosition() {
         return elevatorPID.getGoal().position;
     }
@@ -211,9 +261,5 @@ public class CoralElevator extends SubsystemBase {
     public boolean isSupposedToBeInPosition() {
         return MathUtil.isNear(elevatorPID.getSetpoint().position, elevatorPID.getGoal().position,
                 Units.inchesToMeters(1 / 16.0));
-    }
-
-    public void zeroElevator() {
-        isZeroed = false;
     }
 }

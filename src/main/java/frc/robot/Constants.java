@@ -382,6 +382,8 @@ public final class Constants {
   // See
   // https://cad.onshape.com/documents/fa9a0365dfdf7e376f93f1b4/w/36bfb0cc9de95ef5933791e3/e/700ba3cf920578fe61d3ec24
   public static final class Elevator {
+    public static final boolean DEBUG_PIDS = false;
+
     public static final class Leader {
       public static final int MOTOR_PORT = 10;
       public static final boolean INVERTED = false;
@@ -398,10 +400,10 @@ public final class Constants {
 
     // TODO: Tune! Use FWERB for now
     public static class PID {
-      public static double kP = 28.0;
+      public static double kP = 26.0;
       public static double kI = 0.0;
       public static double kD = 0.01;
-      public static double MAX_VELOCITY = 2.60;
+      public static double MAX_VELOCITY = 2.80;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
       public static double MAX_ACCELERATION = 12.0;
@@ -410,11 +412,9 @@ public final class Constants {
     // TODO: PAD THE ELEVATOR!!!!!!!
     public static class FeedforwardConstants {
       public static double Ks = 0.0;
-      public static double Kv = 2.45
-
-      ;
-      public static double Ka = 0.1;
-      public static double Kg = 0.05; // TODO: Check this!!!
+      public static double Kv = 2.40; // Test: 2.40 was 2.45
+      public static double Ka = 0.11; // Test: 0.11 was 0.1
+      public static double Kg = 0.07; // Test 0.075 was 0.05
     }
 
     public static ElevatorFeedforward FEEDFORWARD = new ElevatorFeedforward(

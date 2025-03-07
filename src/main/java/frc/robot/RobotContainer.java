@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -80,8 +81,10 @@ public class RobotContainer {
     @Logged
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BF, LL_BR, LL_BL, LL_FR);
 
+    // @Logged
     private final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
+    // @Logged
     private final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
     private final CommandXboxController debugXboxController = new CommandXboxController(3);
@@ -444,16 +447,11 @@ public class RobotContainer {
         })).onTrue(new InstantCommand(() -> {
             climberSubsystem.setOutput(-1);
         }));
+
         // TODO: something something maintainence
-        driverXbox.button(6).onTrue(new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    System.out.print("swaaws");
-                })));
-        // set field orientation
-        driverXbox.button(7).onTrue(new InstantCommand(() -> { // windows button
-            swerveDriveSubsystem.setHeading(0);
-            SmartDashboard.putBoolean("Pressed 7", true);
-        }));
+        driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
+            coralSubsystem.getElevator().zeroElevator();
+        })));
 
         /*
          * coop
