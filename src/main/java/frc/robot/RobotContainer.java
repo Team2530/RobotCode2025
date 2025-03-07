@@ -84,7 +84,8 @@ public class RobotContainer {
     // @Logged
     private final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
-    private final CommandXboxController debugXboxController = new CommandXboxController(3);
+    // private final CommandXboxController debugXboxController = new
+    // CommandXboxController(3);
 
     // private final CommandXboxController debugXbox = new CommandXboxController(0);
 
@@ -92,17 +93,14 @@ public class RobotContainer {
 
     @Logged
     public final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem();
-    @Logged
-    public final LimelightAssistance limelightAssistance = new LimelightAssistance(swerveDriveSubsystem);
+
     // private final LimeLightSubsystem limeLightSubsystem = new
     // LimeLightSubsystem();
-
-    private final UsbCamera intakeCam = CameraServer.startAutomaticCapture();
     @Logged
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
     @Logged
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem(limelightAssistance, swerveDriveSubsystem);
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(swerveDriveSubsystem);
 
     // NOTE: Removed to prevent loop overruns while the robot does not have the
     // algae manipulator installed.
@@ -173,9 +171,9 @@ public class RobotContainer {
                 })
                         .andThen(getGoToLockedPresetSideFASTCommand(
                                 MirrorPresets.LEFT))
-                                .andThen(new InstantCommand(() -> {
-                                    CommandScheduler.getInstance().schedule(new IntakeCoralCommand(coralSubsystem));
-                                })));
+                        .andThen(new InstantCommand(() -> {
+                            CommandScheduler.getInstance().schedule(new IntakeCoralCommand(coralSubsystem));
+                        })));
 
         NamedCommands.registerCommand("Start Intake R",
                 new InstantCommand(() -> {
@@ -511,43 +509,47 @@ public class RobotContainer {
         // }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
 
         /////////////////// DEBUGGING //////////////////
-        debugXboxController.a().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
-        })).onFalse(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
-        }));
+        // debugXboxController.a().onTrue(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
+        // })).onFalse(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
+        // }));
 
-        debugXboxController.b().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetRoll(CoralPresets.LEVEL_4);
-        })).onFalse(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetRoll(CoralPresets.STOW);
-        }));
+        // debugXboxController.b().onTrue(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetRoll(CoralPresets.LEVEL_4);
+        // })).onFalse(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetRoll(CoralPresets.STOW);
+        // }));
 
-        debugXboxController.x().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetPivot(CoralPresets.LEVEL_4);
-        })).onFalse(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetPivot(CoralPresets.STOW);
-        }));
-        debugXboxController.y().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_4);
-        })).onFalse(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
-        }));
+        // debugXboxController.x().onTrue(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetPivot(CoralPresets.LEVEL_4);
+        // })).onFalse(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetPivot(CoralPresets.STOW);
+        // }));
+        // debugXboxController.y().onTrue(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_4);
+        // })).onFalse(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
+        // }));
 
-        debugXboxController.rightBumper().whileTrue(new IntakeCoralCommand(coralSubsystem));
-        debugXboxController.leftBumper().whileTrue(new ScoreCoralCommand(coralSubsystem));
+        // debugXboxController.rightBumper().whileTrue(new
+        // IntakeCoralCommand(coralSubsystem));
+        // debugXboxController.leftBumper().whileTrue(new
+        // ScoreCoralCommand(coralSubsystem));
 
-        // Algae debugging!!!
-        debugXboxController.povUp().onTrue(new InstantCommand(() -> {
-            algaeSubsystem.setAlgaePreset(AlgaePresets.REMOVE);
-        }));
+        // // Algae debugging!!!
+        // debugXboxController.povUp().onTrue(new InstantCommand(() -> {
+        // algaeSubsystem.setAlgaePreset(AlgaePresets.REMOVE);
+        // }));
 
-        debugXboxController.povDown().onTrue(new InstantCommand(() -> {
-            algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
-        }));
+        // debugXboxController.povDown().onTrue(new InstantCommand(() -> {
+        // algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
+        // }));
 
-        debugXboxController.povLeft().whileTrue(new RemoveAlgaeCommand(algaeSubsystem));
-        debugXboxController.povRight().whileTrue(new IntakeAlgaeCommand(algaeSubsystem));
+        // debugXboxController.povLeft().whileTrue(new
+        // RemoveAlgaeCommand(algaeSubsystem));
+        // debugXboxController.povRight().whileTrue(new
+        // IntakeAlgaeCommand(algaeSubsystem));
     }
 
     /**

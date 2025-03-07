@@ -48,8 +48,6 @@ public class CoralSubsystem extends SubsystemBase {
     private final MechanismLigament2d rollMechanism = pivotMechanism.append(
             new MechanismLigament2d("Roll", Constants.Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS, 90));
 
-    private LimelightAssistance llAssist = null;
-
     public enum CoralPresets {
         LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636), true),
         LEVEL_2(0.247 - 0.085, 16.532, 90, 98.068, true),
@@ -92,8 +90,7 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public CoralSubsystem(LimelightAssistance llAssist, SwerveSubsystem swerveSubsystem) {
-        this.llAssist = llAssist;
+    public CoralSubsystem(SwerveSubsystem swerveSubsystem) {
         this.swerveSubsystem = swerveSubsystem;
         // Epilogue.bind(this);
     }
@@ -269,10 +266,9 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void mirrorArm() {
-        SmartDashboard.putBoolean("Called", true);
-        if (llAssist.isTagOnRight()) {
+        if (mirrorSetting == MirrorPresets.LEFT) {
             mirrorSetting = MirrorPresets.RIGHT;
-        } else if (!llAssist.isTagOnRight())
+        } else
             mirrorSetting = MirrorPresets.LEFT;
     }
 
