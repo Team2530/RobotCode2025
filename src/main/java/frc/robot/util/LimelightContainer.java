@@ -136,6 +136,9 @@ public class LimelightContainer {
             if (Math.abs(navx.getRate()) > 720)
                 doRejectUpdate = true;// if our angular velocity is greater than 720 degrees per second, ignore
             // vision updates
+            if (mt2 == null) {
+                continue;
+            }
 
             if (mt2.tagCount == 1 && mt2.rawFiducials.length == 1) {
                 if (mt2.rawFiducials[0].ambiguity > .7) {

@@ -443,8 +443,12 @@ public final class Constants {
   }
 
   public static final class PathPlannerConstants {
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0, 0.01);
-    public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0, 0.02);
+    // public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0,
+    // 0.01);
+    // public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0,
+    // 0.02);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(3.0, 0, 0.0);
+    public static final PIDConstants ROTATION_PID = new PIDConstants(3.0, 0, 0.0);
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
         TRANSLATION_PID,
