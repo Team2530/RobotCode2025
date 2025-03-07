@@ -448,10 +448,10 @@ public class RobotContainer {
             climberSubsystem.setOutput(-1);
         }));
 
-        // TODO: something something maintainence
-        driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
-            coralSubsystem.getElevator().zeroElevator();
-        })));
+        // TODO: Fix zeroing!!!!!
+        // driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
+        // coralSubsystem.getElevator().zeroElevator();
+        // })));
 
         /*
          * coop

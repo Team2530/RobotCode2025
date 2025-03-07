@@ -70,7 +70,7 @@ public class CoralElevator extends SubsystemBase {
                     Elevator.PID.MAX_ACCELERATION));
 
     public CoralElevator() {
-        SoftLimitConfig limconfig = new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(false);
+        SoftLimitConfig limconfig = new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(true);
         // .forwardSoftLimit(Constants.Elevator.PhysicalParameters.MAX_TRAVEL).forwardSoftLimitEnabled(true);
 
         leaderConfig
@@ -110,7 +110,7 @@ public class CoralElevator extends SubsystemBase {
         }
     }
 
-    private boolean isZeroed = false;
+    private boolean isZeroed = true;
 
     private double lastVelocity = 0.0;
     private double lastTime = 0.0;
@@ -152,23 +152,24 @@ public class CoralElevator extends SubsystemBase {
 
         // check if needs to be zeroed and is at zero
         // TODO: ######################### PLACEHOLDERS AGAIN #########################
-        if (!isZeroed
-                && (curFilter.calculate((leaderMotor.getOutputCurrent() + followerMotor.getOutputCurrent()) / 2) > 15
-                        || Robot.isSimulation())) {
-            leaderEncoder.setPosition(0.0);
-            followerEncoder.setPosition(0.0);
-            isZeroed = true;
-            leaderMotor.configure(leaderConfig.apply(
-                    new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
-                            true)),
-                    ResetMode.kNoResetSafeParameters,
-                    PersistMode.kNoPersistParameters);
-            followerMotor.configure(leaderConfig.apply(
-                    new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
-                            true)),
-                    ResetMode.kNoResetSafeParameters,
-                    PersistMode.kNoPersistParameters);
-        }
+        // if (!isZeroed
+        // && (curFilter.calculate((leaderMotor.getOutputCurrent() +
+        // followerMotor.getOutputCurrent()) / 2) > 15
+        // || Robot.isSimulation())) {
+        // leaderEncoder.setPosition(0.0);
+        // followerEncoder.setPosition(0.0);
+        // isZeroed = true;
+        // leaderMotor.configure(leaderConfig.apply(
+        // new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
+        // true)),
+        // ResetMode.kNoResetSafeParameters,
+        // PersistMode.kNoPersistParameters);
+        // followerMotor.configure(leaderConfig.apply(
+        // new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
+        // true)),
+        // ResetMode.kNoResetSafeParameters,
+        // PersistMode.kNoPersistParameters);
+        // }
 
         // check if initial zero had been run
         if (isZeroed) {
