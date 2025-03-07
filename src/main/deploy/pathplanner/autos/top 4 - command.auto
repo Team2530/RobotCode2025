@@ -19,6 +19,12 @@
                 "data": {
                   "name": "Score"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
+                }
               }
             ]
           }
@@ -82,6 +88,12 @@
                 "type": "named",
                 "data": {
                   "name": "Score"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
                 }
               }
             ]
@@ -147,6 +159,12 @@
                 "data": {
                   "name": "Score"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
+                }
               }
             ]
           }
@@ -210,6 +228,12 @@
                 "type": "named",
                 "data": {
                   "name": "Score"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
                 }
               }
             ]

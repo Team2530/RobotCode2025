@@ -20,8 +20,8 @@
         "y": 2.699
       },
       "prevControl": {
-        "x": 4.328679368807343,
-        "y": 2.377952471392474
+        "x": 4.519364754098361,
+        "y": 2.196875
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,14 +34,19 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.5040738728951674,
+      "waypointRelativePos": 0.16512764801738072,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4"
+        }
+      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

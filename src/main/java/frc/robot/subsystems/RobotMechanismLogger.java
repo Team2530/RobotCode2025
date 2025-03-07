@@ -67,7 +67,7 @@ public class RobotMechanismLogger extends SubsystemBase {
                 new Rotation3d(Units.degreesToRadians(armRotation), 0, 0));
 
         wrist1Pose = armPose.transformBy(new Transform3d(0.11, 0, 0.74 - 0.22,
-                new Rotation3d(0, 0, Units.degreesToRadians(coralSubsystem.getCoralArm().getRollPositionDegrees()))));
+                new Rotation3d(0, 0, -Units.degreesToRadians(coralSubsystem.getCoralArm().getRollPositionDegrees()))));
 
         wrist2Pose = wrist1Pose.transformBy(new Transform3d(0, 0.025, 0.07,
                 new Rotation3d(0, Units.degreesToRadians(coralSubsystem.getCoralArm().getPitchPositionDegrees()), 0)));

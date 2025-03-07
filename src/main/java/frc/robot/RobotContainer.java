@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -162,7 +163,9 @@ public class RobotContainer {
                     lockCoralArmPreset(CoralPresets.INTAKE);
                 })
                         .andThen(getGoToLockedPresetFASTCommand())
-                        .andThen(new IntakeCoralCommand(coralSubsystem)));
+                        .andThen(new InstantCommand(() -> {
+                            CommandScheduler.getInstance().schedule(new IntakeCoralCommand(coralSubsystem));
+                        })));
 
         NamedCommands.registerCommand("Start Intake L",
                 new InstantCommand(() -> {
@@ -170,14 +173,18 @@ public class RobotContainer {
                 })
                         .andThen(getGoToLockedPresetSideFASTCommand(
                                 MirrorPresets.LEFT))
-                        .andThen(new IntakeCoralCommand(coralSubsystem)));
+                                .andThen(new InstantCommand(() -> {
+                                    CommandScheduler.getInstance().schedule(new IntakeCoralCommand(coralSubsystem));
+                                })));
 
         NamedCommands.registerCommand("Start Intake R",
                 new InstantCommand(() -> {
                     lockCoralArmPreset(CoralPresets.INTAKE);
                 })
                         .andThen(getGoToLockedPresetSideFASTCommand(MirrorPresets.RIGHT))
-                        .andThen(new IntakeCoralCommand(coralSubsystem)));
+                        .andThen(new InstantCommand(() -> {
+                            CommandScheduler.getInstance().schedule(new IntakeCoralCommand(coralSubsystem));
+                        })));
 
         NamedCommands.registerCommand("Wait Intake",
                 new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(getStowCommand()));

@@ -116,7 +116,7 @@ public class LimelightContainer {
             }
 
             if (!doRejectUpdate) {
-                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(8, 8, 9999999));
                 odometry.addVisionMeasurement(
                         mt1.pose,
                         mt1.timestampSeconds);
@@ -138,7 +138,7 @@ public class LimelightContainer {
               doRejectUpdate = true;
             }
 
-            if(mt2.rawFiducials[0].distToCamera > 3){
+            if(mt2.rawFiducials[0].distToCamera > 6){
               doRejectUpdate = true;
             }
           }
@@ -148,7 +148,7 @@ public class LimelightContainer {
           }
 
           if(!doRejectUpdate){
-            odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+            odometry.setVisionMeasurementStdDevs(VecBuilder.fill(10,10,9999999));
             odometry.addVisionMeasurement(
                 mt2.pose,
                 mt2.timestampSeconds);
