@@ -177,18 +177,17 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // if ((!isalliancereset && DriverStation.getAlliance().isPresent())) {
-        //     RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry,
-        //     lastChassisSpeeds, navX, getModulePositions());
-        //     SmartDashboard.putString("Prelim odometry position",
-        //     odometry.getEstimatedPosition().toString());
-        //     isalliancereset = true;
+        // RobotContainer.LLContainer.estimateMT1OdometryPrelim(odometry,
+        // lastChassisSpeeds, navX, getModulePositions());
+        // SmartDashboard.putString("Prelim odometry position",
+        // odometry.getEstimatedPosition().toString());
+        // isalliancereset = true;
         // }
 
-        
-        // if (DriverStation.isTeleop())
-        //     RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
-        //         navX);
-        // else
+        if (DriverStation.isTeleop())
+            RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
+                    navX);
+        else
             RobotContainer.LLContainer.estimateMT2Odometry(odometry, lastChassisSpeeds,
                     navX);
 

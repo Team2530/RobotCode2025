@@ -116,7 +116,7 @@ public class LimelightContainer {
             }
 
             if (!doRejectUpdate) {
-                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(8, 8, 9999999));
+                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
                 odometry.addVisionMeasurement(
                         mt1.pose,
                         mt1.timestampSeconds);
@@ -125,37 +125,41 @@ public class LimelightContainer {
         }
     }
 
-      public void estimateMT2Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
+    public void estimateMT2Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
         for (Limelight limelight : limelights) {
-          boolean doRejectUpdate = false;
-          LimelightHelpers.SetRobotOrientation(limelight.getName(), -navx.getAngle() + (FieldConstants.getAlliance() == Alliance.Red ? 180 : 0.0), -navx.getRate(), 0, 0, 0, 0);
-          LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.getName());
-          if (Math.abs(navx.getRate()) > 720) doRejectUpdate = true;// if our angular velocity is greater than 720 degrees per second, ignore
-                                              // vision updates
-          
-          if(mt2.tagCount == 1 && mt2.rawFiducials.length == 1){
-            if(mt2.rawFiducials[0].ambiguity > .7){
-              doRejectUpdate = true;
+            boolean doRejectUpdate = false;
+            LimelightHelpers.SetRobotOrientation(limelight.getName(),
+                    -navx.getAngle() + (FieldConstants.getAlliance() == Alliance.Red ? 180 : 0.0), -navx.getRate(), 0,
+                    0, 0, 0);
+            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers
+                    .getBotPoseEstimate_wpiBlue_MegaTag2(limelight.getName());
+            if (Math.abs(navx.getRate()) > 720)
+                doRejectUpdate = true;// if our angular velocity is greater than 720 degrees per second, ignore
+            // vision updates
+
+            if (mt2.tagCount == 1 && mt2.rawFiducials.length == 1) {
+                if (mt2.rawFiducials[0].ambiguity > .7) {
+                    doRejectUpdate = true;
+                }
+
+                if (mt2.rawFiducials[0].distToCamera > 6) {
+                    doRejectUpdate = true;
+                }
             }
 
-            if(mt2.rawFiducials[0].distToCamera > 6){
-              doRejectUpdate = true;
+            if (mt2.tagCount == 0) {
+                doRejectUpdate = true;
             }
-          }
 
-          if(mt2.tagCount == 0){
-            doRejectUpdate = true;
-          }
-
-          if(!doRejectUpdate){
-            odometry.setVisionMeasurementStdDevs(VecBuilder.fill(10,10,9999999));
-            odometry.addVisionMeasurement(
-                mt2.pose,
-                mt2.timestampSeconds);
-          }
+            if (!doRejectUpdate) {
+                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(10, 10, 9999999));
+                odometry.addVisionMeasurement(
+                        mt2.pose,
+                        mt2.timestampSeconds);
+            }
         }
-      
-      }
+
+    }
 
     public int findNearestTagPos(SwerveDrivePoseEstimator odometry) {
         double min = 43490824;
