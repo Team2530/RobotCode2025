@@ -189,15 +189,6 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("Stow", getStowCommand());
 
-        /*
-         * NamedCommands.registerCommand("Algae removal", new InstantCommand(() -> {
-         * lockCoralArmPreset(selectedLevel == 2 ? CoralPresets.ALGAE_REM_LOW :
-         * CoralPresets.ALGAE_REM_HIGH);
-         * }).andThen(
-         * new ParallelCommandGroup(
-         * new RemoveAlgaeCommand(algaeSubsystem),
-         * getGoToLockedPresetCommandV2())));
-         */
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
