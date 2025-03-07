@@ -63,12 +63,21 @@ public class ClimberSubsystem extends SubsystemBase {
                     ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         }
 
-        if (DriverStation.isTestEnabled() & !isTested) {
+        if (DriverStation.isTest() && !isTested) {
             climberMotor.configure(
                     climberConfig.apply(
                             climberConfig.softLimit.forwardSoftLimitEnabled(false)
                                     .reverseSoftLimitEnabled(false)),
                     ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+            isTested = true;
+        } else if (!DriverStation.isTest() && isTested) {
+            climberEncoder.setPosition(0.0);
+            climberMotor.configure(
+                    climberConfig.apply(
+                            climberConfig.softLimit.forwardSoftLimitEnabled(true)
+                                    .reverseSoftLimitEnabled(true)),
+                    ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+            deployed = false;
             isTested = false;
         }
 
@@ -81,6 +90,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public void resetClimberDeploy() {
+        deployed = false;
         climberMotor.configure(climberConfig.apply(climberConfig.softLimit.forwardSoftLimit(0.0)),
                 ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }

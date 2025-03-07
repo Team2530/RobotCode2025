@@ -184,7 +184,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // isalliancereset = true;
         // }
 
-        if (DriverStation.isTeleop())
+        if (DriverStation.isTeleop() || (DriverStation.isAutonomous() && DriverStation.isDisabled()))
             RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
                     navX);
         else

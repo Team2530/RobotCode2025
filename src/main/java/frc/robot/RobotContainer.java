@@ -189,7 +189,6 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("Stow", getStowCommand());
 
-
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);

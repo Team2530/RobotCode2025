@@ -160,6 +160,8 @@ public class SwerveModule {
 
     public void setModuleStateRaw(SwerveModuleState state) {
         state.optimize(new Rotation2d(getSteerPosition()));
+        // COSINE COMPENSATION!!!
+        state.cosineScale(new Rotation2d(getSteerPosition()));
         drive_command = state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY;
 
         driveMotor.set(drive_command);

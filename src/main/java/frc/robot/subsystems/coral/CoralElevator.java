@@ -231,6 +231,7 @@ public class CoralElevator extends SubsystemBase {
         elevatorPID.setGoal(MathUtil.clamp(position, 0.0, Elevator.PhysicalParameters.MAX_TRAVEL));
     }
 
+    // TODO: Fix!!!
     public void zeroElevator() {
         isZeroed = false;
         leaderMotor.configure(leaderConfig.apply(
