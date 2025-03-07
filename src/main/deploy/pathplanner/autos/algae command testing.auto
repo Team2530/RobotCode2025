@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Stow"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "middle start"
@@ -14,18 +20,6 @@
           "type": "named",
           "data": {
             "name": "Score"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "middle algae 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "middle 1"
           }
         }
       ]

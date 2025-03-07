@@ -29,7 +29,6 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.algae.IntakeAlgaeCommand;
 import frc.robot.commands.algae.RemoveAlgaeCommand;
-import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
 import frc.robot.commands.coral.ScoreCoralCommand;
@@ -43,19 +42,15 @@ import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.RobotMechanismLogger;
 import frc.robot.subsystems.Limelight.LimelightType;
+import frc.robot.subsystems.RobotMechanismLogger;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
-import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaeIntakePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
-
-import frc.robot.util.Reef;
-import frc.robot.util.Reef.ReefBranch;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -165,6 +160,13 @@ public class RobotContainer {
                 new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(getStowCommand()));
 
         NamedCommands.registerCommand("Stow", getStowCommand());
+
+        /*NamedCommands.registerCommand("Algae removal", new InstantCommand(() -> {
+                    lockCoralArmPreset(selectedLevel == 2 ? CoralPresets.ALGAE_REM_LOW : CoralPresets.ALGAE_REM_HIGH);
+                }).andThen(
+                        new ParallelCommandGroup(
+                                new RemoveAlgaeCommand(algaeSubsystem),
+                                getGoToLockedPresetCommandV2()))); */
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
