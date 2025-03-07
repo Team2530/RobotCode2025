@@ -52,6 +52,7 @@ import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
+import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
 
@@ -163,17 +164,35 @@ public class RobotContainer {
                         .andThen(getGoToLockedPresetFASTCommand())
                         .andThen(new IntakeCoralCommand(coralSubsystem)));
 
+        NamedCommands.registerCommand("Start Intake L",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.INTAKE);
+                })
+                        .andThen(getGoToLockedPresetSideFASTCommand(
+                                MirrorPresets.LEFT))
+                        .andThen(new IntakeCoralCommand(coralSubsystem)));
+
+        NamedCommands.registerCommand("Start Intake R",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.INTAKE);
+                })
+                        .andThen(getGoToLockedPresetSideFASTCommand(MirrorPresets.RIGHT))
+                        .andThen(new IntakeCoralCommand(coralSubsystem)));
+
         NamedCommands.registerCommand("Wait Intake",
                 new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(getStowCommand()));
 
         NamedCommands.registerCommand("Stow", getStowCommand());
 
-        /*NamedCommands.registerCommand("Algae removal", new InstantCommand(() -> {
-                    lockCoralArmPreset(selectedLevel == 2 ? CoralPresets.ALGAE_REM_LOW : CoralPresets.ALGAE_REM_HIGH);
-                }).andThen(
-                        new ParallelCommandGroup(
-                                new RemoveAlgaeCommand(algaeSubsystem),
-                                getGoToLockedPresetCommandV2()))); */
+        /*
+         * NamedCommands.registerCommand("Algae removal", new InstantCommand(() -> {
+         * lockCoralArmPreset(selectedLevel == 2 ? CoralPresets.ALGAE_REM_LOW :
+         * CoralPresets.ALGAE_REM_HIGH);
+         * }).andThen(
+         * new ParallelCommandGroup(
+         * new RemoveAlgaeCommand(algaeSubsystem),
+         * getGoToLockedPresetCommandV2())));
+         */
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -227,6 +246,24 @@ public class RobotContainer {
                                 .andThen(new MoveRoll(coralSubsystem, currentLockedPresetSupplier)),
                         new WaitRollFinished(coralSubsystem).andThen(new WaitElevatorApproach(coralSubsystem, 0.5))
                                 .andThen(new MovePitch(coralSubsystem, currentLockedPresetSupplier))))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
+    private Command getGoToLockedPresetSideFASTCommand(MirrorPresets mirrorSide) {
+        return new InstantCommand(() -> {
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE)
+                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+            coralSubsystem.mirrorArm(mirrorSide);
+
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(coralSubsystem))
+                .andThen(new MoveElevator(coralSubsystem, currentLockedPresetSupplier))
+                .andThen(new ParallelCommandGroup(
+                        new MovePivot(coralSubsystem, currentLockedPresetSupplier),
+                        new MoveRoll(coralSubsystem, currentLockedPresetSupplier),
+                        new MovePitch(coralSubsystem, currentLockedPresetSupplier)))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
