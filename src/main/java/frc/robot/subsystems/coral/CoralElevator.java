@@ -197,8 +197,8 @@ public class CoralElevator extends SubsystemBase {
             }
 
             if (Robot.isSimulation()) {
-                simLeaderMotor.setAppliedOutput(output);
-                simFollowerMotor.setAppliedOutput(output);
+                simLeaderMotor.setAppliedOutput(output / 12.0f);
+                simFollowerMotor.setAppliedOutput(output / 12.0f);
             }
         } else {
             if (!Constants.Elevator.DBG_DISABLED) {

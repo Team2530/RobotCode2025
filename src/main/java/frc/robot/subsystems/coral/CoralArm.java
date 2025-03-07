@@ -271,7 +271,7 @@ public class CoralArm extends SubsystemBase {
                     (Math.abs(pivotGoal) < Units.degreesToRadians(3)) ? MathUtil.applyDeadband(
                             pivotPIDout + pivotFFout, 0.6) : pivotPIDout + pivotFFout);
         if (Robot.isSimulation())
-            simPivotMotor.setAppliedOutput(pivotPIDout + pivotFFout);
+            simPivotMotor.setAppliedOutput((pivotPIDout + pivotFFout) / 12.0);
 
         double rollPIDout = rollPID.calculate(readRollEncoderPosition());
         double rollFFout = 0.0;// Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
@@ -286,7 +286,7 @@ public class CoralArm extends SubsystemBase {
         if (!Constants.Coral.Roll.DBG_DISABLED)
             rollMotor.setVoltage(rollPIDout + rollFFout);
         if (Robot.isSimulation())
-            simRollMotor.setAppliedOutput(rollPIDout);
+            simRollMotor.setAppliedOutput(rollPIDout / 12.0);
 
         double pitchPIDout = pitchPID.calculate(readPitchEncoderPosition());
         double pitchFFout = 0.0;// Constants.Coral.Pitch.FEEDFORWARD.calculate(pitchPID.getSetpoint().velocity);
@@ -301,7 +301,7 @@ public class CoralArm extends SubsystemBase {
         if (!Constants.Coral.Pitch.DBG_DISABLED)
             pitchMotor.setVoltage(pitchPIDout + pitchFFout);
         if (Robot.isSimulation())
-            simPitchMotor.setAppliedOutput(pitchPIDout);
+            simPitchMotor.setAppliedOutput(pitchPIDout / 12.0);
     }
 
     @Override
