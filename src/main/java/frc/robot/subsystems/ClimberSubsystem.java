@@ -2,11 +2,13 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SoftLimitConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -23,8 +25,8 @@ import frc.robot.Constants.Climber;
 
 @Logged
 public class ClimberSubsystem extends SubsystemBase {
-    private final SparkMax climberMotor = new SparkMax(Climber.MOTOR_PORT, MotorType.kBrushless);
-    private SparkMaxConfig climberConfig = new SparkMaxConfig();
+    private final SparkFlex climberMotor = new SparkFlex(Climber.MOTOR_PORT, MotorType.kBrushless);
+    private SparkFlexConfig climberConfig = new SparkFlexConfig();
     private RelativeEncoder climberEncoder;
     @NotLogged
     XboxController operator;
