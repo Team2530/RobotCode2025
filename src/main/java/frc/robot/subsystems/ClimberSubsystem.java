@@ -87,7 +87,7 @@ public class ClimberSubsystem extends SubsystemBase {
             climberMotor.set(operator.getLeftStickButton()
                     ? (MathUtil.applyDeadband(
                             operator.getLeftY(), 0.05)
-                            * (operator.getLeftY() < 0.0 ? 0.7 : 1.0))
+                            * (operator.getLeftY() < 0.0 ? 1.0 : 0.7))
                     : 0.0);
     }
 

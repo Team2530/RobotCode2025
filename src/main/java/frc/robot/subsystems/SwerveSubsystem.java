@@ -187,7 +187,7 @@ public class SwerveSubsystem extends SubsystemBase {
             RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
                     navX);
         else
-            RobotContainer.LLContainer.estimateMT2Odometry(odometry, lastChassisSpeeds,
+            RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
                     navX);
 
         odometry.update(getGyroRotation2d(), getModulePositions());
