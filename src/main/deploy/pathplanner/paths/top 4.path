@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 1.67827868852459,
-        "y": 7.303637295081967
+        "y": 7.315624999999999
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.70922131147541,
-        "y": 6.332633196721311
+        "y": 6.344620901639343
       },
       "isLocked": false,
       "linkedName": "High Source"
