@@ -116,7 +116,7 @@ public class LimelightContainer {
             }
 
             if (!doRejectUpdate) {
-                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 9999999));
                 odometry.addVisionMeasurement(
                         mt1.pose,
                         mt1.timestampSeconds);

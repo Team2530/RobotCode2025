@@ -50,9 +50,9 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralPresets {
         LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636), true),
-        LEVEL_2(0.247 - 0.085, 16.532, 90, 98.068, true),
-        LEVEL_3(0.650 - 0.085, 16.532, 90, 98.068, true),
-        LEVEL_4(1.342 - 0.04, 21.0, 90, 110.062, true),
+        LEVEL_2(0.247 - 0.085, 15, 90, 98.0, true),
+        LEVEL_3(0.650 - 0.085, 15, 90, 98.0, true),
+        LEVEL_4(1.342 - 0.02, 19.5, 90, 110.062, true),
         INTAKE(0.03, 19.5, 90, 34.0, true),
         STOW(0.05, 0.0, 0.0, 0.0, true),
 

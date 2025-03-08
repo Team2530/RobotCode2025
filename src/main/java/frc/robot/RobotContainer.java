@@ -483,9 +483,9 @@ public class RobotContainer {
         }));
 
         // TODO: Fix zeroing!!!!!
-        // driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
-        // coralSubsystem.getElevator().zeroElevator();
-        // })));
+        driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
+            coralSubsystem.getElevator().zeroElevator();
+        })));
 
         /*
          * coop

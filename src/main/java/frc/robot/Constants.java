@@ -412,9 +412,9 @@ public final class Constants {
     // TODO: PAD THE ELEVATOR!!!!!!!
     public static class FeedforwardConstants {
       public static double Ks = 0.0;
-      public static double Kv = 2.40; // Test: 2.40 was 2.45
-      public static double Ka = 0.11; // Test: 0.11 was 0.1
-      public static double Kg = 0.07; // Test 0.075 was 0.05
+      public static double Kv = 2.38; // Test: 2.40 was 2.45
+      public static double Ka = 0.08; // Test: 0.11 was 0.1
+      public static double Kg = 0.17; // Test 0.075 was 0.05
     }
 
     public static ElevatorFeedforward FEEDFORWARD = new ElevatorFeedforward(

@@ -152,24 +152,23 @@ public class CoralElevator extends SubsystemBase {
 
         // check if needs to be zeroed and is at zero
         // TODO: ######################### PLACEHOLDERS AGAIN #########################
-        // if (!isZeroed
-        // && (curFilter.calculate((leaderMotor.getOutputCurrent() +
-        // followerMotor.getOutputCurrent()) / 2) > 15
-        // || Robot.isSimulation())) {
-        // leaderEncoder.setPosition(0.0);
-        // followerEncoder.setPosition(0.0);
-        // isZeroed = true;
-        // leaderMotor.configure(leaderConfig.apply(
-        // new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
-        // true)),
-        // ResetMode.kNoResetSafeParameters,
-        // PersistMode.kNoPersistParameters);
-        // followerMotor.configure(leaderConfig.apply(
-        // new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
-        // true)),
-        // ResetMode.kNoResetSafeParameters,
-        // PersistMode.kNoPersistParameters);
-        // }
+        if (!isZeroed
+                && DriverStation.isEnabled() && (Math.abs(leaderEncoder.getVelocity()) < 0.5
+                        || Robot.isSimulation())) {
+            leaderEncoder.setPosition(0.0);
+            followerEncoder.setPosition(0.0);
+            isZeroed = true;
+            leaderMotor.configure(leaderConfig.apply(
+                    new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
+                            true)),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+            followerMotor.configure(followerConfig.apply(
+                    new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
+                            true)),
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters);
+        }
 
         // check if initial zero had been run
         if (isZeroed) {
@@ -186,6 +185,7 @@ public class CoralElevator extends SubsystemBase {
 
             SmartDashboard.putNumber("Elevator/output", output);
             SmartDashboard.putNumber("Elevator/position", getPosition());
+            SmartDashboard.putNumber("Elevator/position2", followerEncoder.getPosition());
             SmartDashboard.putNumber("Elevator/target", setpoint.position);
             SmartDashboard.putNumber("Elevator/goal", elevatorPID.getGoal().position);
             SmartDashboard.putNumber("Elevator/pid_out", pid_out);
@@ -239,7 +239,7 @@ public class CoralElevator extends SubsystemBase {
                         false)),
                 ResetMode.kNoResetSafeParameters,
                 PersistMode.kNoPersistParameters);
-        followerMotor.configure(leaderConfig.apply(
+        followerMotor.configure(followerConfig.apply(
                 new SoftLimitConfig().reverseSoftLimit(0.03).reverseSoftLimitEnabled(
                         false)),
                 ResetMode.kNoResetSafeParameters,
