@@ -92,7 +92,7 @@ public class AlgaeArm extends SubsystemBase {
             pivotPID.setD(SmartDashboard.getNumber("Algae/Pivot/PID/D", pivotPID.getD()));
         }
 
-        double output = pivotPID.calculate(pivotEncoder.getPosition());
+        double output = pivotPID.calculate(Units.degreesToRadians(getPositionDegrees()));
 
         SmartDashboard.putNumber("Algae/Pivot/out", output);
         SmartDashboard.putNumber("Algae/Pivot/position", pivotEncoder.getPosition());

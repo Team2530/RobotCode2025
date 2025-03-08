@@ -150,7 +150,6 @@ public class SwerveSubsystem extends SubsystemBase {
                                             // pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 (speeds, feedforward) -> {
-                    SmartDashboard.putString("PP FF", feedforward.toString());
                     setChassisSpeedsAuto(speeds);
                 }, // Method that will drive the robot given ROBOT
                    // RELATIVE ChassisSpeeds
@@ -192,7 +191,8 @@ public class SwerveSubsystem extends SubsystemBase {
                     navX);
 
         odometry.update(getGyroRotation2d(), getModulePositions());
-        SmartDashboard.putString("Odometry current pos", getOdometryPose().toString());
+        // SmartDashboard.putString("Odometry current pos",
+        // getOdometryPose().toString());
 
         field.setRobotPose(getOdometryPose());
         posePublisher.set(getOdometryPose());

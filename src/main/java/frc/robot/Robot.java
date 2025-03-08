@@ -21,6 +21,7 @@ import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -44,6 +45,10 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
 
     public static SendableChooser<String> autoChooser = new SendableChooser<>();
+
+    double lastLoopTime = Timer.getFPGATimestamp();
+    @Logged
+    double loopTime = 0.02;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -76,7 +81,7 @@ public class Robot extends TimedRobot {
         }
 
         Epilogue.bind(this);
-        
+
         // Put git/code version metadata on networktables
         NetworkTable versionTable = NetworkTableInstance.getDefault().getTable("Version");
         versionTable.putValue("GIT_SHA", NetworkTableValue.makeString(BuildConstants.GIT_SHA));
@@ -106,6 +111,10 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
 
         CommandScheduler.getInstance().run();
+
+        double currentTime = Timer.getFPGATimestamp();
+        loopTime = currentTime - lastLoopTime;
+        lastLoopTime = currentTime;
     }
 
     /** This function is called once each time the robot enters Disabled mode. */

@@ -87,9 +87,6 @@ public class DriveCommand extends Command {
         double xSpeed = MathUtil.applyDeadband(xyRaw.getX(), 0.08); // xbox.getLeftX();
         double ySpeed = MathUtil.applyDeadband(xyRaw.getY(), 0.08); // xbox.getLeftY();
 
-        SmartDashboard.putString("Drive XY", xyRaw.toString());
-        SmartDashboard.putNumber("Drive Z", zSpeed);
-
         xSpeed *= DriveConstants.XY_SPEED_LIMIT * DriveConstants.MAX_ROBOT_VELOCITY;
         ySpeed *= DriveConstants.XY_SPEED_LIMIT * DriveConstants.MAX_ROBOT_VELOCITY;
         zSpeed *= DriveConstants.Z_SPEED_LIMIT * DriveConstants.MAX_ROBOT_RAD_VELOCITY;
@@ -99,7 +96,6 @@ public class DriveCommand extends Command {
         xSpeed *= dmult;
         ySpeed *= dmult;
         zSpeed *= dmult;
-        SmartDashboard.putNumber("Drive Multiplier", dmult);
 
         if (xbox.getXButton()) {
             swerveSubsystem.zeroHeading();

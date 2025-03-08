@@ -87,7 +87,8 @@ public class LimelightContainer {
 
                 odometry.resetPosition(mt1.pose.getRotation(), swerveModulePositions, mt1.pose);
 
-                SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString() + " " + RLCountermt1);
+                // SmartDashboard.putString("Pos MT1 prelim: ", mt1.pose.toString() + " " +
+                // RLCountermt1);
             }
 
             RLCountermt1++;
