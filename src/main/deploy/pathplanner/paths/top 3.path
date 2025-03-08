@@ -34,9 +34,14 @@
   "eventMarkers": [
     {
       "name": "Start Intake L",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.30635524171646056,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Start Intake L"
+        }
+      }
     }
   ],
   "globalConstraints": {
