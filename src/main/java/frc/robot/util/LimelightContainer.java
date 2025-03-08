@@ -32,8 +32,10 @@ public class LimelightContainer {
     private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
     public LimelightContainer(Limelight... limelights) {
+        int[] validIDs = {1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18, 19, 20, 21, 22}; //ignore barge TODO: remove
         for (Limelight limelight : limelights) {
             LimelightContainer.limelights.add(limelight);
+            LimelightHelpers.SetFiducialIDFiltersOverride(limelight.getName(), validIDs);
             LimelightHelpers.SetIMUMode(limelight.getName(), 0);
         }
         enableLimelights(true);
