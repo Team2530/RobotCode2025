@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
 
     private Command m_autonomousCommand;
 
-    @Logged
+    // @Logged
     private RobotContainer m_robotContainer;
 
     public static SendableChooser<String> autoChooser = new SendableChooser<>();
@@ -49,6 +49,8 @@ public class Robot extends TimedRobot {
     double lastLoopTime = Timer.getFPGATimestamp();
     @Logged
     double loopTime = 0.02;
+    @Logged
+    double commandSchedulerTime = 0.02;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -109,11 +111,13 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods. This must be called from the
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
+        double startTime = Timer.getFPGATimestamp();
 
         CommandScheduler.getInstance().run();
 
         double currentTime = Timer.getFPGATimestamp();
         loopTime = currentTime - lastLoopTime;
+        commandSchedulerTime = currentTime - startTime;
         lastLoopTime = currentTime;
     }
 
