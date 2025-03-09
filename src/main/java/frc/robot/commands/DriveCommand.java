@@ -58,18 +58,20 @@ public class DriveCommand extends Command {
             DriveConstants.ROTATION_ASSIST.kP,
             DriveConstants.ROTATION_ASSIST.kI,
             DriveConstants.ROTATION_ASSIST.kD);
+
     private PIDController translationAssist = new PIDController(
             DriveConstants.TRANSLATION_ASSIST.kP,
             DriveConstants.TRANSLATION_ASSIST.kI,
             DriveConstants.TRANSLATION_ASSIST.kD);
 
     final AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
-                TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
-                HolonomicDriveController a = new HolonomicDriveController(null, null, null);
-                HolonomicDriveController controller = new HolonomicDriveController(
-                    new PIDController(1, 0, 0), new PIDController(1, 0, 0),
-                    new ProfiledPIDController(1, 0, 0,
-                        new TrapezoidProfile.Constraints(6.28, 3.14)));
+
+    TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
+    HolonomicDriveController a = new HolonomicDriveController(null, null, null);
+    HolonomicDriveController controller = new HolonomicDriveController(
+        new PIDController(1, 0, 0), new PIDController(1, 0, 0),
+        new ProfiledPIDController(1, 0, 0,
+            new TrapezoidProfile.Constraints(6.28, 3.14)));
     
 
     private boolean isXstance = false;
@@ -192,7 +194,7 @@ public class DriveCommand extends Command {
             case CORAL_SPOT_ASSIST:
                 // TODO: make a tag switcher somehow
                 // TODO: offload the goal position into constants or something, shouldn't run periodically as it's a 1 time calculation. CBA to do now.
-                Pose2d thePose = findTagRel(Constants.PoseConstants.selectedTag);
+                Pose2d thePose = findTagRel(Constants.PoseConstants.selectedTag, 'A');
                 Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
                 edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                     currPose, 
@@ -225,8 +227,9 @@ public class DriveCommand extends Command {
             swerveSubsystem.setChassisSpeeds(speeds);
         }
     }
-    public Pose2d findTagRel(int tag){ //note: all meters SHOULD be in meters
-        tagLayout.getTagPose(tag); 
+
+    public Pose2d findTagRel(int tag, char selectedPost){ 
+        Pose3d tagPos = tagLayout.getTagPose(tag).get(); 
         double reefWidth = 65.5;
         Translation2d reefCenter = AllianceFlipUtil.apply(Reef.center);
         double x = reefCenter.getX(); // Original X coordinate
@@ -234,7 +237,7 @@ public class DriveCommand extends Command {
         
         // Polar coordinates (radius and angle)
         double r = 18.75 + (reefWidth / 2); // radius
-        double theta = (3 * Math.PI / 4); // the 90 accounts for wanting to turn robot perpendicular to tag
+        double theta = (tagPos.getRotation().toRotation2d().getRadians());
         
         double deltaX = r * Math.cos(theta); // x' component
         double deltaY = r * Math.sin(theta); // y' component
@@ -242,7 +245,15 @@ public class DriveCommand extends Command {
         // Calculate new point by translating the original point
         double newX = x + deltaX;
         double newY = y + deltaY;
-        return new Pose2d(new Translation2d(newX, newY), new Rotation2d(Units.radiansToDegrees(theta + (Math.PI/2))));
+        double newTheta = theta + (Math.PI/2); // in radians
+        // the thing is now centered at the tag -> let's  center it on a reef now!
+        // if(selectedPost.isIn(fwdArray)){
+        //     moveFWD();
+        // }
+        // else{
+        //     moveBWD();
+        // }
+        return new Pose2d(new Translation2d(newX, newY), new Rotation2d(Units.radiansToDegrees(theta + (Math.PI/2)))); //the extra bit makes sure  the robo is perpendicular
 
     }
     public void setDriveStyle(DriveStyle style) {
