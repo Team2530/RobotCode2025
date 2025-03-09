@@ -64,7 +64,6 @@ import frc.robot.util.LimelightContainer;
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
 
-    @Logged
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
@@ -382,7 +381,7 @@ public class RobotContainer {
         operatorXbox.rightTrigger().and(coralSafe).whileTrue((new InstantCommand(() -> {
             // coralSubsystem.setCoralPreset(currentCoralPreset);
             lockCoralArmPreset(selectedScoringPreset);
-            if (!coralSubsystem.isHolding())
+            if (coralSubsystem.isHolding())
                 isScoring = true;
         }).andThen(getGoToLockedPresetCommandV2().andThen(
                 new InstantCommand(() -> {
@@ -392,7 +391,7 @@ public class RobotContainer {
                 }))))).onlyIf(coralSubsystem.isHoldingSupplier()))
                 .whileFalse(getStowCommand().alongWith(new InstantCommand(() -> {
                     isScoring = false;
-                })));
+                }))); // It's not this!
 
         // wrist adjustment
         // Hold for now, until everything else is working
@@ -497,9 +496,9 @@ public class RobotContainer {
         }));
 
         // TODO: Fix zeroing!!!!!
-        driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
-            coralSubsystem.getElevator().zeroElevator();
-        })));
+        // driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
+        // coralSubsystem.getElevator().zeroElevator();
+        // })));
 
         /*
          * coop

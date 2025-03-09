@@ -13,9 +13,13 @@ import au.grapplerobotics.CanBridge;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
+import edu.wpi.first.epilogue.logging.FileBackend;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableValue;
+import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -41,7 +45,7 @@ public class Robot extends TimedRobot {
 
     private Command m_autonomousCommand;
 
-    // @Logged
+    @Logged
     private RobotContainer m_robotContainer;
 
     public static SendableChooser<String> autoChooser = new SendableChooser<>();
@@ -51,6 +55,11 @@ public class Robot extends TimedRobot {
     double loopTime = 0.02;
     @Logged
     double commandSchedulerTime = 0.02;
+
+    DoublePublisher loopPub = NetworkTableInstance.getDefault()
+            .getDoubleTopic("loopTime").publish();
+    DoublePublisher csTimePublisher = NetworkTableInstance.getDefault()
+            .getDoubleTopic("csTime").publish();
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -81,7 +90,10 @@ public class Robot extends TimedRobot {
         } else {
             URCL.start(DataLogManager.getLog());
         }
-
+        Epilogue.configure(config -> {
+            config.backend = new FileBackend(DataLogManager.getLog());
+            config.minimumImportance = Logged.Importance.DEBUG;
+        });
         Epilogue.bind(this);
 
         // Put git/code version metadata on networktables
@@ -119,6 +131,9 @@ public class Robot extends TimedRobot {
         loopTime = currentTime - lastLoopTime;
         commandSchedulerTime = currentTime - startTime;
         lastLoopTime = currentTime;
+
+        loopPub.set(loopTime);
+        csTimePublisher.set(commandSchedulerTime);
     }
 
     /** This function is called once each time the robot enters Disabled mode. */

@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -35,6 +36,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final CoralElevator elevator = new CoralElevator();
 
+    @NotLogged
     private final SwerveSubsystem swerveSubsystem;
 
     private final Mechanism2d coralMechanism = new Mechanism2d(2, 3);
@@ -55,6 +57,7 @@ public class CoralSubsystem extends SubsystemBase {
         LEVEL_4(1.342 - 0.02, 19.5, 90, 110.062, true),
         INTAKE(0.03, 19.5, 90, 34.0, true),
         STOW(0.05, 0.0, 0.0, 0.0, true),
+        ZERO(0.0, 0.0, 0.0, 0.0, false),
 
         ALGAE_REM_LOW(0.62, 32.0, 0.0, 0.0, false),
         ALGAE_REM_HIGH(1.05, 32.0, 0.0, 0.0, false),
@@ -324,7 +327,8 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorSupposedToBeInPosition() {
-        return elevator.isSupposedToBeInPosition();
+        // return elevator.isSupposedToBeInPosition();
+        return elevator.isInPosition();
     }
 
     public boolean isPitchSupposedToBeInPosition() {

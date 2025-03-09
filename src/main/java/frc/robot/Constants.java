@@ -261,7 +261,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 15;
       public static final boolean MOTOR_INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
-      public static final double ENCODER_OFFSET_VOLTS = -1.82;
+      public static final double ENCODER_OFFSET_VOLTS = -1.86;
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
@@ -272,9 +272,11 @@ public final class Constants {
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
+      public static final double VELOCITY_FF = 0.0;// Volts per radian/second
+
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
-        public static final double NET_REDUCTION = 45.0;
+        public static final double NET_REDUCTION = (54.0 / 12.0) * 10.0;
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
         public static final double JOINT_LENGTH_METERS = 0.10;
@@ -396,25 +398,26 @@ public final class Constants {
 
     public static boolean DBG_DISABLED = false;
 
-    public static double MOTOR_REVOLUTIONS_PER_METER = 32.81;
+    public static double MOTOR_REVOLUTIONS_PER_METER = 32.8083989501;
 
     // TODO: Tune! Use FWERB for now
     public static class PID {
-      public static double kP = 26.0;
+      public static double kP = 80.0;// 100.0;
       public static double kI = 0.0;
-      public static double kD = 0.01;
-      public static double MAX_VELOCITY = 2.80;
+      public static double kD = 0.02;
+      public static double MAX_VELOCITY = 2.8;// 2.8;// 2.8;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
-      public static double MAX_ACCELERATION = 12.0;
+      public static double MAX_ACCELERATION = 10.0;// 10.0;// 20.0;
+      public static double MAX_JERK = MAX_ACCELERATION * 10.0;
     }
 
     // TODO: PAD THE ELEVATOR!!!!!!!
     public static class FeedforwardConstants {
       public static double Ks = 0.0;
-      public static double Kv = 2.38; // Test: 2.40 was 2.45
-      public static double Ka = 0.08; // Test: 0.11 was 0.1
-      public static double Kg = 0.17; // Test 0.075 was 0.05
+      public static double Kv = 3.95; // Test: 2.40 was 2.45
+      public static double Ka = 0.03; // Test: 0.11 was 0.1
+      public static double Kg = 0.1; // Test 0.075 was 0.05
     }
 
     public static ElevatorFeedforward FEEDFORWARD = new ElevatorFeedforward(
@@ -426,19 +429,23 @@ public final class Constants {
     public static class PhysicalParameters {
       public static final double GEARING = 5.0 / 2.0;
       public static final double DRIVE_RADIUS_METERS = 0.0121;
-      public static final double CARRIAGE_MASS_KG = 2.00; // Load on the SECOND stage NOTE: This includes the weight
+      public static final double CARRIAGE_MASS_KG = 2.00; // Load on the SECOND stage NOTE: This includes the
+                                                          // weight
 
       public static final double MAX_TRAVEL = Units.inchesToMeters(59.5);
       public static final double BOTTOM_TO_FLOOR = Units.inchesToMeters(3.0); // Relative to bottom of stage 2
       public static final double CARRIAGE_HEIGHT = Units.inchesToMeters(8.0); // Bottom to top of stage 2
 
-      public static final double CORAL_PIVOT_VERTICAL_OFFSET = Units.inchesToMeters(6.0); // From bottom of stage 2 to
+      public static final double CORAL_PIVOT_VERTICAL_OFFSET = Units.inchesToMeters(6.0); // From bottom of stage
+                                                                                          // 2 to
                                                                                           // coral arm pivot axis
-      public static final double CORAL_PIVOT_HORIZONTAL_OFFSET = Units.inchesToMeters(7.5); // From bottom of stage 2 to
-                                                                                            // coral arm pivot axis
+      public static final double CORAL_PIVOT_HORIZONTAL_OFFSET = Units.inchesToMeters(7.5); // From bottom of
+                                                                                            // stage 2 to
+                                                                                            // coral arm pivot
+                                                                                            // axis
       public static final double ELEVATOR_FORWARDS_OFFSET = Units.inchesToMeters(1); // To mid-plane of elevator
 
-      public static final DCMotor MOTOR = DCMotor.getNeoVortex(2);
+      public static final DCMotor MOTOR = DCMotor.getKrakenX60(2);
     }
   }
 
