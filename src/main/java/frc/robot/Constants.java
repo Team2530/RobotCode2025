@@ -400,13 +400,13 @@ public final class Constants {
 
     // TODO: Tune! Use FWERB for now
     public static class PID {
-      public static double kP = 100.0;
+      public static double kP = 80.0;// 100.0;
       public static double kI = 0.0;
       public static double kD = 0.02;
-      public static double MAX_VELOCITY = 2.8;
+      public static double MAX_VELOCITY = 2.8;// 2.8;// 2.8;
       // TODO: Needs empirical testing - analyze setpoint v/s state graphs to see if
       // the elevator can make or exceed this
-      public static double MAX_ACCELERATION = 10.0;// 20.0;
+      public static double MAX_ACCELERATION = 10.0;// 10.0;// 20.0;
       public static double MAX_JERK = MAX_ACCELERATION * 10.0;
     }
 

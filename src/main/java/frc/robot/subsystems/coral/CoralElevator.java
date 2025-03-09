@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -79,9 +80,12 @@ public class CoralElevator extends SubsystemBase {
         leader.getConfigurator().apply(elevatorConfig);
         leader.getConfigurator()
                 .apply(new MotorOutputConfigs()
-                        .withInverted(Constants.Elevator.Leader.INVERTED ? InvertedValue.Clockwise_Positive
-                                : InvertedValue.CounterClockwise_Positive));
+                        .withInverted(Constants.Elevator.Leader.INVERTED
+                                ? InvertedValue.Clockwise_Positive
+                                : InvertedValue.CounterClockwise_Positive)
+                        .withNeutralMode(NeutralModeValue.Brake));
 
+        follower.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
         follower.setControl(new Follower(Constants.Elevator.Leader.MOTOR_PORT, true));
 
         leader.setPosition(0.0);
@@ -89,9 +93,19 @@ public class CoralElevator extends SubsystemBase {
 
         // Soft limits
         leader.getConfigurator().apply(
-                new SoftwareLimitSwitchConfigs().withReverseSoftLimitEnable(true).withReverseSoftLimitThreshold(0.03));
-        follower.getConfigurator().apply(
-                new SoftwareLimitSwitchConfigs().withReverseSoftLimitEnable(true).withReverseSoftLimitThreshold(0.03));
+                new SoftwareLimitSwitchConfigs().withReverseSoftLimitEnable(true)
+                        .withReverseSoftLimitThreshold(0.03)
+                        .withForwardSoftLimitThreshold(
+                                Constants.Elevator.PhysicalParameters.MAX_TRAVEL
+                                        - Units.inchesToMeters(1.0))
+                        .withForwardSoftLimitEnable(true));
+        // follower.getConfigurator().apply(
+        // new SoftwareLimitSwitchConfigs().withReverseSoftLimitEnable(false)
+        // .withReverseSoftLimitThreshold(0.03)
+        // .withForwardSoftLimitThreshold(
+        // Constants.Elevator.PhysicalParameters.MAX_TRAVEL
+        // - Units.inchesToMeters(1.0))
+        // .withForwardSoftLimitEnable(false));
     }
 
     @Override
@@ -110,9 +124,11 @@ public class CoralElevator extends SubsystemBase {
         simElevator.setInputVoltage(leaderSimState.getMotorVoltage());
         simElevator.update(0.02);
         leaderSimState
-                .setRawRotorPosition(simElevator.getPositionMeters() * Constants.Elevator.MOTOR_REVOLUTIONS_PER_METER);
+                .setRawRotorPosition(simElevator.getPositionMeters()
+                        * Constants.Elevator.MOTOR_REVOLUTIONS_PER_METER);
         leaderSimState.setRotorVelocity(
-                simElevator.getVelocityMetersPerSecond() * Constants.Elevator.MOTOR_REVOLUTIONS_PER_METER);
+                simElevator.getVelocityMetersPerSecond()
+                        * Constants.Elevator.MOTOR_REVOLUTIONS_PER_METER);
     }
 
     public void setGoalPosition(double targetMeters) {

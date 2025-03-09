@@ -516,7 +516,7 @@ public class RobotContainer {
         // coralSubsystem.setCoralPresetPivot(CoralPresets.STOW);
         // }));
         debugXboxController.y().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_2);
+            coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_4);
         })).onFalse(new InstantCommand(() -> {
             coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
         }));
