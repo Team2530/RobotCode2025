@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -20,8 +22,11 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.CoralStation;
 import frc.robot.util.Reef;
 
+@Logged
 public class DriveCommand extends Command {
+    @NotLogged
     private final SwerveSubsystem swerveSubsystem;
+    @NotLogged
     private final XboxController xbox;
 
     private SlewRateLimiter dsratelimiter = new SlewRateLimiter(4);

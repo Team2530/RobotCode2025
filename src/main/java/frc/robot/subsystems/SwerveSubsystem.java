@@ -19,6 +19,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -61,24 +62,25 @@ public class SwerveSubsystem extends SubsystemBase {
 
     boolean isalliancereset = false;
 
+    @NotLogged
     SwerveModule frontLeft = new SwerveModule(SwerveModuleConstants.FL_STEER_ID, SwerveModuleConstants.FL_DRIVE_ID,
             SwerveModuleConstants.FL_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.FL_OFFSET_RADIANS,
             SwerveModuleConstants.FL_ABSOLUTE_ENCODER_REVERSED,
             SwerveModuleConstants.FL_MOTOR_REVERSED,
             SwerveModuleConstants.FL_STEERING_MOTOR_REVERSED);
-
+    @NotLogged
     SwerveModule frontRight = new SwerveModule(SwerveModuleConstants.FR_STEER_ID, SwerveModuleConstants.FR_DRIVE_ID,
             SwerveModuleConstants.FR_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.FR_OFFSET_RADIANS,
             SwerveModuleConstants.FR_ABSOLUTE_ENCODER_REVERSED,
             SwerveModuleConstants.FR_MOTOR_REVERSED,
             SwerveModuleConstants.FR_STEERING_MOTOR_REVERSED);
-
+    @NotLogged
     SwerveModule backRight = new SwerveModule(SwerveModuleConstants.BR_STEER_ID, SwerveModuleConstants.BR_DRIVE_ID,
             SwerveModuleConstants.BR_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.BR_OFFSET_RADIANS,
             SwerveModuleConstants.BR_ABSOLUTE_ENCODER_REVERSED,
             SwerveModuleConstants.BR_MOTOR_REVERSED,
             SwerveModuleConstants.BR_STEERING_MOTOR_REVERSED);
-
+    @NotLogged
     SwerveModule backLeft = new SwerveModule(SwerveModuleConstants.BL_STEER_ID, SwerveModuleConstants.BL_DRIVE_ID,
             SwerveModuleConstants.BL_ABSOLUTE_ENCODER_PORT, SwerveModuleConstants.BL_OFFSET_RADIANS,
             SwerveModuleConstants.BL_ABSOLUTE_ENCODER_REVERSED,

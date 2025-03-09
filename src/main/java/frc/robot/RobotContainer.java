@@ -69,7 +69,6 @@ import frc.robot.util.LimelightContainer;
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
 
-    @Logged
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);

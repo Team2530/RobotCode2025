@@ -261,7 +261,7 @@ public final class Constants {
       public static final int MOTOR_PORT = 15;
       public static final boolean MOTOR_INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
-      public static final double ENCODER_OFFSET_VOLTS = -1.82;
+      public static final double ENCODER_OFFSET_VOLTS = -1.86;
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
@@ -272,9 +272,11 @@ public final class Constants {
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
 
+      public static final double VELOCITY_FF = 0.0;// Volts per radian/second
+
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
-        public static final double NET_REDUCTION = 45.0;
+        public static final double NET_REDUCTION = (54.0 / 12.0) * 10.0;
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
         public static final double JOINT_LENGTH_METERS = 0.10;

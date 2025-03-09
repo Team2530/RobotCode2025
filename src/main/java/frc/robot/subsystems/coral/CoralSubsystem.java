@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -35,6 +36,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final CoralElevator elevator = new CoralElevator();
 
+    @NotLogged
     private final SwerveSubsystem swerveSubsystem;
 
     private final Mechanism2d coralMechanism = new Mechanism2d(2, 3);
