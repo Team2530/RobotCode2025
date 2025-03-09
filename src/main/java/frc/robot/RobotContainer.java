@@ -83,7 +83,8 @@ public class RobotContainer {
     // @Logged
     private final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
-    private final CommandXboxController debugXboxController = new CommandXboxController(3);
+    // private final CommandXboxController debugXboxController = new
+    // CommandXboxController(3);
 
     // private final CommandXboxController debugXbox = new CommandXboxController(0);
 
@@ -366,7 +367,7 @@ public class RobotContainer {
         operatorXbox.rightTrigger().and(coralSafe).whileTrue((new InstantCommand(() -> {
             // coralSubsystem.setCoralPreset(currentCoralPreset);
             lockCoralArmPreset(selectedScoringPreset);
-            if (!coralSubsystem.isHolding())
+            if (coralSubsystem.isHolding())
                 isScoring = true;
         }).andThen(getGoToLockedPresetCommandV2().andThen(
                 new InstantCommand(() -> {
@@ -376,7 +377,7 @@ public class RobotContainer {
                 }))))).onlyIf(coralSubsystem.isHoldingSupplier()))
                 .whileFalse(getStowCommand().alongWith(new InstantCommand(() -> {
                     isScoring = false;
-                })));
+                }))); // It's not this!
 
         // wrist adjustment
         // Hold for now, until everything else is working
@@ -514,11 +515,11 @@ public class RobotContainer {
         // })).onFalse(new InstantCommand(() -> {
         // coralSubsystem.setCoralPresetPivot(CoralPresets.STOW);
         // }));
-        debugXboxController.y().onTrue(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_4);
-        })).onFalse(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
-        }));
+        // debugXboxController.y().onTrue(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_4);
+        // })).onFalse(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
+        // }));
 
         // debugXboxController.rightBumper().whileTrue(new
         // IntakeCoralCommand(coralSubsystem));
