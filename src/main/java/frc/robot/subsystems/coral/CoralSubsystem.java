@@ -51,7 +51,7 @@ public class CoralSubsystem extends SubsystemBase {
             new MechanismLigament2d("Roll", Constants.Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS, 90));
 
     public enum CoralPresets {
-        LEVEL_1(0.05, Units.radiansToDegrees(0.635), Units.radiansToDegrees(1.0), Units.radiansToDegrees(1.636), true),
+        LEVEL_1(0.05, Units.radiansToDegrees(0.662), 65, Units.radiansToDegrees(1.41), true),
         LEVEL_2(0.247 - 0.085, 15, 90, 98.0, true),
         LEVEL_3(0.650 - 0.085, 15, 90, 98.0, true),
         LEVEL_4(1.342 - 0.02, 19.5, 90, 110.062, true),
@@ -116,6 +116,7 @@ public class CoralSubsystem extends SubsystemBase {
         HOLD(0.4, 12.5),
         PURGE(-1, 40.0),
         SCORE(-1, 30.0),
+        SCORE_L1(-0.1, 30.0),
         STOP(0, 12.5),
 
         CUSTOM(Double.NaN, 40.0);
@@ -175,6 +176,10 @@ public class CoralSubsystem extends SubsystemBase {
     public void setCoralPresetElevator(CoralPresets preset) {
         elevator.setGoalPosition(preset.elevatorHeightM);
         currentPreset = preset;
+    }
+
+    public CoralPresets getCurrentPreset() {
+        return currentPreset;
     }
 
     public boolean isElevatorInPosition() {

@@ -185,7 +185,7 @@ public class RobotContainer {
                         })));
 
         NamedCommands.registerCommand("Wait Intake",
-                new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(new InstantCommand( () -> {
+                new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(new InstantCommand(() -> {
                     CommandScheduler.getInstance().schedule(getStowCommand());
                 })));
 
@@ -197,18 +197,17 @@ public class RobotContainer {
                 })
                         .andThen(
                                 new ParallelCommandGroup(
-                                    new RemoveAlgaeCommand(algaeSubsystem),
-                                    getGoToLockedPresetCommandV2())));
-        
+                                        new RemoveAlgaeCommand(algaeSubsystem),
+                                        getGoToLockedPresetCommandV2())));
+
         NamedCommands.registerCommand("Algae High",
                 new InstantCommand(() -> {
                     lockCoralArmPreset(CoralPresets.ALGAE_REM_HIGH);
                 })
                         .andThen(
                                 new ParallelCommandGroup(
-                                    new RemoveAlgaeCommand(algaeSubsystem),
-                                    getGoToLockedPresetCommandV2())));
-
+                                        new RemoveAlgaeCommand(algaeSubsystem),
+                                        getGoToLockedPresetCommandV2())));
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -217,16 +216,17 @@ public class RobotContainer {
 
     public void zeroGyroAutoPrelim() {
         Command selectedAuto = autoChooser.getSelected();
-        Pose2d autoStartPose= new Pose2d();
+        Pose2d autoStartPose = new Pose2d();
         if (selectedAuto != null) {
             String autoName = selectedAuto.getName();
             if (!autoName.equals("InstantCommand")) {
                 try {
-                    autoStartPose = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
+                    autoStartPose = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose()
+                            .get();
                     if (DriverStation.getAlliance().get() == Alliance.Red) {
                         autoStartPose = AllianceFlipUtil.apply(autoStartPose);
                     }
-                } catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
