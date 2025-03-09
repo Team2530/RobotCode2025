@@ -14,6 +14,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -324,11 +325,12 @@ public class RobotContainer {
             }
 
         }).onTrue(new ConditionalCommand(new InstantCommand(() -> {
-            normalDrive.setDriveStyle(DriveStyle.REEF_ASSIST);
+            normalDrive.setDriveStyle(DriveStyle.CORAL_SPOT_ASSIST); //if holding, set to coral assist
         }), new InstantCommand(() -> {
-            normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST);
+            normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST); //if not holding, but button held, set to intake
         }), coralSubsystem.isHoldingSupplier())).onFalse(new InstantCommand(() -> {
-            normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED);
+            Constants.PoseConstants.startTime = Timer.getFPGATimestamp();
+            normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED); //if not holding, and button not held, set to field oriented drive
         }));
 
         /*

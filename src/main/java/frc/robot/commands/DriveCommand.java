@@ -1,24 +1,40 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.proto.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.CoralStation;
 import frc.robot.util.Reef;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.PathPlannerConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+
+
 
 public class DriveCommand extends Command {
     private final SwerveSubsystem swerveSubsystem;
@@ -32,7 +48,8 @@ public class DriveCommand extends Command {
     public static enum DriveStyle {
         FIELD_ORIENTED,
         REEF_ASSIST,
-        INTAKE_ASSIST
+        INTAKE_ASSIST,
+        CORAL_SPOT_ASSIST
     };
 
     private DriveStyle driveStyle = DriveStyle.FIELD_ORIENTED;
@@ -44,6 +61,15 @@ public class DriveCommand extends Command {
             DriveConstants.TRANSLATION_ASSIST.kP,
             DriveConstants.TRANSLATION_ASSIST.kI,
             DriveConstants.TRANSLATION_ASSIST.kD);
+
+    final AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+                TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
+                HolonomicDriveController a = new HolonomicDriveController(null, null, null);
+                HolonomicDriveController controller = new HolonomicDriveController(
+                    new PIDController(1, 0, 0), new PIDController(1, 0, 0),
+                    new ProfiledPIDController(1, 0, 0,
+                        new TrapezoidProfile.Constraints(6.28, 3.14)));
+    
 
     private boolean isXstance = false;
 
@@ -162,6 +188,26 @@ public class DriveCommand extends Command {
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, zSpeed + zPid,
                         swerveSubsystem.getGyroRotation2d());
+            case CORAL_SPOT_ASSIST:
+                Pose3d thePose = tagLayout.getTagPose(Constants.PoseConstants.selectedTag).get(); //TODO: ADJUST THIS TO BE AWAY FROM THE THING, NOT AT IT
+                // TODO: make a tag switcher somehow
+                thePose = moveThePoseAwayFromTag(thePose);
+                Pose2d thePose2d = new Pose2d(new Translation2d(thePose.getX(), thePose.getY()), thePose.getRotation().toRotation2d());
+                Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
+                edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+                    currPose, 
+                    List.of(),  // No intermediate waypoints (just a straight line)
+                    thePose2d, 
+                    config
+                );
+                State goal = trajectory.sample(Timer.getFPGATimestamp()-Constants.PoseConstants.startTime);
+                ChassisSpeeds adjustedSpeeds = controller.calculate(
+                    currPose, goal, currPose.getRotation()); // what is the last parameter? TODO: fix
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeed+adjustedSpeeds.vxMetersPerSecond, ySpeed+adjustedSpeeds.vyMetersPerSecond, zSpeed + adjustedSpeeds.omegaRadiansPerSecond,
+                        swerveSubsystem.getGyroRotation2d());
+
+                break;
 
             default:
                 break;

@@ -55,7 +55,7 @@ public final class Constants {
     public static final double robotWidthMeters = Units.inchesToMeters(29.5);
     public static final double robotLengthMeters = Units.inchesToMeters(29.5);
 
-    // TODO: ############## REPLACE PLACEHOLDERS ##############
+    // TODO: ############## REPLACE PLACEHOLDERS ############## should be relatively accurate
     public static final double TOTAL_MASS_KG = 74.088;
     public static final double MOMENT_OF_INERTIA = 6.883;
   }
@@ -480,6 +480,13 @@ public final class Constants {
     public static final double kVisionStdDevY = 5;
     public static final double kVisionStdDevX = 5;
     public static final double kVisionStdDevTheta = 500;
+
+    public static int selectedTag = -1;
+    public static double startTime = 0;
+
+
+    double currentTime = 0;
+
 
     private static AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
