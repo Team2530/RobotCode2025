@@ -34,9 +34,14 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.3172189027702329,
+      "waypointRelativePos": 0.0953156822810592,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -55,7 +60,7 @@
   "folder": "middle autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": false
 }

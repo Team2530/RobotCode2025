@@ -1,6 +1,7 @@
 package frc.robot.subsystems.coral;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkAnalogSensorSim;
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkMaxSim;
@@ -47,6 +48,7 @@ public class CoralArm extends SubsystemBase {
     private final CANcoder pivotEncoder = new CANcoder(Coral.Pivot.ENCODER_PORT);
     private final SparkAnalogSensor rollEncoder = rollMotor.getAnalog();
     private final SparkAnalogSensor pitchEncoder = pitchMotor.getAnalog();
+    private RelativeEncoder rollRelEncoder;
     // sim encoders
     private final SparkAnalogSensorSim simRollEncoder = new SparkAnalogSensorSim(rollMotor);
     private final SparkAnalogSensorSim simPitchEncoder = new SparkAnalogSensorSim(pitchMotor);
@@ -130,9 +132,12 @@ public class CoralArm extends SubsystemBase {
         rollMotor.configure(
                 rollConfig.idleMode(IdleMode.kBrake)
                         .apply(wristEncConfig.inverted(Constants.Coral.Roll.ENCODER_INVERTED))
+                        .apply(new EncoderConfig().positionConversionFactor((2.0 * Math.PI) / Constants.Coral.Roll.PhysicalConstants.NET_REDUCTION))
                         .apply(new SparkMaxConfig().inverted(
                                 Constants.Coral.Pitch.MOTOR_INVERTED)),
                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+                rollRelEncoder = rollMotor.getEncoder();
+
         pitchMotor.configure(pitchConfig
                 .idleMode(IdleMode.kBrake).apply(wristEncConfig
                         .inverted(Constants.Coral.Pitch.ENCODER_INVERTED))
@@ -182,9 +187,14 @@ public class CoralArm extends SubsystemBase {
 
     double lastPitchReading = 0.0;
     double lastRollReading = 0.0;
+    boolean rollreset = false;
 
     @Override
     public void periodic() {
+        if (!rollreset) {
+                rollRelEncoder.setPosition(Units.degreesToRadians(getRollPositionDegrees()));
+        }
+
         // Put motors in coast mode for testing!!!
         if (DriverStation.isTest() && !testModeConfigured) {
             pitchMotor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
@@ -226,7 +236,7 @@ public class CoralArm extends SubsystemBase {
         // pitchPID.setGoal(pitchGoal);
         // }
 
-        double rollPosition = readRollEncoderPosition();
+        double rollPosition = rollRelEncoder.getPosition();//readRollEncoderPosition();
         double pitchPosition = readPitchEncoderPosition();
         double dRollDt = (rollPosition - lastRollReading) / 0.02;
         double dPitchDt = (pitchPosition - lastPitchReading) / 0.02;

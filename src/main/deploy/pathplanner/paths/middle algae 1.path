@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Algae Low",
-      "waypointRelativePos": 0.3845736013036332,
+      "waypointRelativePos": 0.575774035850078,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

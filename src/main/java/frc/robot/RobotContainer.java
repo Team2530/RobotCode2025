@@ -9,9 +9,14 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -50,6 +55,7 @@ import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LimelightContainer;
 
 /**
@@ -179,7 +185,9 @@ public class RobotContainer {
                         })));
 
         NamedCommands.registerCommand("Wait Intake",
-                new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(getStowCommand()));
+                new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(new InstantCommand( () -> {
+                    CommandScheduler.getInstance().schedule(getStowCommand());
+                })));
 
         NamedCommands.registerCommand("Stow", getStowCommand());
 
@@ -205,6 +213,28 @@ public class RobotContainer {
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+    }
+
+    public void zeroGyroAutoPrelim() {
+        Command selectedAuto = autoChooser.getSelected();
+        Pose2d autoStartPose= new Pose2d();
+        if (selectedAuto != null) {
+            String autoName = selectedAuto.getName();
+            if (!autoName.equals("InstantCommand")) {
+                try {
+                    autoStartPose = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
+                    if (DriverStation.getAlliance().get() == Alliance.Red) {
+                        autoStartPose = AllianceFlipUtil.apply(autoStartPose);
+                    }
+                } catch (Exception e){
+
+                }
+            }
+
+            if (DriverStation.isAutonomous() && DriverStation.isDisabled()) {
+                swerveDriveSubsystem.resetOdometryRotation(autoStartPose.getRotation());
+            }
+        }
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;

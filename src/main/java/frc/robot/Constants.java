@@ -454,8 +454,8 @@ public final class Constants {
     // 0.01);
     // public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0,
     // 0.02);
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(10.0, 0, 0.0);
-    public static final PIDConstants ROTATION_PID = new PIDConstants(9.0, 0, 0.0);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12.0, 0, 0.005);
+    public static final PIDConstants ROTATION_PID = new PIDConstants(9.0, 0, 0.03); // was 10 and 9
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
         TRANSLATION_PID,
@@ -475,8 +475,8 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double SCORE_WAIT_BEFORE_SECONDS = 0.2;
-    public static final double SCORE_WAIT_AFTER_SECONDS = 0.4;
+    public static final double SCORE_WAIT_BEFORE_SECONDS = 0.3;
+    public static final double SCORE_WAIT_AFTER_SECONDS = 0.3;
   }
 
   public static final class PoseConstants {

@@ -11,7 +11,7 @@ public class StowArm extends Command {
 
     public StowArm(CoralSubsystem coralSub) {
         this.coralSub = coralSub;
-        addRequirements(coralSub);
+        // addRequirements(coralSub);
     }
 
     @Override

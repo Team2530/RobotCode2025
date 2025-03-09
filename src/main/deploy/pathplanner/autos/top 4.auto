@@ -11,19 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "bottom 0"
+                  "pathName": "top 0"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Score"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stow"
                 }
               }
             ]
@@ -34,9 +28,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "bottom 1"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "top 1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stow"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -55,19 +62,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "bottom 2"
+                  "pathName": "top 2"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Score"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stow"
                 }
               }
             ]
@@ -78,9 +79,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "bottom 3"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "top 3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stow"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -99,19 +113,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "bottom 4"
+                  "pathName": "top 4"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Score"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stow"
                 }
               }
             ]
@@ -122,9 +130,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "bottom 5"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "top 5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stow"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -143,7 +164,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "bottom 6"
+                  "pathName": "top 6"
                 }
               },
               {

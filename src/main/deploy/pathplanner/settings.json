@@ -11,7 +11,10 @@
     "bottom autos",
     "middle autos"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Killing Series",
+    "Testing"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,

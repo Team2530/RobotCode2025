@@ -185,11 +185,11 @@ public class SwerveSubsystem extends SubsystemBase {
         // isalliancereset = true;
         // }
 
-        if (DriverStation.isTeleop() || (DriverStation.isAutonomous() && DriverStation.isDisabled()))
+        if (DriverStation.isTeleop())
             RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
                     navX);
         else
-            RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
+            RobotContainer.LLContainer.estimateMT1OdometryAuto(odometry, lastChassisSpeeds,
                     navX);
 
         odometry.update(getGyroRotation2d(), getModulePositions());
@@ -230,6 +230,10 @@ public class SwerveSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("HEading reset to", getGyroHeading());
         // SmartDashboard.putBoolean("HASBEENREET", true);
         odometry.resetPosition(getGyroRotation2d(), getModulePositions(), pose);
+    }
+
+    public void resetOdometryRotation(Rotation2d rot) {
+        odometry.resetRotation(rot);
     }
 
     public void resetOdometryAndGyro(Pose2d pose) {

@@ -11,19 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "top 0"
+                  "pathName": "bottom 0"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Score"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stow"
                 }
               }
             ]
@@ -40,7 +34,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "top 1"
+                        "pathName": "bottom 1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stow"
                       }
                     }
                   ]
@@ -62,19 +62,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "top 2"
+                  "pathName": "bottom 2"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Score"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stow"
                 }
               }
             ]
@@ -91,7 +85,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "top 3"
+                        "pathName": "bottom 3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stow"
                       }
                     }
                   ]
@@ -113,19 +113,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "top 4"
+                  "pathName": "bottom 4"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Score"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stow"
                 }
               }
             ]
@@ -142,7 +136,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "top 5"
+                        "pathName": "bottom 5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stow"
                       }
                     }
                   ]
@@ -164,7 +164,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "top 6"
+                  "pathName": "bottom 6"
                 }
               },
               {
