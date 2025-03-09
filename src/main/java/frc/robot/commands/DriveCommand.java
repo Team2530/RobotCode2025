@@ -271,10 +271,10 @@ public class DriveCommand extends Command {
         }   
 
         double angle = Math.atan2(relative.getY(), relative.getX()); 
-        int index = (int) Math.floor(( 
+        int index = (int) Math.floor( 
             (angle + Math.PI)
             * (6 / (2*Math.PI))
-        ));
+        );
 
         return tags[index];
     }
