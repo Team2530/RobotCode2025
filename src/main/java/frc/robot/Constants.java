@@ -483,8 +483,22 @@ public final class Constants {
 
     public static final int defaultSelectedTag = 21;
     public static double startTime = 0;
-    
 
+    public static final Pose2d[] blueCoralScores = { // IN METERS AND DEGREES
+      new Pose2d(new Translation2d(), new Rotation2d(90)), // A
+      new Pose2d(new Translation2d(), new Rotation2d(90)), // B
+      new Pose2d(new Translation2d(1.606, .734), new Rotation2d(150)), // C
+      new Pose2d(new Translation2d(4.13, 2.67), new Rotation2d(150)), // D
+      new Pose2d(new Translation2d(), new Rotation2d(-150)), // E
+      new Pose2d(new Translation2d(5.49, 3.05), new Rotation2d(-150)), // F
+      new Pose2d(new Translation2d(), new Rotation2d(-90)), // G
+      new Pose2d(new Translation2d(), new Rotation2d(-90)), // H
+      new Pose2d(new Translation2d(), new Rotation2d(-30)), // I
+      new Pose2d(new Translation2d(), new Rotation2d(-30)), // J
+      new Pose2d(new Translation2d(), new Rotation2d(30)), // K
+      new Pose2d(new Translation2d(), new Rotation2d(30)), // L
+    };
+    
 
     double currentTime = 0;
 

@@ -196,7 +196,7 @@ public class DriveCommand extends Command {
             case CORAL_SPOT_ASSIST:
                 // TODO: make a tag switcher somehow
                 // TODO: offload the goal position into constants or something, shouldn't run periodically as it's a 1 time calculation. CBA to do now.
-                Pose2d thePose = findTagRel(Constants.PoseConstants.selectedTag, 'A');
+                Pose2d thePose = Constants.PoseConstants.blueCoralScores[0]; // i.e., A 
                 Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
                 edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                     currPose, 
