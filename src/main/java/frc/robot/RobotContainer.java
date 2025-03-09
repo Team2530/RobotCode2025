@@ -84,8 +84,7 @@ public class RobotContainer {
     // @Logged
     private final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
-    // private final CommandXboxController debugXboxController = new
-    // CommandXboxController(3);
+    private final CommandXboxController debugXboxController = new CommandXboxController(3);
 
     // private final CommandXboxController debugXbox = new CommandXboxController(0);
 
@@ -483,9 +482,9 @@ public class RobotContainer {
         }));
 
         // TODO: Fix zeroing!!!!!
-        driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
-            coralSubsystem.getElevator().zeroElevator();
-        })));
+        // driverXbox.button(7).whileTrue(new RepeatCommand(new InstantCommand(() -> {
+        // coralSubsystem.getElevator().zeroElevator();
+        // })));
 
         /*
          * coop
@@ -516,11 +515,11 @@ public class RobotContainer {
         // })).onFalse(new InstantCommand(() -> {
         // coralSubsystem.setCoralPresetPivot(CoralPresets.STOW);
         // }));
-        // debugXboxController.y().onTrue(new InstantCommand(() -> {
-        // coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_4);
-        // })).onFalse(new InstantCommand(() -> {
-        // coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
-        // }));
+        debugXboxController.y().onTrue(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_2);
+        })).onFalse(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetElevator(CoralPresets.STOW);
+        }));
 
         // debugXboxController.rightBumper().whileTrue(new
         // IntakeCoralCommand(coralSubsystem));

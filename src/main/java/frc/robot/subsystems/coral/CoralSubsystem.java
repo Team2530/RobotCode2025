@@ -324,7 +324,8 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorSupposedToBeInPosition() {
-        return elevator.isSupposedToBeInPosition();
+        // return elevator.isSupposedToBeInPosition();
+        return elevator.isInPosition();
     }
 
     public boolean isPitchSupposedToBeInPosition() {
