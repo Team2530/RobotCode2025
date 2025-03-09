@@ -74,6 +74,8 @@ public class DriveCommand extends Command {
 
     private boolean isXstance = false;
 
+    private int selectedTag = PoseConstants.defaultSelectedTag;
+
     public DriveCommand(SwerveSubsystem swerveSubsystem, XboxController xbox) {
         this.swerveSubsystem = swerveSubsystem;
         this.xbox = xbox;
@@ -192,7 +194,7 @@ public class DriveCommand extends Command {
             case CORAL_SPOT_ASSIST:
                 // TODO: make a tag switcher somehow
                 // TODO: offload the goal position into constants or something, shouldn't run periodically as it's a 1 time calculation. CBA to do now.
-                Pose2d thePose = findTagRel(Constants.PoseConstants.selectedTag);
+                Pose2d thePose = findTagRel(selectedTag);
                 Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
                 edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                     currPose, 
@@ -245,6 +247,31 @@ public class DriveCommand extends Command {
         return new Pose2d(new Translation2d(newX, newY), new Rotation2d(Units.radiansToDegrees(theta + (Math.PI/2))));
 
     }
+
+    public int getNearestTag() {
+        Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
+            .relativeTo(FieldConstants.getReefPose());
+
+        int[] tags; // these are pretransformed to make the the logic easier
+        if (FieldConstants.getAlliance() == Alliance.Red) {
+            tags = new int[] {6, 7, 8, 9, 10, 11};
+        } else {
+            tags = new int[] {19, 18, 17,22, 21, 20};
+        }   
+
+        double angle = Math.atan2(relative.getY(), relative.getX()); 
+        int index = Math.round((float) ( 
+            (angle + Math.PI)
+            * (6 / (2*Math.PI))
+        ));
+
+        return tags[index];
+    }
+
+    public void setSelectedTag(int tag) {
+        this.selectedTag = tag;
+    }
+
     public void setDriveStyle(DriveStyle style) {
         this.driveStyle = style;
     }

@@ -325,6 +325,7 @@ public class RobotContainer {
             }
 
         }).onTrue(new ConditionalCommand(new InstantCommand(() -> {
+            normalDrive.setSelectedTag(normalDrive.getNearestTag());
             normalDrive.setDriveStyle(DriveStyle.CORAL_SPOT_ASSIST); //if holding, set to coral assist
         }), new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST); //if not holding, but button held, set to intake
