@@ -481,7 +481,7 @@ public final class Constants {
     public static final double kVisionStdDevX = 5;
     public static final double kVisionStdDevTheta = 500;
 
-    public static int selectedTag = -1;
+    public static int selectedTag = 21;
     public static double startTime = 0;
 
 

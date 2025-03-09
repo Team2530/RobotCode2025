@@ -17,6 +17,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -189,15 +190,14 @@ public class DriveCommand extends Command {
                         xSpeed, ySpeed, zSpeed + zPid,
                         swerveSubsystem.getGyroRotation2d());
             case CORAL_SPOT_ASSIST:
-                Pose3d thePose = tagLayout.getTagPose(Constants.PoseConstants.selectedTag).get(); //TODO: ADJUST THIS TO BE AWAY FROM THE THING, NOT AT IT
                 // TODO: make a tag switcher somehow
-                thePose = moveThePoseAwayFromTag(thePose);
-                Pose2d thePose2d = new Pose2d(new Translation2d(thePose.getX(), thePose.getY()), thePose.getRotation().toRotation2d());
+                // TODO: offload the goal position into constants or something, shouldn't run periodically as it's a 1 time calculation. CBA to do now.
+                Pose2d thePose = findTagRel(Constants.PoseConstants.selectedTag);
                 Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
                 edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                     currPose, 
                     List.of(),  // No intermediate waypoints (just a straight line)
-                    thePose2d, 
+                    thePose, 
                     config
                 );
                 State goal = trajectory.sample(Timer.getFPGATimestamp()-Constants.PoseConstants.startTime);
@@ -206,7 +206,6 @@ public class DriveCommand extends Command {
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed+adjustedSpeeds.vxMetersPerSecond, ySpeed+adjustedSpeeds.vyMetersPerSecond, zSpeed + adjustedSpeeds.omegaRadiansPerSecond,
                         swerveSubsystem.getGyroRotation2d());
-
                 break;
 
             default:
@@ -226,7 +225,26 @@ public class DriveCommand extends Command {
             swerveSubsystem.setChassisSpeeds(speeds);
         }
     }
+    public Pose2d findTagRel(int tag){ //note: all meters SHOULD be in meters
+        tagLayout.getTagPose(tag); 
+        double reefWidth = 65.5;
+        Translation2d reefCenter = AllianceFlipUtil.apply(Reef.center);
+        double x = reefCenter.getX(); // Original X coordinate
+        double y = reefCenter.getY(); // Original Y coordinate
+        
+        // Polar coordinates (radius and angle)
+        double r = 18.75 + (reefWidth / 2); // radius
+        double theta = (3 * Math.PI / 4); // the 90 accounts for wanting to turn robot perpendicular to tag
+        
+        double deltaX = r * Math.cos(theta); // x' component
+        double deltaY = r * Math.sin(theta); // y' component
+        
+        // Calculate new point by translating the original point
+        double newX = x + deltaX;
+        double newY = y + deltaY;
+        return new Pose2d(new Translation2d(newX, newY), new Rotation2d(Units.radiansToDegrees(theta + (Math.PI/2))));
 
+    }
     public void setDriveStyle(DriveStyle style) {
         this.driveStyle = style;
     }
