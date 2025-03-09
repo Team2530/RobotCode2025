@@ -333,6 +333,19 @@ public class RobotContainer {
             normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED); //if not holding, and button not held, set to field oriented drive
         }));
 
+        driverXbox.leftBumper().and(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return driverXbox.getLeftTriggerAxis() > 0.05;
+            }
+        }).onTrue(new ConditionalCommand(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.REEF_ASSIST); //if holding, set to coral assist
+        }), new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST); //if not holding, but button held, set to intake
+        }), coralSubsystem.isHoldingSupplier())).onFalse(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED); //if not holding, and button not held, set to field oriented drive
+        }));
+
         /*
          * operator
          */
