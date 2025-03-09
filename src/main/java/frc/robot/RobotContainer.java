@@ -57,6 +57,7 @@ import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
+import frc.robot.util.Reef.ReefBranch;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -325,7 +326,7 @@ public class RobotContainer {
             }
 
         }).onTrue(new ConditionalCommand(new InstantCommand(() -> {
-            normalDrive.setSelectedTag(normalDrive.getNearestTag());
+            normalDrive.setSelectedBranch(normalDrive.getNearestBranch());
             normalDrive.setDriveStyle(DriveStyle.CORAL_SPOT_ASSIST); //if holding, set to coral assist
         }), new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST); //if not holding, but button held, set to intake
@@ -496,6 +497,11 @@ public class RobotContainer {
             climberSubsystem.setOutput(1);
         })).onTrue(new InstantCommand(() -> {
             climberSubsystem.setOutput(-1);
+        }));
+
+        // select next branch, counterclockwise
+        driverXbox.x().onTrue(new InstantCommand(() -> {
+            normalDrive.setSelectedBranch(ReefBranch.values()[(normalDrive.getSelectedBranch().ordinal() + 1) % 12]);
         }));
 
         // TODO: Fix zeroing!!!!!

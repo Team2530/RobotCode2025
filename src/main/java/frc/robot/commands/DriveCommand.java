@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.net.http.HttpClient.Redirect;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.CoralStation;
 import frc.robot.util.Reef;
+import frc.robot.util.Reef.ReefBranch;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -76,7 +78,7 @@ public class DriveCommand extends Command {
 
     private boolean isXstance = false;
 
-    private int selectedTag = PoseConstants.defaultSelectedTag;
+    private ReefBranch selectedBranch = PoseConstants.defaultSelectedBranch;
 
     public DriveCommand(SwerveSubsystem swerveSubsystem, XboxController xbox) {
         this.swerveSubsystem = swerveSubsystem;
@@ -194,9 +196,8 @@ public class DriveCommand extends Command {
                         xSpeed, ySpeed, zSpeed + zPid,
                         swerveSubsystem.getGyroRotation2d());
             case CORAL_SPOT_ASSIST:
-                // TODO: make a tag switcher somehow
                 // TODO: offload the goal position into constants or something, shouldn't run periodically as it's a 1 time calculation. CBA to do now.
-                Pose2d thePose = Constants.PoseConstants.blueCoralScores[0]; // i.e., A 
+                Pose2d thePose = selectedBranch.pose; 
                 Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
                 edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                     currPose, 
@@ -230,35 +231,6 @@ public class DriveCommand extends Command {
         }
     }
 
-    public Pose2d findTagRel(int tag, char selectedPost){ 
-        Pose3d tagPos = tagLayout.getTagPose(tag).get(); 
-        double reefWidth = 65.5;
-        Translation2d reefCenter = AllianceFlipUtil.apply(Reef.center);
-        double x = reefCenter.getX(); // Original X coordinate
-        double y = reefCenter.getY(); // Original Y coordinate
-        
-        // Polar coordinates (radius and angle)
-        double r = 18.75 + (reefWidth / 2); // radius
-        double theta = (tagPos.getRotation().toRotation2d().getRadians());
-        
-        double deltaX = r * Math.cos(theta); // x' component
-        double deltaY = r * Math.sin(theta); // y' component
-        
-        // Calculate new point by translating the original point
-        double newX = x + deltaX;
-        double newY = y + deltaY;
-        double newTheta = theta + (Math.PI/2); // in radians
-        // the thing is now centered at the tag -> let's  center it on a reef now!
-        // if(selectedPost.isIn(fwdArray)){
-        //     moveFWD();
-        // }
-        // else{
-        //     moveBWD();
-        // }
-        return new Pose2d(new Translation2d(newX, newY), new Rotation2d(Units.radiansToDegrees(theta + (Math.PI/2)))); //the extra bit makes sure  the robo is perpendicular
-
-    }
-
     public int getNearestTag() {
         Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
             .relativeTo(FieldConstants.getReefPose());
@@ -271,7 +243,7 @@ public class DriveCommand extends Command {
         }   
 
         double angle = Math.atan2(relative.getY(), relative.getX()); 
-        int index = (int) Math.floor( 
+        int index = (int) Math.floor(
             (angle + Math.PI)
             * (6 / (2*Math.PI))
         );
@@ -279,8 +251,24 @@ public class DriveCommand extends Command {
         return tags[index];
     }
 
-    public void setSelectedTag(int tag) {
-        this.selectedTag = tag;
+    public ReefBranch getNearestBranch() {
+        Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
+            .relativeTo(FieldConstants.getReefPose());
+
+        double angle = Math.atan2(relative.getY(), relative.getX()); 
+        int index = (int) Math.floor(
+            (angle + Math.PI)
+            * (12 / (2*Math.PI))
+        );
+
+        return ReefBranch.values()[(index + 10) % 12];
+    }
+
+    public void setSelectedBranch(ReefBranch branch) {
+        this.selectedBranch = branch;
+    }
+    public ReefBranch getSelectedBranch() {
+        return selectedBranch;
     }
 
     public void setDriveStyle(DriveStyle style) {

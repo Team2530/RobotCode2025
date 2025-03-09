@@ -25,6 +25,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.Reef.ReefBranch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -481,7 +482,7 @@ public final class Constants {
     public static final double kVisionStdDevX = 5;
     public static final double kVisionStdDevTheta = 500;
 
-    public static final int defaultSelectedTag = 21;
+    public static final ReefBranch defaultSelectedBranch = ReefBranch.G;
     public static double startTime = 0;
 
     public static final Pose2d[] blueCoralScores = { // IN METERS AND DEGREES
