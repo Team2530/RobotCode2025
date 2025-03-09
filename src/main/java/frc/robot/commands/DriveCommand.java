@@ -271,7 +271,7 @@ public class DriveCommand extends Command {
         }   
 
         double angle = Math.atan2(relative.getY(), relative.getX()); 
-        int index = Math.round((float) ( 
+        int index = (int) Math.floor(( 
             (angle + Math.PI)
             * (6 / (2*Math.PI))
         ));
