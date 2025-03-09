@@ -10,8 +10,6 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -23,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -31,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveCommand.DriveStyle;
-import frc.robot.commands.algae.IntakeAlgaeCommand;
 import frc.robot.commands.algae.RemoveAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
@@ -54,7 +50,6 @@ import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
-import frc.robot.util.LimelightAssistance;
 import frc.robot.util.LimelightContainer;
 
 /**
@@ -188,6 +183,25 @@ public class RobotContainer {
                 new WaitUntilCommand(coralSubsystem.isHoldingSupplier()).andThen(getStowCommand()));
 
         NamedCommands.registerCommand("Stow", getStowCommand());
+
+        NamedCommands.registerCommand("Algae Low",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.ALGAE_REM_LOW);
+                })
+                        .andThen(
+                                new ParallelCommandGroup(
+                                    new RemoveAlgaeCommand(algaeSubsystem),
+                                    getGoToLockedPresetCommandV2())));
+        
+        NamedCommands.registerCommand("Algae High",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.ALGAE_REM_HIGH);
+                })
+                        .andThen(
+                                new ParallelCommandGroup(
+                                    new RemoveAlgaeCommand(algaeSubsystem),
+                                    getGoToLockedPresetCommandV2())));
+
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();

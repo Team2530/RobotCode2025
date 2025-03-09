@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.874,
-        "y": 4.07
+        "x": 5.358504098360656,
+        "y": 2.940112704918032
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.132684426229508,
-        "y": 3.9590676229508195
+        "x": 6.358504098360656,
+        "y": 2.940112704918032
       },
       "isLocked": false,
-      "linkedName": "middle start end"
+      "linkedName": "middle algae 3 end"
     },
     {
       "anchor": {
-        "x": 5.874,
-        "y": 4.246772540983606
+        "x": 6.964856557377049,
+        "y": 2.940112704918032
       },
       "prevControl": {
-        "x": 6.197643442622951,
-        "y": 4.354661885245902
+        "x": 5.964856557377049,
+        "y": 2.940112704918032
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "middle algae end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,13 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Algae Low",
-      "waypointRelativePos": 0.3845736013036332,
+      "name": "Stow",
+      "waypointRelativePos": 0.3172189027702321,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Algae Low"
+          "name": "Stow"
         }
       }
     }
@@ -54,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 179.30972280213487
   },
   "reversed": false,
   "folder": "middle autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -150.0
   },
   "useDefaultConstraints": true
 }

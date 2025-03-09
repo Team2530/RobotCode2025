@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.874,
-        "y": 4.07
+        "x": 4.99,
+        "y": 5.33
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.132684426229508,
-        "y": 3.9590676229508195
+        "x": 5.897950819672132,
+        "y": 6.356608606557376
       },
       "isLocked": false,
-      "linkedName": "middle start end"
+      "linkedName": "middle algae 2 end"
     },
     {
       "anchor": {
-        "x": 5.874,
-        "y": 4.246772540983606
+        "x": 5.358504098360656,
+        "y": 2.940112704918032
       },
       "prevControl": {
-        "x": 6.197643442622951,
-        "y": 4.354661885245902
+        "x": 7.672131147540986,
+        "y": 3.995030737704917
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "middle algae end"
+      "linkedName": "middle algae 3 end"
     }
   ],
   "rotationTargets": [],
@@ -33,20 +33,31 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Algae Low",
-      "waypointRelativePos": 0.3845736013036332,
+      "name": "Stow",
+      "waypointRelativePos": 0.2737642585551328,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Algae Low"
+          "name": "Stow"
+        }
+      }
+    },
+    {
+      "name": "Algae High",
+      "waypointRelativePos": 0.7908745247148251,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Algae High"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -54,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -150.0
   },
   "reversed": false,
   "folder": "middle autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -29.999999999999996
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
