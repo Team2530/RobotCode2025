@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.epilogue.Logged;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveCommand.DriveStyle;
 import frc.robot.commands.algae.RemoveAlgaeCommand;
@@ -212,29 +214,6 @@ public class RobotContainer {
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
-    }
-
-    public void zeroGyroAutoPrelim() {
-        Command selectedAuto = autoChooser.getSelected();
-        Pose2d autoStartPose = new Pose2d();
-        if (selectedAuto != null) {
-            String autoName = selectedAuto.getName();
-            if (!autoName.equals("InstantCommand")) {
-                try {
-                    autoStartPose = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose()
-                            .get();
-                    if (DriverStation.getAlliance().get() == Alliance.Red) {
-                        autoStartPose = AllianceFlipUtil.apply(autoStartPose);
-                    }
-                } catch (Exception e) {
-
-                }
-            }
-
-            if (DriverStation.isAutonomous() && DriverStation.isDisabled()) {
-                swerveDriveSubsystem.resetOdometryRotation(autoStartPose.getRotation());
-            }
-        }
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
@@ -591,12 +570,11 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+        swerveDriveSubsystem.setGyroToEstimate();
         if (Robot.isSimulation()) {
             coralSubsystem.simSetHolding(true);
         }
         return autoChooser.getSelected();
-        // return new PathPlannerAuto("4-close-middle");
-
     }
 
     public SwerveSubsystem getSwerveSubsystem() {
