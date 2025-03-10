@@ -266,6 +266,7 @@ public class DriveCommand extends Command {
 
     public void setSelectedBranch(ReefBranch branch) {
         this.selectedBranch = branch;
+        SmartDashboard.putString("Selected Branch", branch.name());
     }
     public ReefBranch getSelectedBranch() {
         return selectedBranch;
