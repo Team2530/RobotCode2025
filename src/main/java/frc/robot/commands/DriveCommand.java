@@ -69,7 +69,6 @@ public class DriveCommand extends Command {
     final AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
     TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
-    HolonomicDriveController a = new HolonomicDriveController(null, null, null);
     HolonomicDriveController controller = new HolonomicDriveController(
         new PIDController(1, 0, 0), new PIDController(1, 0, 0),
         new ProfiledPIDController(1, 0, 0,
@@ -196,7 +195,6 @@ public class DriveCommand extends Command {
                         xSpeed, ySpeed, zSpeed + zPid,
                         swerveSubsystem.getGyroRotation2d());
             case CORAL_SPOT_ASSIST:
-                // TODO: offload the goal position into constants or something, shouldn't run periodically as it's a 1 time calculation. CBA to do now.
                 Pose2d thePose = selectedBranch.pose; 
                 Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
                 edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
