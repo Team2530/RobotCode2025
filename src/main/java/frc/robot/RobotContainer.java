@@ -110,7 +110,7 @@ public class RobotContainer {
     @Logged
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
 
-    private final RobotMechanismLogger robotLogger = new RobotMechanismLogger(coralSubsystem);
+    private final RobotMechanismLogger robotLogger = new RobotMechanismLogger(coralSubsystem, swerveDriveSubsystem);
 
     /*
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -591,6 +591,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+        if (Robot.isSimulation()) {
+            coralSubsystem.simSetHolding(true);
+        }
         return autoChooser.getSelected();
         // return new PathPlannerAuto("4-close-middle");
 

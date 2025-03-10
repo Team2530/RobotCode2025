@@ -364,4 +364,8 @@ public class CoralSubsystem extends SubsystemBase {
     public CoralElevator getElevator() {
         return elevator;
     }
+
+    public void simSetHolding(boolean holding) {
+        SmartDashboard.putBoolean("[SIM] Holding Coral", holding);
+    }
 }
