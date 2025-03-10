@@ -14,13 +14,40 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.PoseConstants;
 
 public class Reef {
     public enum ReefBranch {
-        A, B, C, D, E, F, G, H, I, J, K, L;
+        A(7, 18, PoseConstants.blueCoralScores[0]),
+        B(7, 18, PoseConstants.blueCoralScores[1]), 
+        C(8, 17, PoseConstants.blueCoralScores[2]), 
+        D(8, 17, PoseConstants.blueCoralScores[3]), 
+        E(9, 22, PoseConstants.blueCoralScores[4]), 
+        F(9, 22, PoseConstants.blueCoralScores[5]), 
+        G(10, 21, PoseConstants.blueCoralScores[6]), 
+        H(10, 21, PoseConstants.blueCoralScores[7]), 
+        I(11, 20, PoseConstants.blueCoralScores[8]), 
+        J(11, 20, PoseConstants.blueCoralScores[9]), 
+        K(11, 19, PoseConstants.blueCoralScores[10]), 
+        L(11, 19, PoseConstants.blueCoralScores[11]);
+
+        public int tag;
+        public Pose2d pose;
+
+        private ReefBranch(int redTag, int blueTag, Pose2d bluePose) {
+                if (FieldConstants.getAlliance() == Alliance.Red) {
+                        this.tag = redTag;
+                        this.pose = AllianceFlipUtil.apply(bluePose);
+                } else {
+                        this.tag = blueTag;
+                        this.pose = bluePose;
+                }
+        }
     }
 
     private static final Pose2d[] centerFaces = new Pose2d[] {
