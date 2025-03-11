@@ -117,7 +117,8 @@ public class SwerveModule {
 
     public double getDriveVelocity() {
         // return driveMotorEncoder.getVelocity();
-        return driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
+        return Robot.isSimulation() ? drive_command * (DriveConstants.MAX_MODULE_VELOCITY)
+                : driveMotor.getVelocity().getValueAsDouble() * SwerveModuleConstants.DRIVE_ROTATION_TO_METER;
     }
 
     public double getSteerPosition() {

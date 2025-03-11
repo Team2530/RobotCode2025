@@ -41,7 +41,7 @@ public class CoralReefVision extends SubsystemBase {
     private final StructPublisher<Pose3d> cameraPublisher;
 
     // Debug outputs
-    private StructPublisher<Pose2d> primaryVisionTargetFieldSpace;
+    private StructPublisher<Pose3d> primaryVisionTargetFieldSpace;
     private StructArrayPublisher<Pose3d> visionTargetsFieldSpace;
     private StructPublisher<Pose2d> scoringPoseFieldSpace;
     private StructPublisher<Pose3d> cameraPoseFieldSpace;
@@ -70,7 +70,7 @@ public class CoralReefVision extends SubsystemBase {
         // Debug publishers
         primaryVisionTargetFieldSpace = NetworkTableInstance.getDefault()
                 .getStructTopic("CoralVision/selectedTargetPose",
-                        Pose2d.struct)
+                        Pose3d.struct)
                 .publish();
         visionTargetsFieldSpace = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("CoralVision/targetPoses",
@@ -163,18 +163,22 @@ public class CoralReefVision extends SubsystemBase {
     }
 
     public void publishDebugData(SwerveSubsystem swerveSubsystem) {
-        primaryVisionTargetFieldSpace.set(getSelectedTargetPose(swerveSubsystem));
         scoringPoseFieldSpace.set(swerveSubsystem.getOdometryPose().transformBy(new Transform2d(
                 Constants.Coral.Vision.SCORING_POSITION,
                 Rotation2d.kZero)));
         cameraPoseFieldSpace.set(getCameraPoseFieldSpace(swerveSubsystem));
 
         // Transform local vision targets to field space
+        Pose3d primaryTargetPose3d = new Pose3d(swerveSubsystem.getOdometryPose());
         Pose3d[] targetsField = new Pose3d[visionTargets.size()];
         for (int i = 0; i < visionTargets.size(); i++) {
             targetsField[i] = new Pose3d(swerveSubsystem.getOdometryPose())
                     .transformBy(new Transform3d(visionTargets.get(i), Rotation3d.kZero));
+            if (i == selectedTargetIndex)
+                primaryTargetPose3d = targetsField[i];
         }
         visionTargetsFieldSpace.set(targetsField);
+        primaryVisionTargetFieldSpace.set(primaryTargetPose3d);
+
     }
 }
