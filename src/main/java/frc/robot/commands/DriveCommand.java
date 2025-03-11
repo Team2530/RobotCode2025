@@ -35,6 +35,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import java.util.List;
+import frc.robot.Constants.PathPlannerConstants;
 
 @Logged
 public class DriveCommand extends Command {
@@ -69,9 +70,9 @@ public class DriveCommand extends Command {
     
     TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
     HolonomicDriveController controller = new HolonomicDriveController(
-        new PIDController(1, 0, 0), new PIDController(1, 0, 0),
-        new ProfiledPIDController(1, 0, 0,
-            new TrapezoidProfile.Constraints(6.28, 3.14)));
+        new PIDController(8, 0, 0.01), new PIDController(8, 0, 0.01),
+        new ProfiledPIDController(5, 0, 0.2,
+            new TrapezoidProfile.Constraints(3.14, 1.07)));
 
     private boolean isXstance = false;
 
@@ -191,20 +192,25 @@ public class DriveCommand extends Command {
                         xSpeed, ySpeed, zSpeed + zPid,
                         swerveSubsystem.getGyroRotation2d());
             case CORAL_SPOT_ASSIST:
-                Pose2d thePose = selectedBranch.pose; 
+                
+                Pose2d goalPose = selectedBranch.pose; 
                 Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
-                edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-                    currPose, 
-                    List.of(),  // No intermediate waypoints (just a straight line)
-                    thePose, 
-                    config
-                );
-                State goal = trajectory.sample(Timer.getFPGATimestamp()-Constants.PoseConstants.startTime);
-                ChassisSpeeds adjustedSpeeds = controller.calculate(
-                    currPose, goal, currPose.getRotation()); // what is the last parameter? TODO: fix
-                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                        xSpeed+adjustedSpeeds.vxMetersPerSecond, ySpeed+adjustedSpeeds.vyMetersPerSecond, zSpeed + adjustedSpeeds.omegaRadiansPerSecond,
-                        swerveSubsystem.getGyroRotation2d());
+                double xDiff = goalPose.getX() - currPose.getX();
+                double yDiff = goalPose.getY() - currPose.getY();
+                double thetaDiff = goalPose.getRotation().getRadians() - currPose.getRotation().getRadians();
+                
+
+                // edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+                //     currPose, 
+                //     List.of(),  // No intermediate waypoints (just a straight line)
+                //     thePose, 
+                //     config
+                // );
+                // State goal = trajectory.sample(Timer.getFPGATimestamp()-Constants.PoseConstants.startTime);
+                // ChassisSpeeds adjustedSpeeds = controller.calculate(
+                //     currPose, goal, thePose.getRotation()); // what is the last parameter? TODO: fix
+                // speeds = new ChassisSpeeds(
+                //         adjustedSpeeds.vxMetersPerSecond, adjustedSpeeds.vyMetersPerSecond, adjustedSpeeds.omegaRadiansPerSecond);
                 break;
 
             default:

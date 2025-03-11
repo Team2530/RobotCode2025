@@ -292,10 +292,10 @@ public class RobotContainer {
         }).onTrue(new ConditionalCommand(new InstantCommand(() -> {
             normalDrive.setSelectedBranch(normalDrive.getNearestBranch());
             normalDrive.setDriveStyle(DriveStyle.CORAL_SPOT_ASSIST); //if holding, set to coral assist
+            Constants.PoseConstants.startTime = Timer.getFPGATimestamp();
         }), new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST); //if not holding, but button held, set to intake
         }), coralSubsystem.isHoldingSupplier())).onFalse(new InstantCommand(() -> {
-            Constants.PoseConstants.startTime = Timer.getFPGATimestamp();
             normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED); //if not holding, and button not held, set to field oriented drive
         }));
 

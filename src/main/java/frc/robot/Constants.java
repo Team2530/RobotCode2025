@@ -451,10 +451,6 @@ public final class Constants {
   }
 
   public static final class PathPlannerConstants {
-    // public static final PIDConstants TRANSLATION_PID = new PIDConstants(12, 0,
-    // 0.01);
-    // public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0,
-    // 0.02);
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(12.0, 0, 0.005);
     public static final PIDConstants ROTATION_PID = new PIDConstants(9.0, 0, 0.03); // was 10 and 9
 
@@ -489,7 +485,7 @@ public final class Constants {
     public static final double kVisionStdDevX = 5;
     public static final double kVisionStdDevTheta = 500;
 
-    public static final ReefBranch defaultSelectedBranch = ReefBranch.G;
+    public static final ReefBranch defaultSelectedBranch = ReefBranch.C;
     public static double startTime = 0;
 
     public static final Pose2d[] blueCoralScores = { // IN METERS AND DEGREES
