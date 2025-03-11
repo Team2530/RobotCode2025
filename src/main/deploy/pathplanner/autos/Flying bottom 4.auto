@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "bottom fly 0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "bottom fly 1"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
