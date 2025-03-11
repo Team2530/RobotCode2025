@@ -18,6 +18,7 @@ import frc.robot.Constants.Coral.Vision;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.util.CoralReefVisionSim;
+import frc.robot.util.Reef;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -115,7 +116,7 @@ public class CoralReefVision extends SubsystemBase {
         } else {
             for (int i = 0; i < visionTargets.size(); ++i) {
                 double dist = visionTargets.get(i).toTranslation2d()
-                        .getDistance(Constants.Coral.Vision.SCORING_POSITION);
+                        .getDistance(Constants.Coral.Vision.SCORING_BUMPER_POINT);
                 if (dist < minDistance) {
                     minDistance = dist;
                     selectedTargetIndex = i;
@@ -124,7 +125,7 @@ public class CoralReefVision extends SubsystemBase {
         }
 
         // Filter out too far away targets (1 meter)
-        if (minDistance >= 1.0) {
+        if (minDistance >= Reef.faceOffset * 2.5 + Units.inchesToMeters(10.0)) {
             selectedTargetIndex = -1;
         }
 

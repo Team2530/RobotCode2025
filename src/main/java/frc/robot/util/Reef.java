@@ -56,8 +56,10 @@ public class Reef {
     // Starting off facing DS wall
     public static final double centerOffset = Units.inchesToMeters(32);
     public static final double faceOffset = Units.inchesToMeters(6.469);
+    public static final double poleInset = Units.inchesToMeters(2.0);
+    public static final double baseInset = Units.inchesToMeters(12.0);
 
-    public static final Map<ReefBranch, Pose2d> branches = new HashMap<ReefBranch, Pose2d>() {
+    public static final Map<ReefBranch, Pose2d> robotBranchPoses = new HashMap<ReefBranch, Pose2d>() {
         {
             ReefBranch[] branchName = ReefBranch.values();
             for (int i = 0; i < 12; i += 2) {
@@ -72,8 +74,42 @@ public class Reef {
         }
     };
 
+    public static final Map<ReefBranch, Translation2d> branchTranslations = new HashMap<ReefBranch, Translation2d>() {
+        {
+            ReefBranch[] branchName = ReefBranch.values();
+            for (int i = 0; i < 12; i += 2) {
+                Pose2d face = centerFaces[i / 2];
+                put(branchName[i], face.transformBy(
+                        new Transform2d(-poleInset, faceOffset,
+                                new Rotation2d()))
+                        .getTranslation());
+                put(branchName[i + 1], face.transformBy(
+                        new Transform2d(-poleInset, -faceOffset,
+                                new Rotation2d()))
+                        .getTranslation());
+            }
+        }
+    };
+
+    public static final Map<ReefBranch, Translation2d> baseTranslations = new HashMap<ReefBranch, Translation2d>() {
+        {
+            ReefBranch[] branchName = ReefBranch.values();
+            for (int i = 0; i < 12; i += 2) {
+                Pose2d face = centerFaces[i / 2];
+                put(branchName[i], face.transformBy(
+                        new Transform2d(-baseInset, faceOffset,
+                                new Rotation2d()))
+                        .getTranslation());
+                put(branchName[i + 1], face.transformBy(
+                        new Transform2d(-baseInset, -faceOffset,
+                                new Rotation2d()))
+                        .getTranslation());
+            }
+        }
+    };
+
     public static Pose2d getBranchPose2d(ReefBranch branch) {
-        return branches.get(branch);
+        return robotBranchPoses.get(branch);
     }
 
     /**
@@ -90,19 +126,29 @@ public class Reef {
         publisher.set(pose);
     }
 
+    static StructArrayPublisher<Pose2d> botPosePublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("Reef Robot Poses", Pose2d.struct).publish();
+    static StructArrayPublisher<Translation2d> branchPublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("Reef Branches", Translation2d.struct).publish();
+    static StructArrayPublisher<Translation2d> basePublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("Reef Bases", Translation2d.struct).publish();
+
     /**
      * Just for visualization for poses
      */
     public static void putToShuffleboard() {
-        for (ReefBranch branch : branches.keySet()) {
-            System.out.println(branch.name());
-            Pose2d branchPosition = branches.get(branch);
+        // for (ReefBranch branch : branches.keySet()) {
+        // System.out.println(branch.name());
+        // Pose2d branchPosition = branches.get(branch);
 
-            StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
-                    .getStructTopic(branch.name(), Pose2d.struct).publish();
+        // StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+        // .getStructTopic(branch.name(), Pose2d.struct).publish();
 
-            publisher.set(branchPosition);
-        }
+        // publisher.set(branchPosition);
+        // }
 
+        botPosePublisher.set(robotBranchPoses.values().toArray(new Pose2d[] {}));
+        branchPublisher.set(branchTranslations.values().toArray(new Translation2d[] {}));
+        basePublisher.set(baseTranslations.values().toArray(new Translation2d[] {}));
     }
 }

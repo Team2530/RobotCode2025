@@ -340,9 +340,17 @@ public final class Constants {
 
       public static Pose3d CAM_POSE = new Pose3d(CAM_FORWARDS, CAM_LEFT, CAM_UP, new Rotation3d(CAM_YAW));
 
+      public static double CAM_FOV_HORIZ = Units.degreesToRadians(58.51);
+      public static double CAM_FOV_VERT = Units.degreesToRadians(45.57);
+      public static double CAM_MAX_DIST = 2.0; // Meters
+
       public static Translation2d SCORING_POSITION = new Translation2d(
           Units.inchesToMeters(8.5), // TODO: Forwards
           Units.inchesToMeters(-18.75 - 11.0) // This includes the shift of reef base pole to scoring pole
+      );
+      public static Translation2d SCORING_BUMPER_POINT = new Translation2d(
+          Units.inchesToMeters(8.5), // TODO: Forwards
+          Units.inchesToMeters(-18.75) // This includes the shift of reef base pole to scoring pole
       );
     }
   }
