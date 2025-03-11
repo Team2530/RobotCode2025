@@ -219,6 +219,10 @@ public class SwerveSubsystem extends SubsystemBase {
         navX.setAngleAdjustment(new_adjustment);
     }
 
+    public void setGyroToEstimate() {
+        resetOdometryAndGyro(odometry.getEstimatedPosition());
+    }
+
     public Pose2d getOdometryPose() {
         Pose2d p = odometry.getEstimatedPosition();
         return p;

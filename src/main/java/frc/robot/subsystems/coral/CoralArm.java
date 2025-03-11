@@ -132,11 +132,12 @@ public class CoralArm extends SubsystemBase {
         rollMotor.configure(
                 rollConfig.idleMode(IdleMode.kBrake)
                         .apply(wristEncConfig.inverted(Constants.Coral.Roll.ENCODER_INVERTED))
-                        .apply(new EncoderConfig().positionConversionFactor((2.0 * Math.PI) / Constants.Coral.Roll.PhysicalConstants.NET_REDUCTION))
+                        .apply(new EncoderConfig().positionConversionFactor((2.0 * Math.PI)
+                                / Constants.Coral.Roll.PhysicalConstants.NET_REDUCTION))
                         .apply(new SparkMaxConfig().inverted(
                                 Constants.Coral.Pitch.MOTOR_INVERTED)),
                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-                rollRelEncoder = rollMotor.getEncoder();
+        rollRelEncoder = rollMotor.getEncoder();
 
         pitchMotor.configure(pitchConfig
                 .idleMode(IdleMode.kBrake).apply(wristEncConfig
@@ -192,7 +193,7 @@ public class CoralArm extends SubsystemBase {
     @Override
     public void periodic() {
         if (!rollreset) {
-                rollRelEncoder.setPosition(Units.degreesToRadians(getRollPositionDegrees()));
+            rollRelEncoder.setPosition(Units.degreesToRadians(getRollPositionDegrees()));
         }
 
         // Put motors in coast mode for testing!!!
@@ -236,7 +237,7 @@ public class CoralArm extends SubsystemBase {
         // pitchPID.setGoal(pitchGoal);
         // }
 
-        double rollPosition = rollRelEncoder.getPosition();//readRollEncoderPosition();
+        double rollPosition = rollRelEncoder.getPosition();// readRollEncoderPosition();
         double pitchPosition = readPitchEncoderPosition();
         double dRollDt = (rollPosition - lastRollReading) / 0.02;
         double dPitchDt = (pitchPosition - lastPitchReading) / 0.02;
@@ -493,7 +494,7 @@ public class CoralArm extends SubsystemBase {
 
     public double readPivotEncoderPosition() {
         return Robot.isSimulation() ? (simPivotPhysics.getAngleRads() - Math.PI * 0.5)
-                : Units.rotationsToRadians((pivotEncoder.getAbsolutePosition().getValueAsDouble()
+                : Units.rotationsToRadians((pivotEncoder.getPosition().getValueAsDouble()
                         * (Constants.Coral.Pivot.ENCODER_INVERTED ? -1.0 : 1.0)));
     }
 
