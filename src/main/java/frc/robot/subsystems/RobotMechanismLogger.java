@@ -83,7 +83,7 @@ public class RobotMechanismLogger extends SubsystemBase {
             // coralPose = new Pose3d(Units.inchesToMeters(2.0), 0, 0, Rotation3d.kZero)
             // .relativeTo(wrist2Pose.relativeTo(new
             // Pose3d(swerveSubsystem.getOdometryPose())));
-            Pose3d coralHoldingPose = new Pose3d(0.0, 0, Units.inchesToMeters(2.0 + 11.875
+            Pose3d coralHoldingPose = new Pose3d(0.0, 0, Units.inchesToMeters(2.5 + 11.875
                     / 2.0),
                     new Rotation3d(0.0, Units.degreesToRadians(90.0), 0.0));
             coralPose = new Pose3d(swerveSubsystem.getOdometryPose())

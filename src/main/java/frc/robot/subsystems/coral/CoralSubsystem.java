@@ -7,9 +7,13 @@ import java.util.function.Supplier;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 // import edu.wpi.first.epilogue.Epilogue;
@@ -51,6 +55,8 @@ public class CoralSubsystem extends SubsystemBase {
     private final CoralIntake intake = new CoralIntake();
 
     private final CoralElevator elevator = new CoralElevator();
+
+    private final CoralReefVision vision = new CoralReefVision();
 
     @NotLogged
     private final SwerveSubsystem swerveSubsystem;
@@ -111,7 +117,6 @@ public class CoralSubsystem extends SubsystemBase {
 
     public CoralSubsystem(SwerveSubsystem swerveSubsystem) {
         this.swerveSubsystem = swerveSubsystem;
-        // Epilogue.bind(this);
     }
 
     public enum MirrorPresets {
@@ -166,6 +171,8 @@ public class CoralSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Roll SUPPOSED to be in position", isRollSupposedToBeInPosition());
         SmartDashboard.putBoolean("Pitch SUPPOSED to be in position", isPitchSupposedToBeInPosition());
         SmartDashboard.putBoolean("Pivot SUPPOSED to be in position", isPivotSupposedToBeInPosition());
+
+        vision.publishDebugData(swerveSubsystem);
     }
 
     private CoralPresets currentPreset = CoralPresets.STOW;
@@ -389,8 +396,9 @@ public class CoralSubsystem extends SubsystemBase {
             Supplier<CoralPresets> currentLockedPresetSupplier) {
         return new InstantCommand(() -> {
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
-                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
                 this.autoSetMirrorIntake();
+                if (this.mirrorSetting.isMirrored)
+                    algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             } else {
                 this.autoSetMirrorScoring();
             }
@@ -421,7 +429,7 @@ public class CoralSubsystem extends SubsystemBase {
     public Command getGoToLockedPresetSideFASTCommand(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier, MirrorPresets mirrorSide) {
         return new InstantCommand(() -> {
-            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE)
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE && this.mirrorSetting.isMirrored)
                 algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             this.mirrorArm(mirrorSide);
 

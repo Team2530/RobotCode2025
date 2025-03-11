@@ -338,11 +338,11 @@ public final class Constants {
       public static double CAM_UP = Units.inchesToMeters(36.053);
       public static Rotation2d CAM_YAW = Rotation2d.fromDegrees(-70.0);
 
-      public static Pose3d CAM_POSE = new Pose3d(CAM_FORWARDS,CAM_LEFT,CAM_UP, new Rotation3d(CAM_YAW));
-    
-      public static Translation2d scoring_position = new Translation2d(
-        Units.inchesToMeters(0.0), // TODO: Forwards
-        Units.inchesToMeters(0.0) // TODO: Left (-right)
+      public static Pose3d CAM_POSE = new Pose3d(CAM_FORWARDS, CAM_LEFT, CAM_UP, new Rotation3d(CAM_YAW));
+
+      public static Translation2d SCORING_POSITION = new Translation2d(
+          Units.inchesToMeters(8.5), // TODO: Forwards
+          Units.inchesToMeters(-18.75 - 11.0) // This includes the shift of reef base pole to scoring pole
       );
     }
   }
