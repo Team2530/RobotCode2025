@@ -23,18 +23,18 @@ import frc.robot.Constants.PoseConstants;
 
 public class Reef {
     public enum ReefBranch {
-        A(7, 18, PoseConstants.blueCoralScores[0]),
-        B(7, 18, PoseConstants.blueCoralScores[1]), 
-        C(8, 17, PoseConstants.blueCoralScores[2]), 
-        D(8, 17, PoseConstants.blueCoralScores[3]), 
-        E(9, 22, PoseConstants.blueCoralScores[4]), 
-        F(9, 22, PoseConstants.blueCoralScores[5]), 
-        G(10, 21, PoseConstants.blueCoralScores[6]), 
-        H(10, 21, PoseConstants.blueCoralScores[7]), 
-        I(11, 20, PoseConstants.blueCoralScores[8]), 
-        J(11, 20, PoseConstants.blueCoralScores[9]), 
-        K(11, 19, PoseConstants.blueCoralScores[10]), 
-        L(11, 19, PoseConstants.blueCoralScores[11]);
+        A(7, 18, new Pose2d(new Translation2d(1, 1), new Rotation2d(Units.degreesToRadians(90)))),
+        B(7, 18, new Pose2d(new Translation2d(1, 1), new Rotation2d(Units.degreesToRadians(90)))),
+        C(8, 17, new Pose2d(new Translation2d(1.606, .734), new Rotation2d(Units.degreesToRadians(150)))),
+        D(8, 17, new Pose2d(new Translation2d(4.13, 2.67), new Rotation2d(Units.degreesToRadians(150)))),
+        E(9, 22, new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-150)))), 
+        F(9, 22, new Pose2d(new Translation2d(5.49, 3.05), new Rotation2d(Units.degreesToRadians(-150)))), 
+        G(10, 21,  new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-90)))), // G
+        H(10, 21, new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-90)))), // H
+        I(11, 20, new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-30)))), // I
+        J(11, 20,  new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-30)))), // J
+        K(11, 19, new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(30)))), // K
+        L(11, 19, new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(30))));
 
         public int tag;
         public Pose2d pose;

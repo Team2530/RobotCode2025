@@ -10,7 +10,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
 import au.grapplerobotics.CanBridge;
-import edu.wpi.first.epilogue.Epilogue;
+//import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.networktables.NetworkTable;
@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
             URCL.start(DataLogManager.getLog());
         }
 
-        Epilogue.bind(this);
+        //Epilogue.bind(this);
 
         // Put git/code version metadata on networktables
         NetworkTable versionTable = NetworkTableInstance.getDefault().getTable("Version");
