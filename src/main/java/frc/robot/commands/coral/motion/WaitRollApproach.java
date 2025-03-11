@@ -1,30 +1,29 @@
 package frc.robot.commands.coral.motion;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
-public class StowArm extends Command {
+public class WaitRollApproach extends Command {
     private CoralSubsystem coralSub;
+    double degreesBefore;
 
-    public StowArm(CoralSubsystem coralSub) {
+    public WaitRollApproach(CoralSubsystem coralSub, double degreesBefore) {
         this.coralSub = coralSub;
-        // addRequirements(coralSub);
+        this.degreesBefore = degreesBefore;
     }
 
     @Override
     public void initialize() {
-        SmartDashboard.putString("Arm Sequence", "Stowing Arm");
-        coralSub.setCoralPresetPitch(CoralPresets.STOW);
-        coralSub.setCoralPresetRoll(CoralPresets.STOW);
-        coralSub.setCoralPresetPivot(CoralPresets.STOW);
+
     }
 
     @Override
     public boolean isFinished() {
-        // TODO: For the future... might want to wait? or not.
-        return true;
+        return (Math.abs(coralSub.getRollGoalDegrees()) > 10) && (Math
+                .abs(coralSub.getRollGoalDegrees() - coralSub.getCoralArm().getRollPositionDegrees()) < degreesBefore);
     }
 }

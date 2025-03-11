@@ -32,7 +32,7 @@ public class LimelightContainer {
     private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
     public LimelightContainer(Limelight... limelights) {
-        int[] validIDs = {1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18, 19, 20, 21, 22}; //ignore barge TODO: remove
+        int[] validIDs = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22}; //ignore barge TODO: remove
         for (Limelight limelight : limelights) {
             LimelightContainer.limelights.add(limelight);
             LimelightHelpers.SetFiducialIDFiltersOverride(limelight.getName(), validIDs);
@@ -119,10 +119,43 @@ public class LimelightContainer {
             }
 
             if (!doRejectUpdate) {
-                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 9999999));
+                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, 10));
                 odometry.addVisionMeasurement(
                         mt1.pose,
                         mt1.timestampSeconds);
+                limelight.pushPoseToShuffleboard(limelight.getName(), mt1.pose);
+            }
+
+        }
+    }
+
+    public void estimateMT1OdometryAuto(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
+        for (Limelight limelight : limelights) {
+            boolean doRejectUpdate = false;
+
+            LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.getName());
+            if (mt1 == null) {
+                continue;
+            }
+
+            if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
+                if (mt1.rawFiducials[0].ambiguity > .7) {
+                    doRejectUpdate = true;
+                }
+                if (mt1.rawFiducials[0].distToCamera > 1.85) {
+                    doRejectUpdate = true;
+                }
+            }
+            if (mt1.tagCount == 0) {
+                doRejectUpdate = true;
+            }
+
+            if (!doRejectUpdate) {
+                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(mt1.avgTagDist * 0.7, mt1.avgTagDist * 0.7, 9999999));
+                odometry.addVisionMeasurement(
+                        mt1.pose,
+                        mt1.timestampSeconds);
+                limelight.pushPoseToShuffleboard(limelight.getName(), mt1.pose);
             }
 
         }
@@ -158,10 +191,12 @@ public class LimelightContainer {
             }
 
             if (!doRejectUpdate) {
-                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(10, 10, 9999999));
+                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(5, 5, 9999999));
                 odometry.addVisionMeasurement(
                         mt2.pose,
                         mt2.timestampSeconds);
+                limelight.pushPoseToShuffleboard(limelight.getName(), mt2.pose);
+                
             }
         }
 

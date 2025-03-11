@@ -7,6 +7,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralIntakePresets;
+import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 
 public class ScoreCoralCommand extends Command {
 
@@ -20,7 +21,8 @@ public class ScoreCoralCommand extends Command {
 
     @Override
     public void initialize() {
-        subsystem.setCoralIntakePreset(CoralIntakePresets.SCORE);
+        boolean isL1 = subsystem.getCurrentPreset() == CoralPresets.LEVEL_1;
+        subsystem.setCoralIntakePreset(isL1 ? CoralIntakePresets.SCORE_L1 : CoralIntakePresets.SCORE);
         if (Robot.isSimulation()) {
             SmartDashboard.putBoolean("[SIM] Holding Coral", false);
         }

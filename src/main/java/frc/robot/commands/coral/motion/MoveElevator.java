@@ -15,7 +15,7 @@ public class MoveElevator extends Command {
     public MoveElevator(CoralSubsystem coralSub, Supplier<CoralPresets> presetSupplier) {
         this.coralSub = coralSub;
         this.presetSupplier = presetSupplier;
-        addRequirements(coralSub);
+        // addRequirements(coralSub);
     }
 
     @Override

@@ -215,8 +215,7 @@ public class Limelight extends SubsystemBase {
     }
 
     /**
-   * Used to put a pose on Shuffleboard for debugging - Don't repeatadly call
-   * this!
+   * Used to put a pose on Shuffleboard for debugging
    * 
    * @param name Name of pose
    * @param pose Pose2d pose

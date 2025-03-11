@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
@@ -20,11 +22,13 @@ import frc.robot.subsystems.coral.CoralSubsystem;
 
 public class RobotMechanismLogger extends SubsystemBase {
     private final CoralSubsystem coralSubsystem;
+    private final SwerveSubsystem swerveSubsystem;
     private final StructPublisher<Pose3d> s1;
     private final StructPublisher<Pose3d> s2;
     private final StructPublisher<Pose3d> arm;
     private final StructPublisher<Pose3d> wrist1;
     private final StructPublisher<Pose3d> wrist2;
+    private final StructPublisher<Pose3d> coral;
 
     // Zeroed component poses
     private Pose3d s1Pose = new Pose3d(0, 0, 0, new Rotation3d());
@@ -32,15 +36,17 @@ public class RobotMechanismLogger extends SubsystemBase {
     private Pose3d armPose = new Pose3d(0, 0, 0, new Rotation3d());
     private Pose3d wrist1Pose = new Pose3d(0, 0, 0, new Rotation3d());
     private Pose3d wrist2Pose = new Pose3d(0, 0, 0, new Rotation3d());
+    private Pose3d coralPose = new Pose3d();
 
-    public RobotMechanismLogger(CoralSubsystem coralSubsystem) {
+    public RobotMechanismLogger(CoralSubsystem coralSubsystem, SwerveSubsystem swerveSubsystem) {
+        this.swerveSubsystem = swerveSubsystem;
         this.coralSubsystem = coralSubsystem;
         s1 = NetworkTableInstance.getDefault().getStructTopic("0_ElevatorS1", Pose3d.struct).publish();
         s2 = NetworkTableInstance.getDefault().getStructTopic("1_ElevatorS2", Pose3d.struct).publish();
         arm = NetworkTableInstance.getDefault().getStructTopic("2_Arm", Pose3d.struct).publish();
         wrist1 = NetworkTableInstance.getDefault().getStructTopic("3_Wrist1", Pose3d.struct).publish();
         wrist2 = NetworkTableInstance.getDefault().getStructTopic("4_Wrist2", Pose3d.struct).publish();
-
+        coral = NetworkTableInstance.getDefault().getStructTopic("Coral_Pose", Pose3d.struct).publish();
     }
 
     @Override
@@ -55,6 +61,7 @@ public class RobotMechanismLogger extends SubsystemBase {
         arm.set(armPose);
         wrist1.set(wrist1Pose);
         wrist2.set(wrist2Pose);
+        coral.set(coralPose);
     }
 
     public void updatePoses() {
@@ -71,6 +78,20 @@ public class RobotMechanismLogger extends SubsystemBase {
 
         wrist2Pose = wrist1Pose.transformBy(new Transform3d(0, 0.025, 0.07,
                 new Rotation3d(0, Units.degreesToRadians(coralSubsystem.getCoralArm().getPitchPositionDegrees()), 0)));
-    }
 
+        if (coralSubsystem.isHolding()) {
+            // coralPose = new Pose3d(Units.inchesToMeters(2.0), 0, 0, Rotation3d.kZero)
+            // .relativeTo(wrist2Pose.relativeTo(new
+            // Pose3d(swerveSubsystem.getOdometryPose())));
+            Pose3d coralHoldingPose = new Pose3d(0.0, 0, Units.inchesToMeters(2.0 + 11.875
+                    / 2.0),
+                    new Rotation3d(0.0, Units.degreesToRadians(90.0), 0.0));
+            coralPose = new Pose3d(swerveSubsystem.getOdometryPose())
+                    .transformBy(new Transform3d(wrist2Pose.getTranslation(),
+                            wrist2Pose.getRotation()))
+                    .transformBy(new Transform3d(coralHoldingPose.getTranslation(), coralHoldingPose.getRotation()));
+        } else {
+            coralPose = Pose3d.kZero;
+        }
+    }
 }

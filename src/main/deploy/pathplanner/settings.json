@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.944,
-  "robotLength": 0.944,
+  "robotWidth": 0.94361,
+  "robotLength": 0.94361,
   "holonomicMode": true,
   "pathFolders": [
     "Example autos",
@@ -11,7 +11,10 @@
     "bottom autos",
     "middle autos"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Killing Series",
+    "Testing"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,
