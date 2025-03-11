@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -454,6 +455,8 @@ public final class Constants {
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(12.0, 0, 0.005);
     public static final PIDConstants ROTATION_PID = new PIDConstants(9.0, 0, 0.03); // was 10 and 9
 
+    public static final ProfiledPIDController transProfPID = new ProfiledPIDController(12, 0, 0.005, new Constraints(2, 2));
+    
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
         TRANSLATION_PID,
         ROTATION_PID);
@@ -488,21 +491,7 @@ public final class Constants {
     public static final ReefBranch defaultSelectedBranch = ReefBranch.C;
     public static double startTime = 0;
 
-    public static final Pose2d[] blueCoralScores = { // IN METERS AND DEGREES
-      new Pose2d(new Translation2d(1, 1), new Rotation2d(Units.degreesToRadians(90))), // A
-      new Pose2d(new Translation2d(1, 1), new Rotation2d(Units.degreesToRadians(90))), // B
-      new Pose2d(new Translation2d(1.606, .734), new Rotation2d(Units.degreesToRadians(150))), // C
-      new Pose2d(new Translation2d(4.13, 2.67), new Rotation2d(Units.degreesToRadians(150))), // D
-      new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-150))), // E
-      new Pose2d(new Translation2d(5.49, 3.05), new Rotation2d(Units.degreesToRadians(-150))), // F
-      new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-90))), // G
-      new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-90))), // H
-      new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-30))), // I
-      new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-30))), // J
-      new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(30))), // K
-      new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(30))), // L
-    };
-    
+   
 
     double currentTime = 0;
 

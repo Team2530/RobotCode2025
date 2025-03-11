@@ -68,11 +68,13 @@ public class DriveCommand extends Command {
             DriveConstants.TRANSLATION_ASSIST.kD);
 
     
-    TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
-    HolonomicDriveController controller = new HolonomicDriveController(
-        new PIDController(8, 0, 0.01), new PIDController(8, 0, 0.01),
-        new ProfiledPIDController(5, 0, 0.2,
-            new TrapezoidProfile.Constraints(3.14, 1.07)));
+    // TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
+    // HolonomicDriveController controller = new HolonomicDriveController(
+    //     new PIDController(8, 0, 0.01), new PIDController(8, 0, 0.01),
+    //     new ProfiledPIDController(5, 0, 0.2,
+    //         new TrapezoidProfile.Constraints(3.14, 1.07)));
+
+    
 
     private boolean isXstance = false;
 
@@ -194,11 +196,33 @@ public class DriveCommand extends Command {
             case CORAL_SPOT_ASSIST:
                 
                 Pose2d goalPose = selectedBranch.pose; 
+                SmartDashboard.putString("Selected Branch", selectedBranch.name());
                 Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
-                double xDiff = goalPose.getX() - currPose.getX();
-                double yDiff = goalPose.getY() - currPose.getY();
                 double thetaDiff = goalPose.getRotation().getRadians() - currPose.getRotation().getRadians();
-                
+                double xPID = Constants.PathPlannerConstants.transProfPID.calculate(currPose.getX(), goalPose.getX());
+                double yPID = Constants.PathPlannerConstants.transProfPID.calculate(currPose.getY(), goalPose.getY());
+
+                reefCenter = AllianceFlipUtil.apply(Reef.center);
+                reefAngleRot = swerveSubsystem.getOdometryPose().getTranslation().minus(
+                        reefCenter).getAngle().getRotations();
+
+
+                targetAngle = MathUtil
+                        .angleModulus(Units.rotationsToRadians(Math.floor((reefAngleRot + 1.0 / 12.0) * 6.0) / 6.0))
+                        - Math.PI / 2.0;
+                //targetAngle = selectedBranch.pose.getRotation2d();
+
+                rotationState = new SwerveModuleState(1.5, new Rotation2d(targetAngle));
+                zAssist = MathUtil
+                        .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
+                                rotationState.angle.getRadians()), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.5
+                                        * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
+
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeed+xPID, ySpeed+yPID, zSpeed + zAssist,
+                        swerveSubsystem.getGyroRotation2d());
+
 
                 // edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                 //     currPose, 
