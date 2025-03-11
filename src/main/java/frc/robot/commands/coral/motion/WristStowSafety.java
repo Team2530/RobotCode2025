@@ -21,7 +21,7 @@ public class WristStowSafety extends Command {
 
     @Override
     public void end(boolean interrupted) {
-
+        coralSub.setCoralPresetRoll(CoralPresets.STOW);
     }
 
     @Override
