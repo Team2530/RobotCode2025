@@ -24,9 +24,6 @@ import frc.robot.util.CoralStation;
 import frc.robot.util.Reef;
 import frc.robot.util.Reef.ReefBranch;
 import frc.robot.util.Reef.ReefBranch;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.PathPlannerConstants;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -35,7 +32,6 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import java.util.List;
-import frc.robot.Constants.PathPlannerConstants;
 
 @Logged
 public class DriveCommand extends Command {
@@ -67,14 +63,11 @@ public class DriveCommand extends Command {
             DriveConstants.TRANSLATION_ASSIST.kI,
             DriveConstants.TRANSLATION_ASSIST.kD);
 
-    
     // TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
     // HolonomicDriveController controller = new HolonomicDriveController(
-    //     new PIDController(8, 0, 0.01), new PIDController(8, 0, 0.01),
-    //     new ProfiledPIDController(5, 0, 0.2,
-    //         new TrapezoidProfile.Constraints(3.14, 1.07)));
-
-    
+    // new PIDController(8, 0, 0.01), new PIDController(8, 0, 0.01),
+    // new ProfiledPIDController(5, 0, 0.2,
+    // new TrapezoidProfile.Constraints(3.14, 1.07)));
 
     private boolean isXstance = false;
 
@@ -194,47 +187,78 @@ public class DriveCommand extends Command {
                         xSpeed, ySpeed, zSpeed + zPid,
                         swerveSubsystem.getGyroRotation2d());
             case CORAL_SPOT_ASSIST:
-                
-                Pose2d goalPose = selectedBranch.pose; 
-                SmartDashboard.putString("Selected Branch", selectedBranch.name());
-                Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
-                double thetaDiff = goalPose.getRotation().getRadians() - currPose.getRotation().getRadians();
-                double xPID = Constants.PathPlannerConstants.transProfPID.calculate(currPose.getX(), goalPose.getX());
-                double yPID = Constants.PathPlannerConstants.transProfPID.calculate(currPose.getY(), goalPose.getY());
+                Pose2d goalPose = selectedBranch.pose;
+                if (goalPose != null) {
+                    double zError = swerveSubsystem.getOdometryPose().minus(goalPose).getRotation().getRadians();
+                    double xError = swerveSubsystem.getOdometryPose().getX() - goalPose.getX();
+                    double yError = swerveSubsystem.getOdometryPose().getY() - goalPose.getY();
 
-                reefCenter = AllianceFlipUtil.apply(Reef.center);
-                reefAngleRot = swerveSubsystem.getOdometryPose().getTranslation().minus(
-                        reefCenter).getAngle().getRotations();
+                    SmartDashboard.putNumber("Ex", xError);
+                    SmartDashboard.putNumber("Ey", yError);
 
+                    //! TODO : Figure out why this works?
+                    double yAssist = translationAssist.calculate(xError) * xbox.getLeftTriggerAxis();
+                    double xAssist = translationAssist.calculate(yError)* xbox.getLeftTriggerAxis();
+                    zAssist = rotationAssist.calculate(zError) * xbox.getLeftTriggerAxis();
 
-                targetAngle = MathUtil
-                        .angleModulus(Units.rotationsToRadians(Math.floor((reefAngleRot + 1.0 / 12.0) * 6.0) / 6.0))
-                        - Math.PI / 2.0;
-                //targetAngle = selectedBranch.pose.getRotation2d();
+                    // speeds = new ChassisSpeeds(-xSpeed + xAssist, ySpeed + yAssist, -zSpeed +
+                    // zAssist);
 
-                rotationState = new SwerveModuleState(1.5, new Rotation2d(targetAngle));
-                zAssist = MathUtil
-                        .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
-                                rotationState.angle.getRadians()), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
-                                0.5
-                                        * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
+                    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed + yAssist, xSpeed + xAssist,
+                            zSpeed + zAssist,
+                            swerveSubsystem.getGyroRotation2d());
+                }
 
-                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                        xSpeed+xPID, ySpeed+yPID, zSpeed + zAssist,
-                        swerveSubsystem.getGyroRotation2d());
+                // ? James code below
+                // Pose2d goalPose = selectedBranch.pose;
+                // SmartDashboard.putString("Selected Branch", selectedBranch.name());
+                // Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
+                // double thetaDiff = goalPose.getRotation().getRadians() -
+                // currPose.getRotation().getRadians();
+                // double xPID =
+                // Constants.PathPlannerConstants.transProfPID.calculate(currPose.getX(),
+                // goalPose.getX());
+                // double yPID =
+                // Constants.PathPlannerConstants.transProfPID.calculate(currPose.getY(),
+                // goalPose.getY());
 
+                // reefCenter = AllianceFlipUtil.apply(Reef.center);
+                // reefAngleRot = swerveSubsystem.getOdometryPose().getTranslation().minus(
+                // reefCenter).getAngle().getRotations();
 
-                // edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-                //     currPose, 
-                //     List.of(),  // No intermediate waypoints (just a straight line)
-                //     thePose, 
-                //     config
+                // targetAngle = MathUtil
+                // .angleModulus(Units.rotationsToRadians(Math.floor((reefAngleRot + 1.0 / 12.0)
+                // * 6.0) / 6.0))
+                // - Math.PI / 2.0;
+                // //targetAngle = selectedBranch.pose.getRotation2d();
+
+                // rotationState = new SwerveModuleState(1.5, new Rotation2d(targetAngle));
+                // zAssist = MathUtil
+                // .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
+                // rotationState.angle.getRadians()), -0.5 *
+                // DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                // 0.5
+                // * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
+
+                // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                // xSpeed+xPID, ySpeed+yPID, zSpeed + zAssist,
+                // swerveSubsystem.getGyroRotation2d());
+
+                // edu.wpi.first.math.trajectory.Trajectory trajectory =
+                // TrajectoryGenerator.generateTrajectory(
+                // currPose,
+                // List.of(), // No intermediate waypoints (just a straight line)
+                // thePose,
+                // config
                 // );
-                // State goal = trajectory.sample(Timer.getFPGATimestamp()-Constants.PoseConstants.startTime);
+                // State goal =
+                // trajectory.sample(Timer.getFPGATimestamp()-Constants.PoseConstants.startTime);
                 // ChassisSpeeds adjustedSpeeds = controller.calculate(
-                //     currPose, goal, thePose.getRotation()); // what is the last parameter? TODO: fix
+                // currPose, goal, thePose.getRotation()); // what is the last parameter? TODO:
+                // fix
                 // speeds = new ChassisSpeeds(
-                //         adjustedSpeeds.vxMetersPerSecond, adjustedSpeeds.vyMetersPerSecond, adjustedSpeeds.omegaRadiansPerSecond);
+                // adjustedSpeeds.vxMetersPerSecond, adjustedSpeeds.vyMetersPerSecond,
+                // adjustedSpeeds.omegaRadiansPerSecond);
                 break;
 
             default:
@@ -254,35 +278,34 @@ public class DriveCommand extends Command {
             swerveSubsystem.setChassisSpeeds(speeds);
         }
     }
+
     public int getNearestTag() {
         Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
-            .relativeTo(FieldConstants.getReefPose());
+                .relativeTo(FieldConstants.getReefPose());
 
         int[] tags; // these are pretransformed to make the the logic easier
         if (FieldConstants.getAlliance() == Alliance.Red) {
-            tags = new int[] {6, 7, 8, 9, 10, 11};
+            tags = new int[] { 6, 7, 8, 9, 10, 11 };
         } else {
-            tags = new int[] {19, 18, 17,22, 21, 20};
-        }   
+            tags = new int[] { 19, 18, 17, 22, 21, 20 };
+        }
 
-        double angle = Math.atan2(relative.getY(), relative.getX()); 
+        double angle = Math.atan2(relative.getY(), relative.getX());
         int index = (int) Math.floor(
-            (angle + Math.PI)
-            * (6 / (2*Math.PI))
-        );
+                (angle + Math.PI)
+                        * (6 / (2 * Math.PI)));
 
         return tags[index];
     }
 
     public ReefBranch getNearestBranch() {
         Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
-            .relativeTo(FieldConstants.getReefPose());
+                .relativeTo(FieldConstants.getReefPose());
 
-        double angle = Math.atan2(relative.getY(), relative.getX()); 
+        double angle = Math.atan2(relative.getY(), relative.getX());
         int index = (int) Math.floor(
-            (angle + Math.PI)
-            * (12 / (2*Math.PI))
-        );
+                (angle + Math.PI)
+                        * (12 / (2 * Math.PI)));
 
         return ReefBranch.values()[(index + 10) % 12];
     }
@@ -291,6 +314,7 @@ public class DriveCommand extends Command {
         this.selectedBranch = branch;
         SmartDashboard.putString("Selected Branch", branch.name());
     }
+
     public ReefBranch getSelectedBranch() {
         return selectedBranch;
     }
