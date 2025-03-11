@@ -422,7 +422,7 @@ public class CoralSubsystem extends SubsystemBase {
                                                 this, 0.5))
                                 .andThen(new MovePitch(
                                         this, currentLockedPresetSupplier))))
-                .andThen(new WristAlignAssist(this))
+                // .andThen(new WristAlignAssist(this))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
