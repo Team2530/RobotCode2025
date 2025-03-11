@@ -16,8 +16,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -327,6 +330,20 @@ public final class Constants {
         public static final double MOI = 0.1; // J*KG / M^2
         public static final double GEARING = 1;
       }
+    }
+
+    public class Vision {
+      public static double CAM_FORWARDS = Units.inchesToMeters(1.3075);
+      public static double CAM_LEFT = Units.inchesToMeters(-8.686);
+      public static double CAM_UP = Units.inchesToMeters(36.053);
+      public static Rotation2d CAM_YAW = Rotation2d.fromDegrees(-70.0);
+
+      public static Pose3d CAM_POSE = new Pose3d(CAM_FORWARDS,CAM_LEFT,CAM_UP, new Rotation3d(CAM_YAW));
+    
+      public static Translation2d scoring_position = new Translation2d(
+        Units.inchesToMeters(0.0), // TODO: Forwards
+        Units.inchesToMeters(0.0) // TODO: Left (-right)
+      );
     }
   }
 
