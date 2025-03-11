@@ -182,4 +182,8 @@ public class CoralReefVision extends SubsystemBase {
         primaryVisionTargetFieldSpace.set(primaryTargetPose3d);
 
     }
+
+    public boolean hasValidTarget() {
+        return selectedTargetIndex != -1;
+    }
 }

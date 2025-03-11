@@ -273,7 +273,7 @@ public final class Constants {
           0.02,
           new TrapezoidProfile.Constraints(15, 25.0));
 
-      public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
+      public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90 + 30.0);
 
       public static final double VELOCITY_FF = 0.0;// Volts per radian/second
 

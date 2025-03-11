@@ -38,6 +38,7 @@ import frc.robot.commands.coral.motion.WaitArmClearance;
 import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
+import frc.robot.commands.coral.motion.WristAlignAssist;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -421,6 +422,7 @@ public class CoralSubsystem extends SubsystemBase {
                                                 this, 0.5))
                                 .andThen(new MovePitch(
                                         this, currentLockedPresetSupplier))))
+                .andThen(new WristAlignAssist(this))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
@@ -477,5 +479,9 @@ public class CoralSubsystem extends SubsystemBase {
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
+    }
+
+    public CoralReefVision getVisionSubsystem() {
+        return vision;
     }
 }
