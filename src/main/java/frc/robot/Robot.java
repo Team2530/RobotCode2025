@@ -10,7 +10,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
 import au.grapplerobotics.CanBridge;
-//import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.epilogue.logging.FileBackend;
