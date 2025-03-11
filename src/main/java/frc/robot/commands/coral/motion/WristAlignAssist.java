@@ -29,7 +29,7 @@ public class WristAlignAssist extends Command {
         if (vision.hasValidTarget()) {
             Translation2d error = vision.getSelectedTargetError();
             coralSubsystem.setCustomRollDegrees(MathUtil.clamp(
-                    90.0 - Units.radiansToDegrees(Math.atan2(error.getX(), -error.getY() + Units.inchesToMeters(14.0))),
+                    90.0 - Units.radiansToDegrees(Math.atan2(error.getX(), -error.getY() + Units.inchesToMeters(16.0))),
                     90 - 30.0,
                     90 + 30.0));
 

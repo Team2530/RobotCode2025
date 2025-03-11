@@ -47,6 +47,7 @@ import frc.robot.commands.coral.motion.StowArm;
 import frc.robot.commands.coral.motion.WaitArmClearance;
 import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
+import frc.robot.commands.coral.motion.WristStowSafety;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.LimelightType;
@@ -261,7 +262,8 @@ public class RobotContainer {
                             : CoralPresets.STOW);
             // lockCoralArmPreset(CoralPresets.STOW);
             algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
-        }).andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem, currentLockedPresetSupplier));
+        }).andThen(new WristStowSafety(coralSubsystem))
+                .andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem, currentLockedPresetSupplier));
     }
 
     /**
