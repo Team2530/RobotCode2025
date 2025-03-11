@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -40,8 +41,8 @@ public class CoralElevator extends SubsystemBase {
     double positionGoal = 0.0;
     @Logged
     double currentPosition = 0.0;
-    // @Logged
-    // double currentTarget = 0.0;
+
+    boolean zeroing = false;
 
     private final ElevatorSim simElevator = new ElevatorSim(
             Elevator.PhysicalParameters.MOTOR,
@@ -110,9 +111,13 @@ public class CoralElevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        leader.setControl(mmReq.withPosition(positionGoal).withSlot(0));
-        currentPosition = leader.getPosition().getValueAsDouble();
+        if (zeroing) {
+            leader.setControl(new DutyCycleOut(-0.05));
+        } else {
+            leader.setControl(mmReq.withPosition(positionGoal).withSlot(0));
+        }
 
+        currentPosition = leader.getPosition().getValueAsDouble();
         SmartDashboard.putNumber("Elevator/goal", positionGoal);
         SmartDashboard.putNumber("Elevator/position", currentPosition);
     }
@@ -145,6 +150,16 @@ public class CoralElevator extends SubsystemBase {
 
     public boolean isInPosition() {
         return MathUtil.isNear(getPosition(), getGoalPosition(), Units.inchesToMeters(0.75));
+    }
+
+    public void startZeroElevator() {
+        zeroing = true;
+    }
+
+    public void endZeroElevator() {
+        leader.setPosition(0.0);
+        follower.setPosition(0.0);
+        zeroing = false;
     }
 
     // TODO: Add zeroing!!!
