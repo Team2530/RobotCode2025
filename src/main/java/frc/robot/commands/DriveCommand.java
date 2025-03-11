@@ -16,11 +16,25 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.CoralStation;
 import frc.robot.util.Reef;
+import frc.robot.util.Reef.ReefBranch;
+import frc.robot.util.Reef.ReefBranch;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.PathPlannerConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.proto.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import java.util.List;
 
 @Logged
 public class DriveCommand extends Command {
@@ -33,11 +47,13 @@ public class DriveCommand extends Command {
 
     private double DRIVE_MULT = 1.0;
     private final double SLOWMODE_MULT = 0.25;
+    private ReefBranch selectedBranch = Constants.PoseConstants.defaultSelectedBranch;
 
     public static enum DriveStyle {
         FIELD_ORIENTED,
         REEF_ASSIST,
-        INTAKE_ASSIST
+        INTAKE_ASSIST,
+        CORAL_SPOT_ASSIST
     };
 
     private DriveStyle driveStyle = DriveStyle.FIELD_ORIENTED;
@@ -49,6 +65,13 @@ public class DriveCommand extends Command {
             DriveConstants.TRANSLATION_ASSIST.kP,
             DriveConstants.TRANSLATION_ASSIST.kI,
             DriveConstants.TRANSLATION_ASSIST.kD);
+
+    
+    TrajectoryConfig config = new TrajectoryConfig(2.0, 2.0);
+    HolonomicDriveController controller = new HolonomicDriveController(
+        new PIDController(1, 0, 0), new PIDController(1, 0, 0),
+        new ProfiledPIDController(1, 0, 0,
+            new TrapezoidProfile.Constraints(6.28, 3.14)));
 
     private boolean isXstance = false;
 
@@ -167,6 +190,22 @@ public class DriveCommand extends Command {
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, zSpeed + zPid,
                         swerveSubsystem.getGyroRotation2d());
+            case CORAL_SPOT_ASSIST:
+                Pose2d thePose = selectedBranch.pose; 
+                Pose2d currPose = swerveSubsystem.odometry.getEstimatedPosition();
+                edu.wpi.first.math.trajectory.Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+                    currPose, 
+                    List.of(),  // No intermediate waypoints (just a straight line)
+                    thePose, 
+                    config
+                );
+                State goal = trajectory.sample(Timer.getFPGATimestamp()-Constants.PoseConstants.startTime);
+                ChassisSpeeds adjustedSpeeds = controller.calculate(
+                    currPose, goal, currPose.getRotation()); // what is the last parameter? TODO: fix
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeed+adjustedSpeeds.vxMetersPerSecond, ySpeed+adjustedSpeeds.vyMetersPerSecond, zSpeed + adjustedSpeeds.omegaRadiansPerSecond,
+                        swerveSubsystem.getGyroRotation2d());
+                break;
 
             default:
                 break;
@@ -184,6 +223,46 @@ public class DriveCommand extends Command {
         } else {
             swerveSubsystem.setChassisSpeeds(speeds);
         }
+    }
+    public int getNearestTag() {
+        Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
+            .relativeTo(FieldConstants.getReefPose());
+
+        int[] tags; // these are pretransformed to make the the logic easier
+        if (FieldConstants.getAlliance() == Alliance.Red) {
+            tags = new int[] {6, 7, 8, 9, 10, 11};
+        } else {
+            tags = new int[] {19, 18, 17,22, 21, 20};
+        }   
+
+        double angle = Math.atan2(relative.getY(), relative.getX()); 
+        int index = (int) Math.floor(
+            (angle + Math.PI)
+            * (6 / (2*Math.PI))
+        );
+
+        return tags[index];
+    }
+
+    public ReefBranch getNearestBranch() {
+        Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
+            .relativeTo(FieldConstants.getReefPose());
+
+        double angle = Math.atan2(relative.getY(), relative.getX()); 
+        int index = (int) Math.floor(
+            (angle + Math.PI)
+            * (12 / (2*Math.PI))
+        );
+
+        return ReefBranch.values()[(index + 10) % 12];
+    }
+
+    public void setSelectedBranch(ReefBranch branch) {
+        this.selectedBranch = branch;
+        SmartDashboard.putString("Selected Branch", branch.name());
+    }
+    public ReefBranch getSelectedBranch() {
+        return selectedBranch;
     }
 
     public void setDriveStyle(DriveStyle style) {
