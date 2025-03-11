@@ -2,6 +2,7 @@ package frc.robot.subsystems.coral;
 
 import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -16,14 +17,29 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.LimelightAssistance;
 import frc.robot.RobotContainer;
+import frc.robot.commands.coral.motion.MoveElevator;
+import frc.robot.commands.coral.motion.MovePitch;
+import frc.robot.commands.coral.motion.MovePivot;
+import frc.robot.commands.coral.motion.MoveRoll;
+import frc.robot.commands.coral.motion.StowArm;
+import frc.robot.commands.coral.motion.WaitArmClearance;
+import frc.robot.commands.coral.motion.WaitElevatorApproach;
+import frc.robot.commands.coral.motion.WaitRollApproach;
+import frc.robot.commands.coral.motion.WaitRollFinished;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.algae.AlgaeSubsystem;
+import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
+import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.util.LimelightAssistance;
 
 import frc.robot.util.LimelightContainer;
@@ -367,5 +383,91 @@ public class CoralSubsystem extends SubsystemBase {
 
     public void simSetHolding(boolean holding) {
         SmartDashboard.putBoolean("[SIM] Holding Coral", holding);
+    }
+
+    public Command getGoToLockedPresetCommandV2(AlgaeSubsystem algaeSubsystem,
+            Supplier<CoralPresets> currentLockedPresetSupplier) {
+        return new InstantCommand(() -> {
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
+                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+                this.autoSetMirrorIntake();
+            } else {
+                this.autoSetMirrorScoring();
+            }
+
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(
+                this))
+                .andThen(new ParallelCommandGroup(
+                        new MoveElevator(
+                                this, currentLockedPresetSupplier),
+                        new MovePivot(
+                                this, currentLockedPresetSupplier),
+                        new WaitArmClearance(
+                                this)
+                                .andThen(new MoveRoll(
+                                        this, currentLockedPresetSupplier)),
+                        new WaitRollApproach(
+                                this, 60.0).andThen(
+                                        new WaitElevatorApproach(
+                                                this, 0.5))
+                                .andThen(new MovePitch(
+                                        this, currentLockedPresetSupplier))))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
+    public Command getGoToLockedPresetSideFASTCommand(AlgaeSubsystem algaeSubsystem,
+            Supplier<CoralPresets> currentLockedPresetSupplier, MirrorPresets mirrorSide) {
+        return new InstantCommand(() -> {
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE)
+                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+            this.mirrorArm(mirrorSide);
+
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(
+                this))
+                .andThen(new MoveElevator(
+                        this, currentLockedPresetSupplier))
+                .andThen(new ParallelCommandGroup(
+                        new MovePivot(
+                                this, currentLockedPresetSupplier),
+                        new MoveRoll(
+                                this, currentLockedPresetSupplier),
+                        new MovePitch(
+                                this, currentLockedPresetSupplier)))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
+    // Goes to a preset more quickly by moving pitch+pivot+roll at the same time,
+    // but can throw coral. Good for intaking
+    public Command getGoToLockedPresetFASTCommand(AlgaeSubsystem algaeSubsystem,
+            Supplier<CoralPresets> currentLockedPresetSupplier) {
+        return new InstantCommand(() -> {
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
+                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+
+                this.autoSetMirrorIntake();
+            } else {
+                this.autoSetMirrorScoring();
+            }
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(
+                this))
+                .andThen(new MoveElevator(
+                        this, currentLockedPresetSupplier))
+                .andThen(new ParallelCommandGroup(
+                        new MovePivot(
+                                this, currentLockedPresetSupplier),
+                        new MoveRoll(
+                                this, currentLockedPresetSupplier),
+                        new MovePitch(
+                                this, currentLockedPresetSupplier)))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
     }
 }
