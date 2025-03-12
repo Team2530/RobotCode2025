@@ -16,8 +16,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -272,7 +275,7 @@ public final class Constants {
           0.02,
           new TrapezoidProfile.Constraints(15, 25.0));
 
-      public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90);
+      public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90 + 40.0);
 
       public static final double VELOCITY_FF = 0.0;// Volts per radian/second
 
@@ -329,6 +332,28 @@ public final class Constants {
         public static final double MOI = 0.1; // J*KG / M^2
         public static final double GEARING = 1;
       }
+    }
+
+    public class Vision {
+      public static double CAM_FORWARDS = Units.inchesToMeters(1.141310);
+      public static double CAM_LEFT = Units.inchesToMeters(-8.606161);
+      public static double CAM_UP = Units.inchesToMeters(36.004011);
+      public static Rotation2d CAM_YAW = Rotation2d.fromDegrees(-80.0);
+
+      public static Pose3d CAM_POSE = new Pose3d(CAM_FORWARDS, CAM_LEFT, CAM_UP, new Rotation3d(CAM_YAW));
+
+      public static double CAM_FOV_HORIZ = Units.degreesToRadians(58.51);
+      public static double CAM_FOV_VERT = Units.degreesToRadians(45.57);
+      public static double CAM_MAX_DIST = 2.0; // Meters
+
+      public static Translation2d SCORING_POSITION = new Translation2d(
+          Units.inchesToMeters(8.5), // TODO: Forwards
+          Units.inchesToMeters(-18.75 - 11.0) // This includes the shift of reef base pole to scoring pole
+      );
+      public static Translation2d SCORING_BUMPER_POINT = new Translation2d(
+          Units.inchesToMeters(8.5), // TODO: Forwards
+          Units.inchesToMeters(-18.75) // This includes the shift of reef base pole to scoring pole
+      );
     }
   }
 
