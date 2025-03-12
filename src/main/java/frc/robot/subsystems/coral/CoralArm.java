@@ -194,6 +194,7 @@ public class CoralArm extends SubsystemBase {
     public void periodic() {
         if (!rollreset) {
             rollRelEncoder.setPosition(Units.degreesToRadians(getRollPositionDegrees()));
+            rollreset = true;
         }
 
         // Put motors in coast mode for testing!!!
@@ -237,7 +238,7 @@ public class CoralArm extends SubsystemBase {
         // pitchPID.setGoal(pitchGoal);
         // }
 
-        double rollPosition = rollRelEncoder.getPosition();// readRollEncoderPosition();
+        double rollPosition = readRollEncoderPosition();// readRollEncoderPosition();
         double pitchPosition = readPitchEncoderPosition();
         double dRollDt = (rollPosition - lastRollReading) / 0.02;
         double dPitchDt = (pitchPosition - lastPitchReading) / 0.02;
@@ -284,9 +285,11 @@ public class CoralArm extends SubsystemBase {
         if (Robot.isSimulation())
             simPivotMotor.setAppliedOutput((pivotPIDout + pivotFFout) / 12.0);
 
+        // TODO: Swap to roll motor relative encoder?
         double rollPIDout = rollPID.calculate(readRollEncoderPosition());
         double rollFFout = 0.0;// Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
         SmartDashboard.putNumber("Coral/Roll/position", readRollEncoderPosition());
+        SmartDashboard.putNumber("Coral/Roll/motor_position", rollRelEncoder.getPosition());
         SmartDashboard.putNumber("Coral/Roll/velocity", dRollDt);
         SmartDashboard.putNumber("Coral/Roll/target", rollPID.getSetpoint().position);
         SmartDashboard.putNumber("Coral/Roll/velocity_target", rollPID.getSetpoint().velocity);
