@@ -77,9 +77,11 @@ public class Reef {
                     Rotation2d.fromDegrees(240))
     };
 
-    public static final Translation2d center = new Translation2d(
+    public static final Pose2d center = new Pose2d(
             4.485,
-            4.025);
+            4.025,
+            new Rotation2d()
+        );
     // Starting off facing DS wall
     public static final double centerOffset = Units.inchesToMeters(32);
     public static final double faceOffset = Units.inchesToMeters(6.469);

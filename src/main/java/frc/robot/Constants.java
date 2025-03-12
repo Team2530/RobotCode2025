@@ -101,14 +101,6 @@ public final class Constants {
 
       return poses;
     }
-
-    public static Pose2d getReefPose() {
-      Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d());
-      if (getAlliance() == Alliance.Red) {
-        AllianceFlipUtil.flip(reef);
-      }
-      return reef;
-    }
   }
 
   public static class SwerveModuleConstants {

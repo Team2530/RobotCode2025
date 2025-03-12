@@ -48,6 +48,7 @@ import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.util.LimelightAssistance;
 
 import frc.robot.util.LimelightContainer;
+import frc.robot.util.Reef;
 
 @Logged
 public class CoralSubsystem extends SubsystemBase {
@@ -263,7 +264,7 @@ public class CoralSubsystem extends SubsystemBase {
         return new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
-                return isHolding();
+                return true;
             }
         };
     }
@@ -329,9 +330,9 @@ public class CoralSubsystem extends SubsystemBase {
         Pose2d left = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
         Pose2d right = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
 
-        this.mirrorSetting = left.getTranslation().getDistance(FieldConstants.getReefPose().getTranslation()) < right
+        this.mirrorSetting = left.getTranslation().getDistance(Reef.center.getTranslation()) < right
                 .getTranslation()
-                .getDistance(FieldConstants.getReefPose().getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
+                .getDistance(Reef.center.getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
 
         System.out.println("Mirror Side" + mirrorSetting.name());
     }
