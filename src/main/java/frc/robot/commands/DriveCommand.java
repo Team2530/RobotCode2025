@@ -102,15 +102,12 @@ public class DriveCommand extends Command {
         ySpeed *= dmult;
         zSpeed *= dmult;
 
-        if (xbox.getXButton()) {
+        if (xbox.getStartButton()) {
             swerveSubsystem.zeroHeading();
             Translation2d pospose = swerveSubsystem.getOdometryPose().getTranslation();
             swerveSubsystem.odometry.resetPosition(swerveSubsystem.getGyroRotation2d(),
                     swerveSubsystem.getModulePositions(),
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
-        }
-        if (xbox.getStartButton()) {
-            SmartDashboard.putBoolean("Ham called", true);
         }
 
         ChassisSpeeds speeds = new ChassisSpeeds();

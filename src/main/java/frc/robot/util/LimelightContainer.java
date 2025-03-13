@@ -32,7 +32,8 @@ public class LimelightContainer {
     private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
     public LimelightContainer(Limelight... limelights) {
-        int[] validIDs = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22}; //ignore barge TODO: remove
+        int[] validIDs = { 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18, 19, 20, 21, 22 }; // ignore barge TODO:
+                                                                                              // remove
         for (Limelight limelight : limelights) {
             LimelightContainer.limelights.add(limelight);
             LimelightHelpers.SetFiducialIDFiltersOverride(limelight.getName(), validIDs);
@@ -151,7 +152,8 @@ public class LimelightContainer {
             }
 
             if (!doRejectUpdate) {
-                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(mt1.avgTagDist * 0.7, mt1.avgTagDist * 0.7, 9999999));
+                odometry.setVisionMeasurementStdDevs(
+                        VecBuilder.fill(mt1.avgTagDist * 0.7, mt1.avgTagDist * 0.7, 9999999));
                 odometry.addVisionMeasurement(
                         mt1.pose,
                         mt1.timestampSeconds);
@@ -196,7 +198,7 @@ public class LimelightContainer {
                         mt2.pose,
                         mt2.timestampSeconds);
                 limelight.pushPoseToShuffleboard(limelight.getName(), mt2.pose);
-                
+
             }
         }
 
