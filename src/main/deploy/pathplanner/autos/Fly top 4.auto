@@ -3,7 +3,32 @@
   "command": {
     "type": "sequential",
     "data": {
-      "commands": []
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "fly top 0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "top 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score"
+          }
+        }
+      ]
     }
   },
   "resetOdom": true,

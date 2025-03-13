@@ -24,7 +24,7 @@
         "y": 4.82375
       },
       "nextControl": {
-        "x": 5.130144860041562,
+        "x": 5.130144860041561,
         "y": 5.201120896096974
       },
       "isLocked": false,
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.67827868852459,
-        "y": 7.315624999999999
+        "x": 1.58925,
+        "y": 7.25225
       },
       "prevControl": {
-        "x": 1.9792500000000002,
-        "y": 7.09625
+        "x": 1.8902213114754103,
+        "y": 7.0328750000000015
       },
       "nextControl": null,
       "isLocked": false,
@@ -81,6 +81,28 @@
           "name": "L4"
         }
       }
+    },
+    {
+      "name": "Score",
+      "waypointRelativePos": 0.9368635437881803,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Score"
+        }
+      }
+    },
+    {
+      "name": "Start Intake L",
+      "waypointRelativePos": 1.5560081466395137,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Start Intake L"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -99,7 +121,7 @@
   "folder": "Flying",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": false
 }
