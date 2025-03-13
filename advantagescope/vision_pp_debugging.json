@@ -7,7 +7,7 @@
       "height": 936,
       "state": {
         "sidebar": {
-          "width": 273,
+          "width": 279,
           "expanded": [
             "/DS/joystick0/axes",
             "/NT/Robot/m_robotContainer",
@@ -40,13 +40,16 @@
             "/CoralVision/targets/1",
             "/CoralVision/raw/angles",
             "/CoralVision/raw/distances",
+            "/CoralVision/selectedTargetPose/translation",
             "/CoralVision",
-            "/CoralVision/selectedTargetPose",
-            "/CoralVision/selectedTargetPose/translation"
+            "/SmartDashboard",
+            "/SmartDashboard/Coral",
+            "/SmartDashboard/Coral/Roll",
+            "/SmartDashboard/Coral/Pivot"
           ]
         },
         "tabs": {
-          "selected": 6,
+          "selected": 7,
           "tabs": [
             {
               "type": 0,
@@ -289,6 +292,16 @@
                   },
                   {
                     "type": "vision",
+                    "logKey": "NT:CoralVision/scoringPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "vision",
                     "logKey": "NT:CoralVision/selectedTargetPose",
                     "logType": "Pose3d",
                     "visible": true,
@@ -344,7 +357,7 @@
               },
               "controllerUUID": "qmx56d8q2yb01eyzidcu8tl091od50ei",
               "renderer": null,
-              "controlsHeight": 358
+              "controlsHeight": 263
             },
             {
               "type": 3,
@@ -397,22 +410,22 @@
                   },
                   {
                     "type": "vision",
-                    "logKey": "NT:CoralVision/selectedTargetPose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff0000",
-                      "size": "bold"
-                    }
-                  },
-                  {
-                    "type": "vision",
                     "logKey": "NT:CoralVision/targetPoses",
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
                       "color": "#00ff00",
                       "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:CoralVision/selectedTargetPose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "size": "bold"
                     }
                   },
                   {
@@ -450,17 +463,62 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  3.3857374532564495,
-                  9.248143343885982,
-                  -5.9778592661448275
+                  1.6737679907154779,
+                  3.0124404518957357,
+                  -3.630551093044356
                 ],
                 "cameraTarget": [
-                  3.452276914680463,
-                  0.591541744636167,
-                  -0.7404780566300879
+                  5.581172181866539,
+                  0.9881079067183662,
+                  -0.8721960105452164
                 ]
               },
-              "controlsHeight": 464
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Pivot/target",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Pivot/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "nds733eby3sttyrsteo2suiow00i2ows",
+              "renderer": null,
+              "controlsHeight": 200
             }
           ]
         }

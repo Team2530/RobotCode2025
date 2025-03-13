@@ -380,7 +380,7 @@ public final class Constants {
 
       public static class PhysicalConstants {
         public static final DCMotor MOTOR = DCMotor.getNeo550(1);
-        public static final double NET_REDUCTION = 83.3333333333; // Yeah this is cursed
+        public static final double NET_REDUCTION = 104.2285714; // Yeah this is cursed
         public static final double MASS_KG = 1.36078;
         public static final double ARM_LENGTH_METERS = 0.1620899476;
         public static final double MOI = 0.0303284342; // Kg*m^2
