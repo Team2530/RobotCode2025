@@ -287,9 +287,9 @@ public class CoralArm extends SubsystemBase {
 
         // TODO: Swap to roll motor relative encoder?
         // NEW: Use motor encoder
-        double rollPIDout = rollPID.calculate(rollRelEncoder.getPosition());
+        // double rollPIDout = rollPID.calculate(rollRelEncoder.getPosition());
         // OLD:
-        // double rollPIDout = rollPID.calculate(readRollEncoderPosition());
+        double rollPIDout = rollPID.calculate(readRollEncoderPosition());
 
         double rollFFout = 0.0;// Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
         SmartDashboard.putNumber("Coral/Roll/position", readRollEncoderPosition());
