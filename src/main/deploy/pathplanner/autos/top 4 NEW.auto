@@ -178,6 +178,12 @@
                 "data": {
                   "name": "Score"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
+                }
               }
             ]
           }
@@ -185,7 +191,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }
