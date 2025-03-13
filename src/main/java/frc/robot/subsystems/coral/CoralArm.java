@@ -193,7 +193,7 @@ public class CoralArm extends SubsystemBase {
     @Override
     public void periodic() {
         if (!rollreset) {
-            rollRelEncoder.setPosition(Units.degreesToRadians(getRollPositionDegrees()));
+            rollRelEncoder.setPosition(readRollEncoderPosition());
             rollreset = true;
         }
 
@@ -286,7 +286,11 @@ public class CoralArm extends SubsystemBase {
             simPivotMotor.setAppliedOutput((pivotPIDout + pivotFFout) / 12.0);
 
         // TODO: Swap to roll motor relative encoder?
-        double rollPIDout = rollPID.calculate(readRollEncoderPosition());
+        // NEW: Use motor encoder
+        double rollPIDout = rollPID.calculate(rollRelEncoder.getPosition());
+        // OLD:
+        // double rollPIDout = rollPID.calculate(readRollEncoderPosition());
+
         double rollFFout = 0.0;// Constants.Coral.Roll.FEEDFORWARD.calculate(rollPID.getSetpoint().velocity);
         SmartDashboard.putNumber("Coral/Roll/position", readRollEncoderPosition());
         SmartDashboard.putNumber("Coral/Roll/motor_position", rollRelEncoder.getPosition());
@@ -523,5 +527,9 @@ public class CoralArm extends SubsystemBase {
         // return MathUtil.isNear(this.rollPID.getSetpoint().position,
         // this.rollPID.getGoal().position, 0.01);
         return MathUtil.isNear(this.rollPID.getSetpoint().position, rollGoal, 0.01);
+    }
+
+    public void reset() {
+        rollreset = false;
     }
 }

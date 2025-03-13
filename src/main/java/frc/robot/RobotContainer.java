@@ -453,7 +453,10 @@ public class RobotContainer {
         }));
 
         driverXbox.button(7).onTrue(new InstantCommand(() -> {
+            // Move elevator down to zero
             coralSubsystem.getElevator().startZeroElevator();
+            // Re-zero wrist relative encoder!!!
+            coralSubsystem.getCoralArm().reset();
         })).onFalse(new InstantCommand(() -> {
             coralSubsystem.getElevator().endZeroElevator();
         }));
