@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -23,6 +24,9 @@ public class CoralReefVisionSim extends SubsystemBase {
 
     private final DoubleArrayPublisher simDistPub;
     private final DoubleArrayPublisher simAnglePub;
+    private final IntegerPublisher simFramePub;
+
+    long simFrame = 0;
 
     // Drivetrain input for simulating reef pole positions
     StructSubscriber<Pose2d> botPoseSubscriber = NetworkTableInstance.getDefault()
@@ -34,6 +38,7 @@ public class CoralReefVisionSim extends SubsystemBase {
     public CoralReefVisionSim() {
         simDistPub = NetworkTableInstance.getDefault().getDoubleArrayTopic("CoralVision/raw/distances").publish();
         simAnglePub = NetworkTableInstance.getDefault().getDoubleArrayTopic("CoralVision/raw/angles").publish();
+        simFramePub = NetworkTableInstance.getDefault().getIntegerTopic("CoralVision/raw/frame").publish();
 
         // for (int i = 0; i < numSimTargets; ++i) {
         // SmartDashboard.putNumber("CoralVisionSim/angle" + Integer.toString(i), 0.0);
@@ -93,6 +98,7 @@ public class CoralReefVisionSim extends SubsystemBase {
 
         simDistPub.set(distances);
         simAnglePub.set(angles);
+        simFramePub.set(simFrame++);
 
         Reef.putToShuffleboard();
     }

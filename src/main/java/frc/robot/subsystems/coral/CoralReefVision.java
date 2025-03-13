@@ -24,6 +24,8 @@ import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.IntegerArraySubscriber;
+import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,10 +52,12 @@ public class CoralReefVision extends SubsystemBase {
     // Inputs from vision coprocessor
     private final DoubleArraySubscriber inputAngles;
     private final DoubleArraySubscriber inputDistances;
+    private IntegerSubscriber inputFrame;
 
     @Logged
     private ArrayList<Translation3d> visionTargets = new ArrayList<Translation3d>();
     private int selectedTargetIndex = -1;
+    private long lastFrame = 0;
 
     private CoralReefVisionSim sim;
 
@@ -62,6 +66,8 @@ public class CoralReefVision extends SubsystemBase {
                 .getDoubleArrayTopic("CoralVision/raw/angles").subscribe(new double[] {});
         inputDistances = NetworkTableInstance.getDefault()
                 .getDoubleArrayTopic("CoralVision/raw/distances").subscribe(new double[] {});
+        inputFrame = NetworkTableInstance.getDefault()
+                .getIntegerTopic("CoralVision/raw/frame").subscribe(0);
 
         visionTargetPublisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("CoralVision/targets", Translation3d.struct).publish();
@@ -90,47 +96,52 @@ public class CoralReefVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double[] angles = inputAngles.get();
-        double[] distances = inputDistances.get();
+        long frame = inputFrame.get();
+        if (frame != lastFrame) {
+            double[] angles = inputAngles.get();
+            double[] distances = inputDistances.get();
 
-        visionTargets.clear();
+            lastFrame = frame;
 
-        if (angles.length == distances.length) {
             visionTargets.clear();
-            // Got good data from coprocessor
-            for (int i = 0; i < angles.length; i++) {
-                double r = distances[i];
-                double theta = angles[i] + Constants.Coral.Vision.CAM_YAW.getRadians(); // Radians!!!
 
-                // Calculate vision target positions
-                Translation3d targetPos = Constants.Coral.Vision.CAM_POSE.getTranslation().plus(
-                        new Translation3d(r * Math.cos(theta), r * Math.sin(theta), 0.0));
-                visionTargets.add(targetPos);
-            }
-        }
+            if (angles.length == distances.length) {
+                visionTargets.clear();
+                // Got good data from coprocessor
+                for (int i = 0; i < angles.length; i++) {
+                    double r = distances[i];
+                    double theta = angles[i] + Constants.Coral.Vision.CAM_YAW.getRadians(); // Radians!!!
 
-        // Select a target
-        double minDistance = Double.MAX_VALUE;
-        if (visionTargets.size() == 0) {
-            selectedTargetIndex = -1;
-        } else {
-            for (int i = 0; i < visionTargets.size(); ++i) {
-                double dist = visionTargets.get(i).toTranslation2d()
-                        .getDistance(Constants.Coral.Vision.SCORING_BUMPER_POINT);
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    selectedTargetIndex = i;
+                    // Calculate vision target positions
+                    Translation3d targetPos = Constants.Coral.Vision.CAM_POSE.getTranslation().plus(
+                            new Translation3d(r * Math.cos(theta), r * Math.sin(theta), 0.0));
+                    visionTargets.add(targetPos);
                 }
             }
-        }
 
-        // Filter out too far away targets (1 meter)
-        if (minDistance >= Reef.faceOffset * 2.5 + Units.inchesToMeters(10.0)) {
-            selectedTargetIndex = -1;
-        }
+            // Select a target
+            double minDistance = Double.MAX_VALUE;
+            if (visionTargets.size() == 0) {
+                selectedTargetIndex = -1;
+            } else {
+                for (int i = 0; i < visionTargets.size(); ++i) {
+                    double dist = visionTargets.get(i).toTranslation2d()
+                            .getDistance(Constants.Coral.Vision.SCORING_BUMPER_POINT);
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        selectedTargetIndex = i;
+                    }
+                }
+            }
 
-        cameraPublisher.set(Constants.Coral.Vision.CAM_POSE);
-        visionTargetPublisher.set(visionTargets.toArray(new Translation3d[] {}));
+            // Filter out too far away targets (1 meter)
+            if (minDistance >= Reef.faceOffset * 2.5 + Units.inchesToMeters(10.0)) {
+                selectedTargetIndex = -1;
+            }
+
+            cameraPublisher.set(Constants.Coral.Vision.CAM_POSE);
+            visionTargetPublisher.set(visionTargets.toArray(new Translation3d[] {}));
+        }
     }
 
     @Override
