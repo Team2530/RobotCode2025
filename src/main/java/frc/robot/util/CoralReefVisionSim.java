@@ -43,7 +43,7 @@ public class CoralReefVisionSim extends SubsystemBase {
     }
 
     @Override
-    public void simulationPeriodic() {
+    public void periodic() {
         ArrayList<Translation2d> reefPoles = new ArrayList<>();
         for (Translation2d translation2d : Reef.baseTranslations.values()) {
             reefPoles.add(AllianceFlipUtil.apply(translation2d));
