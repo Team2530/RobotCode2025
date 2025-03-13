@@ -121,15 +121,13 @@ public class DriveCommand extends Command {
         ySpeed *= dmult;
         zSpeed *= dmult;
 
-        if (xbox.getXButton()) {
+        if (xbox.getStartButton()) {
             swerveSubsystem.zeroHeading();
             Translation2d pospose = swerveSubsystem.getOdometryPose().getTranslation();
             swerveSubsystem.odometry.resetPosition(swerveSubsystem.getGyroRotation2d(),
                     swerveSubsystem.getModulePositions(),
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
-        }
-        if (xbox.getStartButton()) {
-            SmartDashboard.putBoolean("Ham called", true);
+
         }
 
         ChassisSpeeds speeds = new ChassisSpeeds();
@@ -140,7 +138,7 @@ public class DriveCommand extends Command {
                         swerveSubsystem.getGyroRotation2d());
                 break;
             case REEF_ASSIST:
-                Translation2d reefCenter = AllianceFlipUtil.apply(Reef.center);
+                Translation2d reefCenter = AllianceFlipUtil.apply(new Translation2d(Reef.center.getX(), Reef.center.getY()));
                 double reefAngleRot = swerveSubsystem.getOdometryPose().getTranslation().minus(
                         reefCenter).getAngle().getRotations();
 
@@ -281,7 +279,7 @@ public class DriveCommand extends Command {
 
     public int getNearestTag() {
         Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
-                .relativeTo(FieldConstants.getReefPose());
+                .relativeTo(Reef.center);
 
         int[] tags; // these are pretransformed to make the the logic easier
         if (FieldConstants.getAlliance() == Alliance.Red) {
@@ -300,7 +298,7 @@ public class DriveCommand extends Command {
 
     public ReefBranch getNearestBranch() {
         Pose2d relative = swerveSubsystem.odometry.getEstimatedPosition()
-                .relativeTo(FieldConstants.getReefPose());
+                .relativeTo(Reef.center);
 
         double angle = Math.atan2(relative.getY(), relative.getX());
         int index = (int) Math.floor(
