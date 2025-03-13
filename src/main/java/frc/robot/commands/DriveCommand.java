@@ -130,6 +130,7 @@ public class DriveCommand extends Command {
 
         }
 
+        SmartDashboard.putString("nearest tag", String.valueOf(getNearestTag()));
         ChassisSpeeds speeds = new ChassisSpeeds();
         switch (driveStyle) {
             case FIELD_ORIENTED:
@@ -138,7 +139,7 @@ public class DriveCommand extends Command {
                         swerveSubsystem.getGyroRotation2d());
                 break;
             case REEF_ASSIST:
-                Translation2d reefCenter = AllianceFlipUtil.apply(new Translation2d(Reef.center.getX(), Reef.center.getY()));
+                Translation2d reefCenter = Reef.center.getTranslation();
                 double reefAngleRot = swerveSubsystem.getOdometryPose().getTranslation().minus(
                         reefCenter).getAngle().getRotations();
 
@@ -283,15 +284,16 @@ public class DriveCommand extends Command {
 
         int[] tags; // these are pretransformed to make the the logic easier
         if (FieldConstants.getAlliance() == Alliance.Red) {
-            tags = new int[] { 6, 7, 8, 9, 10, 11 };
+            tags = new int[] { 7, 8, 9, 10, 11, 6, 7 };
         } else {
-            tags = new int[] { 19, 18, 17, 22, 21, 20 };
+            tags = new int[] { 18, 17, 22, 21, 20, 19, 18 };
         }
 
         double angle = Math.atan2(relative.getY(), relative.getX());
-        int index = (int) Math.floor(
+        int index = (int) Math.round(
                 (angle + Math.PI)
-                        * (6 / (2 * Math.PI)));
+                * (6 / (2 * Math.PI))
+        );
 
         return tags[index];
     }
@@ -305,7 +307,7 @@ public class DriveCommand extends Command {
                 (angle + Math.PI)
                         * (12 / (2 * Math.PI)));
 
-        return ReefBranch.values()[(index + 10) % 12];
+        return ReefBranch.values()[(index + 1) % 12];
     }
 
     public void setSelectedBranch(ReefBranch branch) {
@@ -319,6 +321,7 @@ public class DriveCommand extends Command {
 
     public void setDriveStyle(DriveStyle style) {
         this.driveStyle = style;
+        SmartDashboard.putString("Driving style", style.toString());
     }
 
     @Override
