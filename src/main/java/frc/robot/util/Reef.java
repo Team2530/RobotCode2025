@@ -25,7 +25,7 @@ public class Reef {
     public enum ReefBranch {
         A(7, 18, new Pose2d(new Translation2d(1, 1), new Rotation2d(Units.degreesToRadians(90)))),
         B(7, 18, new Pose2d(new Translation2d(1, 1), new Rotation2d(Units.degreesToRadians(90)))),
-        C(8, 17, new Pose2d(new Translation2d(1.606, .734), new Rotation2d(Units.degreesToRadians(150)))),
+        C(8, 17, new Pose2d(new Translation2d(3.866, 2.84), new Rotation2d(Units.degreesToRadians(150)))),
         D(8, 17, new Pose2d(new Translation2d(4.13, 2.67), new Rotation2d(Units.degreesToRadians(150)))),
         E(9, 22, new Pose2d(new Translation2d(1,1), new Rotation2d(Units.degreesToRadians(-150)))), 
         F(9, 22, new Pose2d(new Translation2d(5.49, 3.05), new Rotation2d(Units.degreesToRadians(-150)))), 
