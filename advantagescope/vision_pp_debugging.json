@@ -3,8 +3,8 @@
     {
       "x": -8,
       "y": -8,
-      "width": 1552,
-      "height": 936,
+      "width": 1536,
+      "height": 920,
       "state": {
         "sidebar": {
           "width": 279,
@@ -409,6 +409,13 @@
                     "options": {}
                   },
                   {
+                    "type": "component",
+                    "logKey": "NT:5_AlgaeArm",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
                     "type": "vision",
                     "logKey": "NT:CoralVision/targetPoses",
                     "logType": "Pose3d[]",
@@ -451,8 +458,17 @@
                     "type": "axes",
                     "logKey": "NT:CoralVision/cameraPoseFieldSpace",
                     "logType": "Pose3d",
-                    "visible": true,
+                    "visible": false,
                     "options": {}
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:Algae_Pose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "variant": "Algae"
+                    }
                   }
                 ],
                 "game": "2025 Field (Welded)",
@@ -463,17 +479,17 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  1.6737679907154779,
-                  3.0124404518957357,
-                  -3.630551093044356
+                  -6.207182740539282e-15,
+                  4.810584712709552,
+                  -8.106401149702496
                 ],
                 "cameraTarget": [
-                  5.581172181866539,
-                  0.9881079067183662,
-                  -0.8721960105452164
+                  0,
+                  0.5,
+                  0
                 ]
               },
-              "controlsHeight": 0
+              "controlsHeight": 475
             },
             {
               "type": 1,

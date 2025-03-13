@@ -18,6 +18,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Algae;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaeIntakePresets;
@@ -91,8 +92,14 @@ public class AlgaeIntake extends SubsystemBase {
     }
 
     public boolean isHolding() {
-        return holding_internal;
+        return Robot.isSimulation() ? SmartDashboard.getBoolean("[SIM] Holding Algae", false) : holding_internal;
     }
+
+    /*
+     * if (Robot.isSimulation()) {
+     * ;
+     * }
+     */
 
     public BooleanSupplier getHoldingSupplier() {
         return new BooleanSupplier() {

@@ -112,5 +112,12 @@ public class RobotMechanismLogger extends SubsystemBase {
         } else {
             coralPose = Pose3d.kZero;
         }
+
+        if (algaeSubsystem.isHolding()) {
+            algaePose = armPose
+                    .transformBy(new Transform3d(0.13, -Units.inchesToMeters(8.125), 0.55, Rotation3d.kZero));
+        } else {
+            algaePose = Pose3d.kZero;
+        }
     }
 }
