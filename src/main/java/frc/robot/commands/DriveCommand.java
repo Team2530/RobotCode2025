@@ -54,10 +54,10 @@ public class DriveCommand extends Command {
     };
 
     private DriveStyle driveStyle = DriveStyle.FIELD_ORIENTED;
-    private PIDController rotationAssist = new PIDController(
+    private ProfiledPIDController rotationAssist = new ProfiledPIDController(
             DriveConstants.ROTATION_ASSIST.kP,
             DriveConstants.ROTATION_ASSIST.kI,
-            DriveConstants.ROTATION_ASSIST.kD);
+            DriveConstants.ROTATION_ASSIST.kD, new TrapezoidProfile.Constraints(3.14, 1.07));
     private PIDController translationAssist = new PIDController(
             DriveConstants.TRANSLATION_ASSIST.kP,
             DriveConstants.TRANSLATION_ASSIST.kI,
