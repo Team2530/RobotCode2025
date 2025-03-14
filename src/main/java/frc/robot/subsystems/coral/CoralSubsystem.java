@@ -85,17 +85,20 @@ public class CoralSubsystem extends SubsystemBase {
         ALGAE_REM_LOW(0.62, 32.0, 0.0, 0.0, false),
         ALGAE_REM_HIGH(1.05, 32.0, 0.0, 0.0, false),
 
-        ALGAE_STOW_LOW(0.34, 28.0, 90.0, 42.0,
+        ALGAE_STOW_LOW(0.44,
+                32.0, 90.0, 42.0,
                 false),
-        ALGAE_STOW_HIGH(0.722, 28.0, 90.0, 42.0,
+        ALGAE_STOW_HIGH(0.822,
+                32.0, 90.0, 42.0,
                 false),
 
-        ALGAE_ACQUIRE_LOW(0.322, 28.0, 90.0, 42.0, false),
-        ALGAE_ACQUIRE_HIGH(0.702, 28.0, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_LOW(0.422, 32.0, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_HIGH(0.802,
+                32.0, 90.0, 42.0, false),
 
-        // TODO: Set these!!!
-        ALGAE_PROCESSOR(0.34, 28.0, 90.0, 42.0, false),
-        ALGAE_BARGE(0.34, 28.0, 90.0, 42.0, false),
+        ALGAE_PROCESSOR(0.05, 30.0, 90.0, -20.0, false),
+        ALGAE_BARGE(
+                1.45, 15.0, 90.0, 42.0, false),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 
@@ -473,6 +476,31 @@ public class CoralSubsystem extends SubsystemBase {
                 .andThen(new ParallelCommandGroup(
                         new MovePivot(
                                 this, currentLockedPresetSupplier),
+                        new MoveRoll(
+                                this, currentLockedPresetSupplier),
+                        new MovePitch(
+                                this, currentLockedPresetSupplier)))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
+    public Command getGoToLockedPresetAlgaeSafeCommand(AlgaeSubsystem algaeSubsystem,
+            Supplier<CoralPresets> currentLockedPresetSupplier) {
+        return new InstantCommand(() -> {
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
+                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+
+                this.autoSetMirrorIntake();
+            } else {
+                this.autoSetMirrorScoring();
+            }
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        })
+                .andThen(new MoveElevator(
+                        this, currentLockedPresetSupplier)
+                        .alongWith(new MovePivot(this, currentLockedPresetSupplier)))
+                .andThen(new ParallelCommandGroup(
                         new MoveRoll(
                                 this, currentLockedPresetSupplier),
                         new MovePitch(
