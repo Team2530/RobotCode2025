@@ -222,6 +222,20 @@ public class RobotContainer {
                                         coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem,
                                                 currentLockedPresetSupplier))));
 
+        NamedCommands.registerCommand("Algae Grab Low", new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_LOW);
+        }).andThen((coralSubsystem
+                .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
+                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
+                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
+
+        NamedCommands.registerCommand("Algae Grab High", new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_HIGH);
+        }).andThen((coralSubsystem
+                .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
+                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
+                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
+
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
