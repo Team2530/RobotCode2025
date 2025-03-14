@@ -8,10 +8,10 @@ import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaeIntakePresets;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 
-public class ShootAlgaeCommand extends Command {
+public class PurgeAlgaeCommand extends Command {
     private final AlgaeSubsystem subsystem;
 
-    public ShootAlgaeCommand(AlgaeSubsystem subsystem) {
+    public PurgeAlgaeCommand(AlgaeSubsystem subsystem) {
         this.subsystem = subsystem;
         addRequirements(subsystem);
     }
@@ -19,7 +19,7 @@ public class ShootAlgaeCommand extends Command {
     @Override
     public void initialize() {
         subsystem.setAlgaeIntakePreset(AlgaeIntakePresets.SHOOT);
-        subsystem.setAlgaePreset(AlgaePresets.HOLD);
+        subsystem.setAlgaePreset(AlgaePresets.STOW);
 
         if (Robot.isSimulation()) {
             SmartDashboard.putBoolean("[SIM] Holding Algae", false);
@@ -29,11 +29,11 @@ public class ShootAlgaeCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         subsystem.setAlgaeIntakePreset(AlgaeIntakePresets.STOP);
-        // subsystem.setAlgaePreset(AlgaePresets.STOW);
+        subsystem.setAlgaePreset(AlgaePresets.STOW);
     }
 
     @Override
     public boolean isFinished() {
-        return subsystem.getIntake().getSensorDistance() > Constants.Algae.Intake.SHOT_THRESHOLD;
+        return false;
     }
 }
