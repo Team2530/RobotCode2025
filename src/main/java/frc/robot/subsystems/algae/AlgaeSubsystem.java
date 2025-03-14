@@ -1,6 +1,7 @@
 package frc.robot.subsystems.algae;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
@@ -52,6 +53,7 @@ public class AlgaeSubsystem extends SubsystemBase {
     private AlgaeIntakePresets currentIntakePreset = AlgaeIntakePresets.STOP;
 
     public void setAlgaePreset(AlgaePresets preset) {
+        SmartDashboard.putString("Algae Preset", preset.toString());
         if (preset != currentPreset) {
             arm.setGoalDegrees(preset.armAngle);
             currentPreset = preset;
@@ -59,6 +61,7 @@ public class AlgaeSubsystem extends SubsystemBase {
     }
 
     public void setAlgaeIntakePreset(AlgaeIntakePresets preset) {
+        SmartDashboard.putString("Algae Intake Preset", preset.toString());
         if (preset != currentIntakePreset) {
             intake.setIntakePreset(preset);
             currentIntakePreset = preset;

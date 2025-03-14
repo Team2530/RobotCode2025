@@ -85,16 +85,17 @@ public class CoralSubsystem extends SubsystemBase {
         ALGAE_REM_LOW(0.62, 32.0, 0.0, 0.0, false),
         ALGAE_REM_HIGH(1.05, 32.0, 0.0, 0.0, false),
 
-        // TODO: Make same as the algae intaking preset
-        // So when it goes to stow it won't hit the reef
         ALGAE_STOW_LOW(0.34, 28.0, 90.0, 42.0,
                 false),
         ALGAE_STOW_HIGH(0.722, 28.0, 90.0, 42.0,
                 false),
 
-        // ALGAE_ACQUIRE_HIGH(0.03, 15.0, 90.0, 75.0, false),
         ALGAE_ACQUIRE_LOW(0.322, 28.0, 90.0, 42.0, false),
         ALGAE_ACQUIRE_HIGH(0.702, 28.0, 90.0, 42.0, false),
+
+        // TODO: Set these!!!
+        ALGAE_PROCESSOR(0.34, 28.0, 90.0, 42.0, false),
+        ALGAE_BARGE(0.34, 28.0, 90.0, 42.0, false),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 

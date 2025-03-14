@@ -37,6 +37,7 @@ import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveCommand.DriveStyle;
 import frc.robot.commands.algae.IntakeAlgaeCommand;
 import frc.robot.commands.algae.RemoveAlgaeCommand;
+import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
 import frc.robot.commands.coral.ScoreCoralCommand;
@@ -269,7 +270,7 @@ public class RobotContainer {
                                             : CoralPresets.ALGAE_STOW_LOW)
                             : CoralPresets.STOW);
             // lockCoralArmPreset(CoralPresets.STOW);
-            algaeSubsystem.setAlgaePreset(AlgaePresets.STOW);
+            algaeSubsystem.setAlgaePreset(algaeSubsystem.isHolding() ? AlgaePresets.HOLD : AlgaePresets.STOW);
         }).andThen(new WristStowSafety(coralSubsystem))
                 .andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem, currentLockedPresetSupplier));
     }
@@ -344,7 +345,9 @@ public class RobotContainer {
                 }))); // It's not this!
 
         // Scoring and stowing
-        driverXbox.rightBumper().and(coralSafe).whileTrue(new ScoreCoralCommand(coralSubsystem));
+        driverXbox.rightBumper().and(coralSafe).whileTrue(new ConditionalCommand(
+                new ScoreCoralCommand(coralSubsystem), new ShootAlgaeCommand(algaeSubsystem),
+                coralSubsystem.isHoldingSupplier()));
         operatorXbox.rightBumper().and(coralSafe).whileFalse(getStowCommand());
         driverXbox.rightBumper().and(coralSafe).whileFalse(getStowCommand());
 
@@ -362,7 +365,8 @@ public class RobotContainer {
                 .andThen(getStowCommand())).whileFalse(getStowCommand());
 
         // purge coral
-        operatorXbox.button(7).whileTrue(new PurgeCoralIntakeCommand(coralSubsystem));
+        operatorXbox.button(7).whileTrue(new ParallelCommandGroup(new PurgeCoralIntakeCommand(coralSubsystem),
+                new ShootAlgaeCommand(algaeSubsystem)));
         operatorXbox.button(8).onTrue(new InstantCommand(() -> {
             climberSubsystem.resetClimberDeploy();
         }));
@@ -409,6 +413,16 @@ public class RobotContainer {
                                 .andThen(new IntakeAlgaeCommand(algaeSubsystem)));
 
         operatorXbox.leftTrigger().onFalse(getStowCommand());
+
+        operatorXbox.leftTrigger().and(algaeSubsystem.getIntake().getHoldingSupplier()).and(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return selectedLevel == 1 || selectedLevel == 4;
+            }
+        }).whileTrue(new InstantCommand(() -> {
+            lockCoralArmPreset(selectedLevel == 1 ? CoralPresets.ALGAE_PROCESSOR : CoralPresets.ALGAE_BARGE);
+        }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)))
+                .whileFalse(getStowCommand());
 
         /*
          * driver

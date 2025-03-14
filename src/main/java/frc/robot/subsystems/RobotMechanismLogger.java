@@ -114,7 +114,9 @@ public class RobotMechanismLogger extends SubsystemBase {
         }
 
         if (algaeSubsystem.isHolding()) {
-            algaePose = armPose
+            algaePose = new Pose3d(swerveSubsystem.getOdometryPose())
+                    .transformBy(new Transform3d(armPose.getTranslation(), armPose
+                            .getRotation()))
                     .transformBy(new Transform3d(0.13, -Units.inchesToMeters(8.125), 0.55, Rotation3d.kZero));
         } else {
             algaePose = Pose3d.kZero;

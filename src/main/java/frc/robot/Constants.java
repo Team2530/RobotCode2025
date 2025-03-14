@@ -279,7 +279,7 @@ public final class Constants {
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
-        public static final double NET_REDUCTION = (54.0 / 12.0) * 10.0;
+        public static final double NET_REDUCTION = (54.0 / 12.0) * 20.0;
         public static final double MASS_KG = 2.85; // Includes a coral
         public static final double ARM_LENGTH_METERS = 0.083;
         public static final double JOINT_LENGTH_METERS = 0.10;
