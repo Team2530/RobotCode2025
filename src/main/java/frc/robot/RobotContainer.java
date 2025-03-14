@@ -204,42 +204,22 @@ public class RobotContainer {
                                         new RemoveAlgaeCommand(algaeSubsystem),
                                         coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem,
                                                 currentLockedPresetSupplier))));
-<<<<<<< HEAD
-        
-        NamedCommands.registerCommand("Grab High", new InstantCommand(() -> {
-                            lockCoralArmPreset(
-                                    CoralPresets.ALGAE_ACQUIRE_HIGH);
-                        }).andThen((coralSubsystem
-                                .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
-                                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
-                                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
-        
-        NamedCommands.registerCommand("Grab Low", new InstantCommand(() -> {
-                            lockCoralArmPreset(
-                                    CoralPresets.ALGAE_ACQUIRE_LOW);
-                        }).andThen((coralSubsystem
-                                .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
-                                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
-                                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
-        
-                                
-=======
 
-        NamedCommands.registerCommand("Algae Grab Low", new InstantCommand(() -> {
+
+        NamedCommands.registerCommand("Grab Low", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_LOW);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
                 .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
                 .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
 
-        NamedCommands.registerCommand("Algae Grab High", new InstantCommand(() -> {
+        NamedCommands.registerCommand("Grab High", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_HIGH);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
                 .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
                 .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
 
->>>>>>> b598b4c8439775514c8e64e8ced4a5d2eb27fd59
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
