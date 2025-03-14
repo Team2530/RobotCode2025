@@ -362,7 +362,6 @@ public final class Constants {
     public static final class Pivot {
       public static final int MOTOR_PORT = 18;
       public static final boolean MOTOR_INVERTED = true;
-      public static final int ENCODER_PORT = 27;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
           1.0,
