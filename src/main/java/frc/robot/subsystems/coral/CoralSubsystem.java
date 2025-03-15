@@ -52,6 +52,7 @@ import frc.robot.util.LimelightContainer;
 @Logged
 public class CoralSubsystem extends SubsystemBase {
 
+    // Declare subsubsystems
     private final CoralArm arm = new CoralArm();
     private final CoralIntake intake = new CoralIntake();
 
@@ -198,6 +199,7 @@ public class CoralSubsystem extends SubsystemBase {
         if (preset == CoralPresets.CUSTOM) {
             // uhhh i don't now how to throw an exception and i don't feel like figuring it
             // out
+            // wonder if its possible to just throw a regular java exception
         } else if (preset != currentPreset) {
             elevator.setGoalPosition(preset.elevatorHeightM);
             arm.setPivotGoalDegrees(
@@ -219,7 +221,6 @@ public class CoralSubsystem extends SubsystemBase {
     public CoralPresets getCurrentPreset() {
         return currentPreset;
     }
-
     public boolean isElevatorInPosition() {
         return elevator.isInPosition();
     }
@@ -237,11 +238,9 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void setCoralPresetPitch(CoralPresets preset) {
-        arm.setPitchGoalDegrees(
-                preset.pitchAngleDeg);
+        arm.setPitchGoalDegrees(preset.pitchAngleDeg);
         currentPreset = preset;
     }
-
     public boolean isPitchInPosition() {
         return arm.isPitchInPosition();
     }
@@ -256,19 +255,15 @@ public class CoralSubsystem extends SubsystemBase {
     public boolean isRollInPosition() {
         return arm.isRollInPosition();
     }
-
     public double getPivotGoalDegrees() {
         return arm.getPivotGoalDegrees();
     }
-
     public double getRollGoalDegrees() {
         return arm.getRollGoalDegrees();
     }
-
     public double getPitchGoalDegrees() {
         return arm.getPitchGoalDegrees();
     }
-
     public boolean isHolding() {
         return Robot.isSimulation() ? SmartDashboard.getBoolean("[SIM] Holding Coral", false) : intake.isHolding();
     }
@@ -276,9 +271,7 @@ public class CoralSubsystem extends SubsystemBase {
     public BooleanSupplier isHoldingSupplier() {
         return new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() {
-                return isHolding();
-            }
+            public boolean getAsBoolean() {return isHolding();}
         };
     }
 
@@ -295,29 +288,24 @@ public class CoralSubsystem extends SubsystemBase {
         currentPreset = CoralPresets.CUSTOM;
         elevator.setGoalPosition(elevatorHeight);
     }
-
     public void setCustomPivotDegrees(double pivotAngle) {
         currentPreset = CoralPresets.CUSTOM;
         arm.setPivotGoalDegrees(pivotAngle);
     }
-
     public void setCustomRollDegrees(double rollAngle) {
         currentPreset = CoralPresets.CUSTOM;
         arm.setRollGoalDegrees(rollAngle);
     }
-
     public void setCustomPitchDegrees(double pitchAngle) {
         currentPreset = CoralPresets.CUSTOM;
         arm.setPitchGoalDegrees(pitchAngle);
     }
-
     public void mirrorArm() {
         if (mirrorSetting == MirrorPresets.LEFT) {
             mirrorSetting = MirrorPresets.RIGHT;
         } else
             mirrorSetting = MirrorPresets.LEFT;
     }
-
     public void mirrorArm(MirrorPresets preset) {
         mirrorSetting = preset;
     }
@@ -377,11 +365,9 @@ public class CoralSubsystem extends SubsystemBase {
     public boolean isPitchSupposedToBeInPosition() {
         return arm.isPitchSupposedToBeInPosition();
     }
-
     public boolean isRollSupposedToBeInPosition() {
         return arm.isRollSupposedToBeInPosition();
     }
-
     public boolean isPivotSupposedToBeInPosition() {
         return arm.isPivotSupposedToBeInPosition();
     }
@@ -391,22 +377,15 @@ public class CoralSubsystem extends SubsystemBase {
                 && isPitchSupposedToBeInPosition();
     }
 
-    public CoralArm getCoralArm() {
-        return arm;
-    }
-
-    public CoralIntake getIntake() {
-        return intake;
-    }
-
-    public CoralElevator getElevator() {
-        return elevator;
-    }
+    public CoralArm getCoralArm() {return arm;}
+    public CoralIntake getIntake() {return intake;}
+    public CoralElevator getElevator() {return elevator;}
 
     public void simSetHolding(boolean holding) {
         SmartDashboard.putBoolean("[SIM] Holding Coral", holding);
     }
 
+    // Lets move everything
     public Command getGoToLockedPresetCommandV2(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier) {
         return new InstantCommand(() -> {
@@ -417,34 +396,23 @@ public class CoralSubsystem extends SubsystemBase {
             } else {
                 this.autoSetMirrorScoring();
             }
-
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
-        }).andThen(new StowArm(
-                this))
-                .andThen(new ParallelCommandGroup(
-                        new MoveElevator(
-                                this, currentLockedPresetSupplier),
-                        new MovePivot(
-                                this, currentLockedPresetSupplier),
-                        new WaitArmClearance(
-                                this)
-                                .andThen(new MoveRoll(
-                                        this, currentLockedPresetSupplier)),
-                        new WaitRollApproach(
-                                this, 60.0).andThen(
-                                        new WaitElevatorApproach(
-                                                this, 0.5))
-                                .andThen(new MovePitch(
-                                        this, currentLockedPresetSupplier))))
-                .andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
-                    @Override
-                    public boolean getAsBoolean() {
-                        return currentLockedPresetSupplier.get().allowAimAssist;
-                    }
-                }))
-                .andThen(new InstantCommand(() -> {
-                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
-                }));
+        }).andThen(new StowArm(this))
+        .andThen(new ParallelCommandGroup(
+            new MoveElevator(this, currentLockedPresetSupplier),
+            new MovePivot(this, currentLockedPresetSupplier),
+            new WaitArmClearance(this).andThen(new MoveRoll(this, currentLockedPresetSupplier)),
+            new WaitRollApproach(this, 60.0)
+                .andThen(new WaitElevatorApproach(this, 0.5))
+                .andThen(new MovePitch(this, currentLockedPresetSupplier))
+        )).andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
+             @Override
+            public boolean getAsBoolean() {
+                return currentLockedPresetSupplier.get().allowAimAssist;
+            }
+        })).andThen(new InstantCommand(() -> {
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+        }));
     }
 
     public Command getGoToLockedPresetSideFASTCommand(AlgaeSubsystem algaeSubsystem,
@@ -453,76 +421,59 @@ public class CoralSubsystem extends SubsystemBase {
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE && !this.mirrorSetting.isMirrored)
                 algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             this.mirrorArm(mirrorSide);
-
-            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
-        }).andThen(new StowArm(
-                this))
-                .andThen(new MoveElevator(
-                        this, currentLockedPresetSupplier))
-                .andThen(new ParallelCommandGroup(
-                        new MovePivot(
-                                this, currentLockedPresetSupplier),
-                        new MoveRoll(
-                                this, currentLockedPresetSupplier),
-                        new MovePitch(
-                                this, currentLockedPresetSupplier)))
-                .andThen(new InstantCommand(() -> {
-                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
-                }));
+            SmartDashboard.putString("Going FAST to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(this))
+        .andThen(new MoveElevator(this, currentLockedPresetSupplier))
+        .andThen(new ParallelCommandGroup(
+            new MovePivot(this, currentLockedPresetSupplier),
+            new MoveRoll(this, currentLockedPresetSupplier),
+            new MovePitch(this, currentLockedPresetSupplier)
+        )).andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going FAST to", currentLockedPresetSupplier.get().toString() + " - Done");
+        }));
     }
 
-    // Goes to a preset more quickly by moving pitch+pivot+roll at the same time,
-    // but can throw coral. Good for intaking
+    /** Goes to a preset more quickly by moving pitch+pivot+roll at the same time, but can throw coral. Good for intaking */
     public Command getGoToLockedPresetFASTCommand(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier) {
         return new InstantCommand(() -> {
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
                 algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
-
                 this.autoSetMirrorIntake();
             } else {
                 this.autoSetMirrorScoring();
             }
-            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
-        }).andThen(new StowArm(
-                this))
-                .andThen(new MoveElevator(
-                        this, currentLockedPresetSupplier))
-                .andThen(new ParallelCommandGroup(
-                        new MovePivot(
-                                this, currentLockedPresetSupplier),
-                        new MoveRoll(
-                                this, currentLockedPresetSupplier),
-                        new MovePitch(
-                                this, currentLockedPresetSupplier)))
-                .andThen(new InstantCommand(() -> {
-                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
-                }));
+            SmartDashboard.putString("Going FAST to", currentLockedPresetSupplier.get().toString());
+        }).andThen(new StowArm(this))
+        .andThen(new MoveElevator(this, currentLockedPresetSupplier))
+        .andThen(new ParallelCommandGroup(
+            new MovePivot(this, currentLockedPresetSupplier),
+            new MoveRoll(this, currentLockedPresetSupplier),
+            new MovePitch(this, currentLockedPresetSupplier)
+        )).andThen(new InstantCommand(() -> {
+            SmartDashboard.putString("Going FAST to", currentLockedPresetSupplier.get().toString() + " - Done");
+        }));
     }
+
 
     public Command getGoToLockedPresetAlgaeSafeCommand(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier) {
         return new InstantCommand(() -> {
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
                 algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
-
                 this.autoSetMirrorIntake();
             } else {
                 this.autoSetMirrorScoring();
             }
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
-        })
-                .andThen(new MoveElevator(
-                        this, currentLockedPresetSupplier)
-                        .alongWith(new MovePivot(this, currentLockedPresetSupplier)))
-                .andThen(new ParallelCommandGroup(
-                        new MoveRoll(
-                                this, currentLockedPresetSupplier),
-                        new MovePitch(
-                                this, currentLockedPresetSupplier)))
-                .andThen(new InstantCommand(() -> {
-                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
-                }));
+        }).andThen(new MoveElevator(this, currentLockedPresetSupplier)
+            .alongWith(new MovePivot(this, currentLockedPresetSupplier))
+        ).andThen(new ParallelCommandGroup(
+            new MoveRoll(this, currentLockedPresetSupplier),
+            new MovePitch(this, currentLockedPresetSupplier)
+        )).andThen(new InstantCommand(() -> {
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+        }));
     }
 
     public CoralReefVision getVisionSubsystem() {
