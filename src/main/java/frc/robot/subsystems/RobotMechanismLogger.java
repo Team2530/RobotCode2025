@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.HashSet;
+import java.util.function.Consumer;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
@@ -13,8 +16,12 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.Publisher;
+import edu.wpi.first.networktables.StringArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.Unit;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Elevator;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
@@ -86,16 +93,22 @@ public class RobotMechanismLogger extends SubsystemBase {
                 new Rotation3d(Units.degreesToRadians(armRotation), 0, 0));
 
         wrist1Pose = armPose.transformBy(new Transform3d(0.11, 0, 0.74 - 0.22,
-                new Rotation3d(0, 0, -Units.degreesToRadians(coralSubsystem.getCoralArm().getRollPositionDegrees()))));
+                new Rotation3d(0, 0, -Units.degreesToRadians(
+                        coralSubsystem.getCoralArm().getRollPositionDegrees()))));
 
         wrist2Pose = wrist1Pose.transformBy(new Transform3d(0.019050,
                 0.0254,
                 0.075057,
-                new Rotation3d(0, Units.degreesToRadians(coralSubsystem.getCoralArm().getPitchPositionDegrees()), 0)));
+                new Rotation3d(0,
+                        Units.degreesToRadians(
+                                coralSubsystem.getCoralArm().getPitchPositionDegrees()),
+                        0)));
 
         algaeArmPose = armPose.transformBy(new Transform3d(
                 0.145, 0.0, 0.365,
-                new Rotation3d(-Units.degreesToRadians(algaeSubsystem.getArm().getPositionDegrees() + 10.0), 0.0,
+                new Rotation3d(-Units
+                        .degreesToRadians(algaeSubsystem.getArm().getPositionDegrees() + 10.0),
+                        0.0,
                         0.0)));
 
         if (coralSubsystem.isHolding()) {
@@ -108,7 +121,8 @@ public class RobotMechanismLogger extends SubsystemBase {
             coralPose = new Pose3d(swerveSubsystem.getOdometryPose())
                     .transformBy(new Transform3d(wrist2Pose.getTranslation(),
                             wrist2Pose.getRotation()))
-                    .transformBy(new Transform3d(coralHoldingPose.getTranslation(), coralHoldingPose.getRotation()));
+                    .transformBy(new Transform3d(coralHoldingPose.getTranslation(),
+                            coralHoldingPose.getRotation()));
         } else {
             coralPose = Pose3d.kZero;
         }
@@ -117,7 +131,8 @@ public class RobotMechanismLogger extends SubsystemBase {
             algaePose = new Pose3d(swerveSubsystem.getOdometryPose())
                     .transformBy(new Transform3d(armPose.getTranslation(), armPose
                             .getRotation()))
-                    .transformBy(new Transform3d(0.13, -Units.inchesToMeters(8.125), 0.55, Rotation3d.kZero));
+                    .transformBy(new Transform3d(0.13, -Units.inchesToMeters(8.125), 0.55,
+                            Rotation3d.kZero));
         } else {
             algaePose = Pose3d.kZero;
         }

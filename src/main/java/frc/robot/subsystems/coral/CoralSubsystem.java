@@ -75,9 +75,11 @@ public class CoralSubsystem extends SubsystemBase {
 
     public enum CoralPresets {
         LEVEL_1(0.05, Units.radiansToDegrees(0.662), 65, Units.radiansToDegrees(1.41), true),
-        LEVEL_2(0.247 - 0.085, 15, 90, 98.0, true),
-        LEVEL_3(0.650 - 0.085, 15, 90, 98.0, true),
-        LEVEL_4(1.342 - 0.02, 19.5, 90, 110.062, true),
+        LEVEL_2(0.247 - 0.085, 15, 90, 98.0, true, true),
+        LEVEL_3(0.650 - 0.085, 15, 90, 98.0, true,
+                true),
+        LEVEL_4(1.342 - 0.02, 19.5, 90, 110.062, true,
+                true),
         INTAKE(0.05, 19.25, 90, 36.0, true),
         STOW(0.05, 0.0, 0.0, 0.0, true),
         ZERO(0.0, 0.0, 0.0, 0.0, false),
@@ -85,17 +87,20 @@ public class CoralSubsystem extends SubsystemBase {
         ALGAE_REM_LOW(0.62, 32.0, 0.0, 0.0, false),
         ALGAE_REM_HIGH(1.05, 32.0, 0.0, 0.0, false),
 
-        ALGAE_STOW_LOW(0.34, 28.0, 90.0, 42.0,
+        ALGAE_STOW_LOW(0.44,
+                32.0, 90.0, 42.0,
                 false),
-        ALGAE_STOW_HIGH(0.722, 28.0, 90.0, 42.0,
+        ALGAE_STOW_HIGH(0.822,
+                32.0, 90.0, 42.0,
                 false),
 
-        ALGAE_ACQUIRE_LOW(0.322, 28.0, 90.0, 42.0, false),
-        ALGAE_ACQUIRE_HIGH(0.702, 28.0, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_LOW(0.422, 32.0, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_HIGH(0.802,
+                32.0, 90.0, 42.0, false),
 
-        // TODO: Set these!!!
-        ALGAE_PROCESSOR(0.34, 28.0, 90.0, 42.0, false),
-        ALGAE_BARGE(0.34, 28.0, 90.0, 42.0, false),
+        ALGAE_PROCESSOR(0.05, 30.0, 90.0, -20.0, false),
+        ALGAE_BARGE(
+                1.45, 15.0, 90.0, 42.0, false),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 
@@ -106,6 +111,7 @@ public class CoralSubsystem extends SubsystemBase {
                              // the robot. positive=CCW
         double pitchAngleDeg; // Wrist 2 angle, degrees from pointing straight up (max: 115deg)
         boolean allowMirror;
+        boolean allowAimAssist;
 
         private CoralPresets(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle,
                 boolean allowMirror) {
@@ -114,6 +120,13 @@ public class CoralSubsystem extends SubsystemBase {
             this.rollAngleDeg = rollAngle;
             this.pitchAngleDeg = pitchAngle;
             this.allowMirror = allowMirror;
+            this.allowAimAssist = false;
+        }
+
+        private CoralPresets(double elevatorHeight, double pivotAngle, double rollAngle, double pitchAngle,
+                boolean allowMirror, boolean allowAimAssist) {
+            this(elevatorHeight, pivotAngle, rollAngle, pitchAngle, allowMirror);
+            this.allowAimAssist = allowAimAssist;
         }
     }
 
@@ -423,7 +436,12 @@ public class CoralSubsystem extends SubsystemBase {
                                                 this, 0.5))
                                 .andThen(new MovePitch(
                                         this, currentLockedPresetSupplier))))
-                // .andThen(new WristAlignAssist(this))
+                .andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
+                    @Override
+                    public boolean getAsBoolean() {
+                        return currentLockedPresetSupplier.get().allowAimAssist;
+                    }
+                }))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
@@ -473,6 +491,31 @@ public class CoralSubsystem extends SubsystemBase {
                 .andThen(new ParallelCommandGroup(
                         new MovePivot(
                                 this, currentLockedPresetSupplier),
+                        new MoveRoll(
+                                this, currentLockedPresetSupplier),
+                        new MovePitch(
+                                this, currentLockedPresetSupplier)))
+                .andThen(new InstantCommand(() -> {
+                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
+                }));
+    }
+
+    public Command getGoToLockedPresetAlgaeSafeCommand(AlgaeSubsystem algaeSubsystem,
+            Supplier<CoralPresets> currentLockedPresetSupplier) {
+        return new InstantCommand(() -> {
+            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
+                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+
+                this.autoSetMirrorIntake();
+            } else {
+                this.autoSetMirrorScoring();
+            }
+            SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
+        })
+                .andThen(new MoveElevator(
+                        this, currentLockedPresetSupplier)
+                        .alongWith(new MovePivot(this, currentLockedPresetSupplier)))
+                .andThen(new ParallelCommandGroup(
                         new MoveRoll(
                                 this, currentLockedPresetSupplier),
                         new MovePitch(

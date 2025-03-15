@@ -1,5 +1,7 @@
 package frc.robot.subsystems.coral;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -104,5 +106,23 @@ public class CoralIntake extends SubsystemBase {
         return Robot.isReal()
                 ? intakeMotor.getForwardLimit().getValue().value == 0
                 : false;
+    }
+
+    public BooleanSupplier getHoldingSupplier() {
+        return new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return isHolding();
+            }
+        };
+    }
+
+    public BooleanSupplier getNotHoldingSupplier() {
+        return new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return !isHolding();
+            }
+        };
     }
 }

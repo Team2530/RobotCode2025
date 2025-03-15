@@ -268,10 +268,10 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          6,
+          10.5,
           0.0,
-          0.02,
-          new TrapezoidProfile.Constraints(15, 25.0));
+          0.07,
+          new TrapezoidProfile.Constraints(13, 40.0));
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90 + 40.0);
 
@@ -362,7 +362,6 @@ public final class Constants {
     public static final class Pivot {
       public static final int MOTOR_PORT = 18;
       public static final boolean MOTOR_INVERTED = true;
-      public static final int ENCODER_PORT = 27;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
           1.0,

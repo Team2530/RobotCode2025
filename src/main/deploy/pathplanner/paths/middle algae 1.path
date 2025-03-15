@@ -33,8 +33,19 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "Stow",
+      "waypointRelativePos": 0.05947046843177223,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow"
+        }
+      }
+    },
+    {
       "name": "Algae Low",
-      "waypointRelativePos": 0.575774035850078,
+      "waypointRelativePos": 0.3299389002036788,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

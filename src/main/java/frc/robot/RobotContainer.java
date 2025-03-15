@@ -9,15 +9,9 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,29 +20,20 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveCommand.DriveStyle;
 import frc.robot.commands.algae.IntakeAlgaeCommand;
+import frc.robot.commands.algae.PurgeAlgaeCommand;
 import frc.robot.commands.algae.RemoveAlgaeCommand;
 import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
 import frc.robot.commands.coral.ScoreCoralCommand;
-import frc.robot.commands.coral.motion.MoveElevator;
-import frc.robot.commands.coral.motion.MovePitch;
-import frc.robot.commands.coral.motion.MovePivot;
-import frc.robot.commands.coral.motion.MoveRoll;
-import frc.robot.commands.coral.motion.StowArm;
-import frc.robot.commands.coral.motion.WaitArmClearance;
-import frc.robot.commands.coral.motion.WaitElevatorApproach;
-import frc.robot.commands.coral.motion.WaitRollFinished;
 import frc.robot.commands.coral.motion.WristStowSafety;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.Limelight;
@@ -60,7 +45,6 @@ import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
-import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LimelightContainer;
 
 /**
@@ -228,6 +212,21 @@ public class RobotContainer {
                                         coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem,
                                                 currentLockedPresetSupplier))));
 
+
+        NamedCommands.registerCommand("Grab Low", new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_LOW);
+        }).andThen((coralSubsystem
+                .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
+                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
+                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
+
+        NamedCommands.registerCommand("Grab High", new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_HIGH);
+        }).andThen((coralSubsystem
+                .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
+                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
+                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
+
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -275,16 +274,44 @@ public class RobotContainer {
 
     private Command getStowCommand() {
         return new InstantCommand(() -> {
-            lockCoralArmPreset(
-                    algaeSubsystem.isHolding()
-                            ? ((lockedPreset == CoralPresets.ALGAE_ACQUIRE_HIGH
-                                    || lockedPreset == CoralPresets.ALGAE_STOW_HIGH) ? CoralPresets.ALGAE_STOW_HIGH
-                                            : CoralPresets.ALGAE_STOW_LOW)
-                            : CoralPresets.STOW);
-            // lockCoralArmPreset(CoralPresets.STOW);
+            CoralPresets preset = CoralPresets.STOW;
+            // If holding algae, use the corresponding algae stow preset
+            if (algaeSubsystem.isHolding()) {
+                if (lockedPreset == CoralPresets.ALGAE_ACQUIRE_HIGH || lockedPreset == CoralPresets.ALGAE_STOW_HIGH) {
+                    preset = CoralPresets.ALGAE_STOW_HIGH;
+                } else {
+                    preset = CoralPresets.ALGAE_STOW_LOW;
+                }
+            }
+            lockCoralArmPreset(preset);
             algaeSubsystem.setAlgaePreset(algaeSubsystem.isHolding() ? AlgaePresets.HOLD : AlgaePresets.STOW);
-        }).andThen(new WristStowSafety(coralSubsystem))
-                .andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem, currentLockedPresetSupplier));
+        }).andThen(new ConditionalCommand(
+                coralSubsystem.getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier),
+                new WristStowSafety(coralSubsystem)
+                        .andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
+                                currentLockedPresetSupplier)),
+                algaeSubsystem.getIntake().getHoldingSupplier()));
+    }
+
+    private Command getGoToCoralScoringPositionCommand() {
+        return new InstantCommand(() -> {
+            lockCoralArmPreset(selectedScoringPreset);
+            isScoring = true;
+            SmartDashboard.putString("Operator Control", "Going to Coral Scoring Preset: " + lockedPreset.toString());
+        }).andThen(
+                coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
+                        .andThen(new InstantCommand(() -> {
+                            operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
+                        }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
+                            operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
+                        }))));
+    }
+
+    private Command getGoToAlgaeScoringPositionCommand() {
+        return new InstantCommand(() -> {
+            lockCoralArmPreset(selectedLevel == 1 ? CoralPresets.ALGAE_PROCESSOR : CoralPresets.ALGAE_BARGE);
+            SmartDashboard.putString("Operator Control", "Going to Algae Scoring Preset: " + lockedPreset.toString());
+        }).andThen(coralSubsystem.getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier));
     }
 
     /**
@@ -335,50 +362,47 @@ public class RobotContainer {
             selectedLevel = 4;
         }));
 
-        // Score!!!
-        operatorXbox.rightTrigger().and(coralSafe).whileTrue((new InstantCommand(() -> {
-            // coralSubsystem.setCoralPreset(currentCoralPreset);
-            lockCoralArmPreset(selectedScoringPreset);
-            if (coralSubsystem.isHolding()) isScoring = true; // If holding coral, activate scoring
-        })
-        .andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
-        .andThen(new InstantCommand(() -> { // Xbox rumble
-                            operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
-                        }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> { // Wonder if theres a better way to do this
-                            operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
-                        })))))
-                .onlyIf(coralSubsystem.isHoldingSupplier()))
-                .whileFalse(getStowCommand().alongWith(new InstantCommand(() -> {
-                    isScoring = false;
-                }))); // It's not this! (?)
+        // Move arm to coral scoring preset
+        operatorXbox.rightTrigger().and(coralSafe)
+                .whileTrue(getGoToCoralScoringPositionCommand().onlyIf(coralSubsystem.isHoldingSupplier()));
+        // Stow arm
+        operatorXbox.rightTrigger().whileFalse(getStowCommand().alongWith(new InstantCommand(() -> {
+            isScoring = false;
+        })));
 
-        // Scoring and stowing
-        driverXbox.rightBumper().and(coralSafe).whileTrue(new ConditionalCommand(
-                new ScoreCoralCommand(coralSubsystem), // If true
-                new ShootAlgaeCommand(algaeSubsystem), // If false
-                coralSubsystem.isHoldingSupplier()));  // This is the condition
+        // Driver scoring:
+        // - If holding coral, score coral
+        // - If not holding coral:
+        // -- If holding algae, score algae
+        // -- If not holding algae, spin coral intake
+        driverXbox.rightBumper().and(coralSubsystem.getIntake().getHoldingSupplier())
+                .whileTrue(new ScoreCoralCommand(coralSubsystem));
+        driverXbox.rightBumper().and(coralSubsystem.getIntake()
+                .getNotHoldingSupplier())
+                .whileTrue(new ConditionalCommand(new ShootAlgaeCommand(algaeSubsystem),
+                        new ScoreCoralCommand(coralSubsystem), algaeSubsystem.getIntake().getHoldingSupplier()));
 
-        operatorXbox.rightBumper().and(coralSafe).whileFalse(getStowCommand()); // Stow if false
-        driverXbox.rightBumper().and(coralSafe).whileFalse(getStowCommand()); // Stow if false
+        // Operator tap-to-stow
+        operatorXbox.rightBumper().whileFalse(getStowCommand());
 
         // Intake coral
         operatorXbox.rightTrigger().and(coralSafe).and(new BooleanSupplier() {
-                @Override
-                public boolean getAsBoolean() {return !coralSubsystem.isHolding() && !isScoring;}
-        }).whileTrue(new InstantCommand(() -> { // Intake
-                System.out.println("Intaking");
-                lockCoralArmPreset(CoralPresets.INTAKE);
-            }).andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem, currentLockedPresetSupplier)
-            ).andThen(new IntakeCoralCommand(coralSubsystem)
-            ).andThen(getStowCommand())
-        ).whileFalse(getStowCommand());
+            @Override
+            public boolean getAsBoolean() {
+                return !coralSubsystem.isHolding() && !isScoring;
+            }
+        }).whileTrue(new InstantCommand(() -> {
+            SmartDashboard.putString("Operator Control", "Intaking Coral");
+            lockCoralArmPreset(CoralPresets.INTAKE);
+        }).andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
+                currentLockedPresetSupplier)).andThen(new IntakeCoralCommand(coralSubsystem))
+                .andThen(getStowCommand()));
 
-        // purge coral (bye bye)
-        operatorXbox.button(7).whileTrue(new ParallelCommandGroup(
-            new PurgeCoralIntakeCommand(coralSubsystem),
-            new ShootAlgaeCommand(algaeSubsystem)
-            ));
-        // Reset climber deploy
+        // Purge gamepieces
+        operatorXbox.button(7).whileTrue(new ParallelCommandGroup(new PurgeCoralIntakeCommand(coralSubsystem),
+                new PurgeAlgaeCommand(algaeSubsystem)));
+
+        // Reset climber deploy (allow to pull back in)
         operatorXbox.button(8).onTrue(new InstantCommand(() -> {
             climberSubsystem.resetClimberDeploy();
         }));
