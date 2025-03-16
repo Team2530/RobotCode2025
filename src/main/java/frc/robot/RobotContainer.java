@@ -30,6 +30,7 @@ import frc.robot.commands.DriveCommand.DriveStyle;
 import frc.robot.commands.algae.IntakeAlgaeCommand;
 import frc.robot.commands.algae.PurgeAlgaeCommand;
 import frc.robot.commands.algae.RemoveAlgaeCommand;
+import frc.robot.commands.algae.ShootAlgaeBargeCommand;
 import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
@@ -302,6 +303,16 @@ public class RobotContainer {
         }).andThen(coralSubsystem.getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier));
     }
 
+    private Command getScoreAlgaeCommand() {
+        return new ConditionalCommand(new ShootAlgaeBargeCommand(algaeSubsystem), new ShootAlgaeCommand(algaeSubsystem),
+                new BooleanSupplier() {
+                    @Override
+                    public boolean getAsBoolean() {
+                        return currentLockedPresetSupplier.get() == CoralPresets.ALGAE_BARGE;
+                    }
+                });
+    }
+
     /**
      * Use this method to define your trigger->command mappings. Triggers can be
      * created via the
@@ -370,7 +381,7 @@ public class RobotContainer {
                 .whileTrue(new ScoreCoralCommand(coralSubsystem));
         driverXbox.rightBumper().and(coralSubsystem.getIntake()
                 .getNotHoldingSupplier())
-                .whileTrue(new ConditionalCommand(new ShootAlgaeCommand(algaeSubsystem),
+                .whileTrue(new ConditionalCommand(getScoreAlgaeCommand(),
                         new ScoreCoralCommand(coralSubsystem), algaeSubsystem.getIntake().getHoldingSupplier()));
 
         // Operator tap-to-stow

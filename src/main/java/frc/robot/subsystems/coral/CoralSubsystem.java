@@ -99,8 +99,9 @@ public class CoralSubsystem extends SubsystemBase {
                 33.5, 90.0, 42.0, false),
 
         ALGAE_PROCESSOR(0.03, 38.0, 90.0, -20.0, false),
-        ALGAE_BARGE(
-                1.44, -10.0, 90.0, 42.0, false),
+        ALGAE_BARGE(1.45, -10.0, 90.0, 42.0, false),
+        // ALGAE_BARGE(
+        // 1.44, -45.0, 90.0, -10.0, false),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 
