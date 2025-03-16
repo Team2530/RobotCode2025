@@ -134,8 +134,8 @@ public class DriveCommand extends Command {
 
                 double zAssist = MathUtil
                         .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
-                                rotationState.angle.getRadians()), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
-                                0.5
+                                rotationState.angle.getRadians()), -0.75 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.75
                                         * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, zSpeed + zAssist,
@@ -158,8 +158,8 @@ public class DriveCommand extends Command {
 
                 double zPid = MathUtil
                         .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
-                                targetRotation), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
-                                0.5
+                                targetRotation), -0.75 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.75
                                         * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, zSpeed + zPid,

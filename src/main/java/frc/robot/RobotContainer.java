@@ -60,14 +60,14 @@ import frc.robot.util.LimelightContainer;
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
 
-    // private static final Limelight LL_BF = new Limelight(LimelightType.LL4,
-    // "limelight-bf", true, true);
+    private static final Limelight LL_BF = new Limelight(LimelightType.LL4,
+    "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
     private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
 
     @Logged
-    public static final LimelightContainer LLContainer = new LimelightContainer(LL_BR, LL_BL, LL_FR);
+    public static final LimelightContainer LLContainer = new LimelightContainer(LL_BR, LL_BL, LL_FR, LL_BF);
 
     // @Logged
     private final CommandXboxController driverXbox = new CommandXboxController(
@@ -220,6 +220,7 @@ public class RobotContainer {
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
                 .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
                 .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
+        
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -276,9 +277,8 @@ public class RobotContainer {
             algaeSubsystem.setAlgaePreset(algaeSubsystem.isHolding() ? AlgaePresets.HOLD : AlgaePresets.STOW);
         }).andThen(new ConditionalCommand(
                 coralSubsystem.getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier),
-                new WristStowSafety(coralSubsystem)
-                        .andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
-                                currentLockedPresetSupplier)),
+                coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
+                                currentLockedPresetSupplier),
                 algaeSubsystem.getIntake().getHoldingSupplier()));
     }
 
@@ -339,7 +339,13 @@ public class RobotContainer {
             normalDrive.setDriveStyle(DriveStyle.REEF_ASSIST);
         }), new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST);
-        }), coralSubsystem.isHoldingSupplier())).onFalse(new InstantCommand(() -> {
+        }), new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                boolean isAlgaeRemove = coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_ACQUIRE_HIGH || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_ACQUIRE_LOW || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_REM_LOW || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_REM_HIGH;
+                return coralSubsystem.isHolding() || isAlgaeRemove;
+            }
+        })).onFalse(new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED);
         }));
 
@@ -386,6 +392,7 @@ public class RobotContainer {
 
         // Operator tap-to-stow
         operatorXbox.rightBumper().whileFalse(getStowCommand());
+        driverXbox.rightBumper().whileFalse(getStowCommand());
 
         // Intake coral
         operatorXbox.rightTrigger().and(coralSafe).and(new BooleanSupplier() {
@@ -401,6 +408,16 @@ public class RobotContainer {
                 .andThen(getStowCommand()))
                 .whileFalse(new ConditionalCommand(getStowCommand(), new InstantCommand(),
                         coralSubsystem.isHoldingSupplier()));
+
+        // Auto stow (after shooting!!!)
+        // coralAquisition.negate().and(operatorXbox.rightTrigger()).and(new BooleanSupplier() {
+        //     @Override
+        //     public boolean getAsBoolean() {
+        //         return isScoring;
+        //     }
+        // }).debounce(0.1).onTrue(new InstantCommand(() -> {
+        //     isScoring = false;
+        // }).alongWith(getStowCommand()));
 
         // Purge gamepieces
         operatorXbox.button(7).whileTrue(new ParallelCommandGroup(new PurgeCoralIntakeCommand(coralSubsystem),

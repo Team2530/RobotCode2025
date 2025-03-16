@@ -183,7 +183,7 @@ public final class Constants {
     public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.50);
 
     public static final PIDConstants TRANSLATION_ASSIST = new PIDConstants(8, 0, 0.01);
-    public static final PIDConstants ROTATION_ASSIST = new PIDConstants(5.0, 0, 0.02);
+    public static final PIDConstants ROTATION_ASSIST = new PIDConstants(7.0, 0, 0.02);
 
     public static final class ModuleIndices {
       public static final int FRONT_LEFT = 0;
@@ -219,7 +219,7 @@ public final class Constants {
     public static double GEAR_RATIO = 45.0;
 
     public static double DEPLOY_SOFT_LIMIT = -6.0;
-    public static double CLIMB_SOFT_LIMIT = -2.8;
+    public static double CLIMB_SOFT_LIMIT = -2.5;
   }
 
   public static class Coral {

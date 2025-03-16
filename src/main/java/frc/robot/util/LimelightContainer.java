@@ -32,7 +32,7 @@ public class LimelightContainer {
     private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
     public LimelightContainer(Limelight... limelights) {
-        int[] validIDs = {3, 6, 7, 8, 9, 10, 11, 16, 17, 18, 19, 20, 21, 22 }; // 1, 2, 12, 13
+        int[] validIDs = {3, 6, 7, 8, 9, 10, 11, 16, 17, 18, 19, 20, 21, 22, 1, 2, 12, 13};
         for (Limelight limelight : limelights) {
             LimelightContainer.limelights.add(limelight);
             LimelightHelpers.SetFiducialIDFiltersOverride(limelight.getName(), validIDs);

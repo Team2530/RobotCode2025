@@ -413,8 +413,8 @@ public class CoralSubsystem extends SubsystemBase {
         return new InstantCommand(() -> {
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
                 this.autoSetMirrorIntake();
-                if (!this.mirrorSetting.isMirrored)
-                    algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+                // if (this.mirrorSetting.isMirrored)
+                //     algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             } else {
                 this.autoSetMirrorScoring();
             }
@@ -451,9 +451,10 @@ public class CoralSubsystem extends SubsystemBase {
     public Command getGoToLockedPresetSideFASTCommand(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier, MirrorPresets mirrorSide) {
         return new InstantCommand(() -> {
-            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE && !this.mirrorSetting.isMirrored)
-                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+            
             this.mirrorArm(mirrorSide);
+            // if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE && this.mirrorSetting.isMirrored)
+            //     algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
 
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(
@@ -479,9 +480,10 @@ public class CoralSubsystem extends SubsystemBase {
         return new InstantCommand(() -> {
 
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
-                if (!this.mirrorSetting.isMirrored)
-                    algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+                
                 this.autoSetMirrorIntake();
+                // if (!this.mirrorSetting.isMirrored)
+                //     algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             } else {
                 this.autoSetMirrorScoring();
             }
