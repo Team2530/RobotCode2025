@@ -1,11 +1,16 @@
 package frc.robot.subsystems.coral;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -24,8 +29,11 @@ import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.IntegerArraySubscriber;
 import edu.wpi.first.networktables.IntegerSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,9 +58,14 @@ public class CoralReefVision extends SubsystemBase {
     private StructPublisher<Pose3d> cameraPoseFieldSpace;
 
     // Inputs from vision coprocessor
+    NetworkTable visionRawTable = NetworkTableInstance.getDefault().getTable("CoralVision/raw");
     private final DoubleArraySubscriber inputAngles;
     private final DoubleArraySubscriber inputDistances;
-    private IntegerSubscriber inputFrame;
+    private final IntegerSubscriber inputFrame;
+
+    // private DatagramSocket visionDataRecever;
+    // private Alert visionAlert = new Alert("Vision Error", AlertType.kError);
+    // private byte[] dataBuf = new byte[1024];
 
     @Logged
     private ArrayList<Translation3d> visionTargets = new ArrayList<Translation3d>();
@@ -62,12 +75,17 @@ public class CoralReefVision extends SubsystemBase {
     private CoralReefVisionSim sim;
 
     public CoralReefVision() {
-        inputAngles = NetworkTableInstance.getDefault()
-                .getDoubleArrayTopic("CoralVision/raw/angles").subscribe(new double[] {});
-        inputDistances = NetworkTableInstance.getDefault()
-                .getDoubleArrayTopic("CoralVision/raw/distances").subscribe(new double[] {});
-        inputFrame = NetworkTableInstance.getDefault()
-                .getIntegerTopic("CoralVision/raw/frame").subscribe(0);
+        visionRawTable = NetworkTableInstance.getDefault().getTable("CoralVision/raw");
+        inputAngles = visionRawTable.getDoubleArrayTopic("angles").subscribe(new double[] {});
+        inputDistances = visionRawTable.getDoubleArrayTopic("distances").subscribe(new double[] {});
+        inputFrame = visionRawTable.getIntegerTopic("frame").subscribe(0);
+
+        // try {
+        // visionDataRecever = new DatagramSocket(2530);
+        // } catch (Exception e) {
+        // visionAlert.setText("Error creating UDP socket on RoboRIO");
+        // visionAlert.set(true);
+        // }
 
         visionTargetPublisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("CoralVision/targets", Translation3d.struct).publish();
@@ -96,11 +114,15 @@ public class CoralReefVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        long frame = inputFrame.get();
-        if (frame != lastFrame) {
-            double[] angles = inputAngles.get();
-            double[] distances = inputDistances.get();
 
+        long frame = inputFrame.getAsLong();
+        double[] angles = inputAngles.get();
+        double[] distances = inputDistances.get();
+        SmartDashboard.putNumber("Real Frame", frame);
+        // System.out.println(Arrays.toString(angles));
+
+        boolean dataUpdated = true;// frame != lastFrame
+        if (dataUpdated) {
             lastFrame = frame;
 
             visionTargets.clear();

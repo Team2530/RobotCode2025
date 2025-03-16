@@ -268,10 +268,10 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          10.5,
+          7.0,
           0.0,
-          0.07,
-          new TrapezoidProfile.Constraints(13, 40.0));
+          0.1,
+          new TrapezoidProfile.Constraints(13, 20.0));
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90 + 40.0);
 

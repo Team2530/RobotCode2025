@@ -59,13 +59,14 @@ import frc.robot.util.LimelightContainer;
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
 
-    private static final Limelight LL_BF = new Limelight(LimelightType.LL4, "limelight-bf", true, true);
+    // private static final Limelight LL_BF = new Limelight(LimelightType.LL4,
+    // "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
     private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
 
     @Logged
-    public static final LimelightContainer LLContainer = new LimelightContainer(LL_BF, LL_BR, LL_BL, LL_FR);
+    public static final LimelightContainer LLContainer = new LimelightContainer(LL_BR, LL_BL, LL_FR);
 
     // @Logged
     private final CommandXboxController driverXbox = new CommandXboxController(
@@ -204,7 +205,6 @@ public class RobotContainer {
                                         new RemoveAlgaeCommand(algaeSubsystem),
                                         coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem,
                                                 currentLockedPresetSupplier))));
-
 
         NamedCommands.registerCommand("Grab Low", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_LOW);
@@ -387,7 +387,9 @@ public class RobotContainer {
             lockCoralArmPreset(CoralPresets.INTAKE);
         }).andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
                 currentLockedPresetSupplier)).andThen(new IntakeCoralCommand(coralSubsystem))
-                .andThen(getStowCommand()));
+                .andThen(getStowCommand()))
+                .whileFalse(new ConditionalCommand(getStowCommand(), new InstantCommand(),
+                        coralSubsystem.isHoldingSupplier()));
 
         // Purge gamepieces
         operatorXbox.button(7).whileTrue(new ParallelCommandGroup(new PurgeCoralIntakeCommand(coralSubsystem),
