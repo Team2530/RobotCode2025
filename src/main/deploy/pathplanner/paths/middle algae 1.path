@@ -44,7 +44,7 @@
       }
     },
     {
-      "name": "Algae Low",
+      "name": "Grab Low",
       "waypointRelativePos": 0.3299389002036788,
       "endWaypointRelativePos": null,
       "command": {
