@@ -25,13 +25,25 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "barge shot"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Go Barge",
+      "waypointRelativePos": 0.9686354378818767,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Go Barge"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 1.0,
     "maxAcceleration": 1.0,
@@ -45,7 +57,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "middle autos",
+  "folder": "middle Barge",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
