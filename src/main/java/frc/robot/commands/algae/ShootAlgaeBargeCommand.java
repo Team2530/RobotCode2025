@@ -10,9 +10,16 @@ import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 
 public class ShootAlgaeBargeCommand extends Command {
     private final AlgaeSubsystem subsystem;
+    private boolean autoExit = true;;
 
     public ShootAlgaeBargeCommand(AlgaeSubsystem subsystem) {
         this.subsystem = subsystem;
+        addRequirements(subsystem);
+    }
+
+    public ShootAlgaeBargeCommand(AlgaeSubsystem subsystem, boolean autoExit) {
+        this.subsystem = subsystem;
+        this.autoExit = autoExit;
         addRequirements(subsystem);
     }
 
@@ -34,6 +41,6 @@ public class ShootAlgaeBargeCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return subsystem.getIntake().getSensorDistance() > Constants.Algae.Intake.SHOT_THRESHOLD;
+        return (subsystem.getIntake().getSensorDistance() > Constants.Algae.Intake.SHOT_THRESHOLD) && this.autoExit;
     }
 }

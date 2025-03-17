@@ -414,7 +414,7 @@ public class CoralSubsystem extends SubsystemBase {
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
                 this.autoSetMirrorIntake();
                 // if (this.mirrorSetting.isMirrored)
-                //     algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+                // algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             } else {
                 this.autoSetMirrorScoring();
             }
@@ -437,12 +437,12 @@ public class CoralSubsystem extends SubsystemBase {
                                                 this, 0.5))
                                 .andThen(new MovePitch(
                                         this, currentLockedPresetSupplier))))
-                // .andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
-                // @Override
-                // public boolean getAsBoolean() {
-                // return currentLockedPresetSupplier.get().allowAimAssist;
-                // }
-                // }))
+                .andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
+                    @Override
+                    public boolean getAsBoolean() {
+                        return currentLockedPresetSupplier.get().allowAimAssist;
+                    }
+                }))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
@@ -451,10 +451,11 @@ public class CoralSubsystem extends SubsystemBase {
     public Command getGoToLockedPresetSideFASTCommand(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier, MirrorPresets mirrorSide) {
         return new InstantCommand(() -> {
-            
+
             this.mirrorArm(mirrorSide);
-            // if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE && this.mirrorSetting.isMirrored)
-            //     algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+            // if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE &&
+            // this.mirrorSetting.isMirrored)
+            // algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
 
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(
@@ -480,10 +481,10 @@ public class CoralSubsystem extends SubsystemBase {
         return new InstantCommand(() -> {
 
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
-                
+
                 this.autoSetMirrorIntake();
                 // if (!this.mirrorSetting.isMirrored)
-                //     algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+                // algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             } else {
                 this.autoSetMirrorScoring();
             }

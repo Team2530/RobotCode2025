@@ -118,8 +118,6 @@ public class CoralReefVision extends SubsystemBase {
         long frame = inputFrame.getAsLong();
         double[] angles = inputAngles.get();
         double[] distances = inputDistances.get();
-        SmartDashboard.putNumber("Real Frame", frame);
-        // System.out.println(Arrays.toString(angles));
 
         boolean dataUpdated = true;// frame != lastFrame
         if (dataUpdated) {

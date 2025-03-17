@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.IntegerPublisher;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -22,6 +23,7 @@ import frc.robot.Constants;
 
 public class CoralReefVisionSim extends SubsystemBase {
 
+    NetworkTable visionRawTable = NetworkTableInstance.getDefault().getTable("CoralVision/raw");
     private final DoubleArrayPublisher simDistPub;
     private final DoubleArrayPublisher simAnglePub;
     private final IntegerPublisher simFramePub;
@@ -36,9 +38,9 @@ public class CoralReefVisionSim extends SubsystemBase {
             .getStructArrayTopic("Camera Debug Pose", Translation2d.struct).publish();
 
     public CoralReefVisionSim() {
-        simDistPub = NetworkTableInstance.getDefault().getDoubleArrayTopic("CoralVision/raw/distances").publish();
-        simAnglePub = NetworkTableInstance.getDefault().getDoubleArrayTopic("CoralVision/raw/angles").publish();
-        simFramePub = NetworkTableInstance.getDefault().getIntegerTopic("CoralVision/raw/frame").publish();
+        simDistPub = visionRawTable.getDoubleArrayTopic("distances").publish();
+        simAnglePub = visionRawTable.getDoubleArrayTopic("angles").publish();
+        simFramePub = visionRawTable.getIntegerTopic("frame").publish();
 
         // for (int i = 0; i < numSimTargets; ++i) {
         // SmartDashboard.putNumber("CoralVisionSim/angle" + Integer.toString(i), 0.0);
@@ -48,7 +50,7 @@ public class CoralReefVisionSim extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
+    public void simulationPeriodic() {
         ArrayList<Translation2d> reefPoles = new ArrayList<>();
         for (Translation2d translation2d : Reef.baseTranslations.values()) {
             reefPoles.add(AllianceFlipUtil.apply(translation2d));

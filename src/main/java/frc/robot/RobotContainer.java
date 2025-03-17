@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveCommand.DriveStyle;
@@ -61,7 +62,7 @@ import frc.robot.util.LimelightContainer;
 public class RobotContainer {
 
     private static final Limelight LL_BF = new Limelight(LimelightType.LL4,
-    "limelight-bf", true, true);
+            "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
     private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
@@ -220,7 +221,15 @@ public class RobotContainer {
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
                 .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
                 .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
-        
+
+        NamedCommands.registerCommand("Go Barge", new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_BARGE);
+        }).andThen((coralSubsystem
+                .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
+
+        NamedCommands.registerCommand("Shoot Barge",
+                new ShootAlgaeBargeCommand(algaeSubsystem, false)
+                        .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT));
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -278,7 +287,7 @@ public class RobotContainer {
         }).andThen(new ConditionalCommand(
                 coralSubsystem.getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier),
                 coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
-                                currentLockedPresetSupplier),
+                        currentLockedPresetSupplier),
                 algaeSubsystem.getIntake().getHoldingSupplier()));
     }
 
@@ -342,7 +351,10 @@ public class RobotContainer {
         }), new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
-                boolean isAlgaeRemove = coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_ACQUIRE_HIGH || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_ACQUIRE_LOW || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_REM_LOW || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_REM_HIGH;
+                boolean isAlgaeRemove = coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_ACQUIRE_HIGH
+                        || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_ACQUIRE_LOW
+                        || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_REM_LOW
+                        || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_REM_HIGH;
                 return coralSubsystem.isHolding() || isAlgaeRemove;
             }
         })).onFalse(new InstantCommand(() -> {
@@ -410,13 +422,14 @@ public class RobotContainer {
                         coralSubsystem.isHoldingSupplier()));
 
         // Auto stow (after shooting!!!)
-        // coralAquisition.negate().and(operatorXbox.rightTrigger()).and(new BooleanSupplier() {
-        //     @Override
-        //     public boolean getAsBoolean() {
-        //         return isScoring;
-        //     }
+        // coralAquisition.negate().and(operatorXbox.rightTrigger()).and(new
+        // BooleanSupplier() {
+        // @Override
+        // public boolean getAsBoolean() {
+        // return isScoring;
+        // }
         // }).debounce(0.1).onTrue(new InstantCommand(() -> {
-        //     isScoring = false;
+        // isScoring = false;
         // }).alongWith(getStowCommand()));
 
         // Purge gamepieces
