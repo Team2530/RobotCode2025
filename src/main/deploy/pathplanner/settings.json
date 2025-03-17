@@ -8,18 +8,19 @@
     "Finn's testing autos",
     "Flying",
     "Hair Spray",
-    "bottom L3",
+    "middle Barge",
     "Testing",
+    "bottom L3",
     "bottom autos",
     "middle autos",
     "top L3",
     "top autos"
   ],
   "autoFolders": [
+    "Flying Series",
     "Killing Series",
-    "New Folder",
     "New New Folder",
-    "New New New Folder",
+    "L3 autos",
     "Testing"
   ],
   "defaultMaxVel": 3.0,

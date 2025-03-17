@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "middle algae 1"
+                  "pathName": "middle algae 1 barge"
                 }
               }
             ]
@@ -43,7 +43,19 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "middle algae 2"
+                  "pathName": "middle 2 barge"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot Barge"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
                 }
               }
             ]
@@ -56,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "middle algae 3"
+                  "pathName": "middle barge 3"
                 }
               }
             ]
@@ -69,7 +81,32 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "middle algae 4"
+                  "pathName": "middle barge 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot Barge"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "middle barge 5"
                 }
               }
             ]

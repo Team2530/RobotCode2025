@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4764344262295084,
-        "y": 5.001997950819672
+        "x": 7.41,
+        "y": 5.039
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4844877049180334,
-        "y": 5.685297131147542
+        "x": 6.3375,
+        "y": 5.43875
       },
       "isLocked": false,
-      "linkedName": "top 6 end"
+      "linkedName": "barge shot"
     },
     {
       "anchor": {
-        "x": 1.55,
-        "y": 7.272
+        "x": 4.99,
+        "y": 5.33
       },
       "prevControl": {
-        "x": 2.0897254098360656,
-        "y": 6.948331967213115
+        "x": 5.391749999999999,
+        "y": 5.90675
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "High Source"
+      "linkedName": "middle algae 2 end"
     }
   ],
   "rotationTargets": [],
@@ -33,13 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Start Intake L",
-      "waypointRelativePos": 0.30635524171646056,
+      "name": "Grab High",
+      "waypointRelativePos": 0.6558044806517352,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Start Intake L"
+          "name": "Grab High"
         }
       }
     }
@@ -54,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": -29.999999999999996
   },
   "reversed": false,
-  "folder": "top L3",
+  "folder": "middle Barge",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 90.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
