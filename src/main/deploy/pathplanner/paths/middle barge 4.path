@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.60625,
-        "y": 5.90675
+        "x": 6.025499999999999,
+        "y": 5.273
       },
       "isLocked": false,
       "linkedName": "middle algae 2 end"
@@ -20,8 +20,8 @@
         "y": 5.039
       },
       "prevControl": {
-        "x": 6.40575,
-        "y": 5.28275
+        "x": 6.4155,
+        "y": 5.1754999999999995
       },
       "nextControl": null,
       "isLocked": false,
