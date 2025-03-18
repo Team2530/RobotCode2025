@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.XboxController;
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -39,6 +40,7 @@ import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
 import frc.robot.commands.coral.motion.WristAlignAssist;
+import frc.robot.commands.coral.motion.WristAlignAssistManual;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -58,6 +60,8 @@ public class CoralSubsystem extends SubsystemBase {
     private final CoralElevator elevator = new CoralElevator();
 
     private final CoralReefVision vision = new CoralReefVision();
+
+    private final XboxController operatorController;
 
     @NotLogged
     private final SwerveSubsystem swerveSubsystem;
@@ -131,15 +135,14 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public CoralSubsystem(SwerveSubsystem swerveSubsystem) {
+    public CoralSubsystem(SwerveSubsystem swerveSubsystem, XboxController operatorController) {
         this.swerveSubsystem = swerveSubsystem;
+        this.operatorController = operatorController;
     }
 
     public enum MirrorPresets {
         RIGHT(false),
-        LEFT(true),
-        STARBOARD(false),
-        PORT(true);
+        LEFT(true);
 
         boolean isMirrored;
 
@@ -323,6 +326,10 @@ public class CoralSubsystem extends SubsystemBase {
         mirrorSetting = preset;
     }
 
+    public MirrorPresets getMirror() {
+        return mirrorSetting;
+    }
+
     public void autoSetMirrorIntake() {
         Pose2d robotPose = swerveSubsystem.getOdometryPose();
         Pose2d closestSource = robotPose.nearest(FieldConstants.getSourcePoses());
@@ -437,7 +444,14 @@ public class CoralSubsystem extends SubsystemBase {
                                                 this, 0.5))
                                 .andThen(new MovePitch(
                                         this, currentLockedPresetSupplier))))
-                .andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
+                // .andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
+                // @Override
+                // public boolean getAsBoolean() {
+                // return currentLockedPresetSupplier.get().allowAimAssist;
+                // }
+                // }))
+
+                .andThen(new WristAlignAssistManual(this, operatorController).onlyIf(new BooleanSupplier() {
                     @Override
                     public boolean getAsBoolean() {
                         return currentLockedPresetSupplier.get().allowAimAssist;

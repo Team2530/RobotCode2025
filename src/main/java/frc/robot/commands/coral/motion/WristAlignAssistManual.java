@@ -1,23 +1,22 @@
 package frc.robot.commands.coral.motion;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.coral.CoralReefVision;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
 
-public class WristAlignAssist extends Command {
+public class WristAlignAssistManual extends Command {
     CoralSubsystem coralSubsystem;
     CoralPresets startingPreset;
-    CoralReefVision vision;
+    XboxController operatorController;
 
-    public WristAlignAssist(CoralSubsystem coralSub) {
+    public WristAlignAssistManual(CoralSubsystem coralSub, XboxController operatorController) {
         coralSubsystem = coralSub;
-        vision = coralSub.getVisionSubsystem();
+        this.operatorController = operatorController;
     }
 
     @Override
@@ -27,18 +26,15 @@ public class WristAlignAssist extends Command {
 
     @Override
     public void execute() {
-        if (vision.hasValidTarget() && coralSubsystem.getMirror() == MirrorPresets.RIGHT) {
-            Translation2d error = vision.getSelectedTargetError();
-            coralSubsystem.setCustomRollDegrees(MathUtil.clamp(
-                    90.0 - Units
-                            .radiansToDegrees(Math.atan2(error.getX(), /*-error.getY()*/ +Units.inchesToMeters(16.0))),
-                    90 - 30.0,
-                    90 + 30.0));
 
-            SmartDashboard.putNumber("Error X", error.getX());
-            SmartDashboard.putNumber("Error Y", error.getY());
-            // coralSubsystem.setCustomPitchDegrees(0);
-        }
+        coralSubsystem
+                .setCustomRollDegrees((coralSubsystem.getMirror() == MirrorPresets.LEFT ? -1.0 : 1.0) * MathUtil.clamp(
+                        (90.0 - Units
+                                .radiansToDegrees(
+                                        Math.atan2((coralSubsystem.getMirror() == MirrorPresets.LEFT ? 1.0 : -1.0)
+                                                * operatorController.getRightX(), 2.0))),
+                        90 - 30.0,
+                        90 + 30.0));
     }
 
     @Override
