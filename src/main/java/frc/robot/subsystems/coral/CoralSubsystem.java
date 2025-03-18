@@ -61,8 +61,8 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final CoralReefVision vision = new CoralReefVision();
 
+    // Members for aim assisting and other automation
     private final XboxController operatorController;
-
     @NotLogged
     private final SwerveSubsystem swerveSubsystem;
 
@@ -339,7 +339,7 @@ public class CoralSubsystem extends SubsystemBase {
         this.mirrorSetting = left.getTranslation().getDistance(closestSource.getTranslation()) < right.getTranslation()
                 .getDistance(closestSource.getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
 
-        System.out.println("Mirror Side" + mirrorSetting.name());
+        SmartDashboard.putString("Mirror Side", mirrorSetting.name());
 
         // this.mirrorSetting = (this.leftUltrasonic.get() < this.rightUltrasonic.get())
         // ? MirrorPresets.LEFT
@@ -355,7 +355,7 @@ public class CoralSubsystem extends SubsystemBase {
                 .getTranslation()
                 .getDistance(FieldConstants.getReefPose().getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
 
-        System.out.println("Mirror Side" + mirrorSetting.name());
+        SmartDashboard.putString("Mirror Side", mirrorSetting.name());
     }
 
     public void setCoralIntakePreset(CoralIntakePresets preset) {
@@ -451,12 +451,13 @@ public class CoralSubsystem extends SubsystemBase {
                 // }
                 // }))
 
-                .andThen(new WristAlignAssistManual(this, operatorController).onlyIf(new BooleanSupplier() {
-                    @Override
-                    public boolean getAsBoolean() {
-                        return currentLockedPresetSupplier.get().allowAimAssist;
-                    }
-                }))
+                .andThen(new WristAlignAssistManual(this, operatorController, swerveSubsystem)
+                        .onlyIf(new BooleanSupplier() {
+                            @Override
+                            public boolean getAsBoolean() {
+                                return currentLockedPresetSupplier.get().allowAimAssist;
+                            }
+                        }))
                 .andThen(new InstantCommand(() -> {
                     SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
                 }));
