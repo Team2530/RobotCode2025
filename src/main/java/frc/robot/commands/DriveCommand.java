@@ -26,8 +26,7 @@ import frc.robot.util.Reef;
 public class DriveCommand extends Command {
     @NotLogged
     private final SwerveSubsystem swerveSubsystem;
-    @NotLogged
-    private final XboxController xbox;
+    private final XboxController driverXbox;
 
     private SlewRateLimiter dsratelimiter = new SlewRateLimiter(4);
 
@@ -54,7 +53,7 @@ public class DriveCommand extends Command {
 
     public DriveCommand(SwerveSubsystem swerveSubsystem, XboxController xbox) {
         this.swerveSubsystem = swerveSubsystem;
-        this.xbox = xbox;
+        this.driverXbox = xbox;
 
         rotationAssist.enableContinuousInput(-Math.PI, Math.PI);
         dsratelimiter.reset(SLOWMODE_MULT);
@@ -87,8 +86,8 @@ public class DriveCommand extends Command {
 
     @Override
     public void execute() {
-        Translation2d xyRaw = new Translation2d(-xbox.getLeftY(), -xbox.getLeftX());
-        double zSpeed = -MathUtil.applyDeadband(xbox.getRightX(), 0.1);
+        Translation2d xyRaw = new Translation2d(-driverXbox.getLeftY(), -driverXbox.getLeftX());
+        double zSpeed = -MathUtil.applyDeadband(driverXbox.getRightX(), 0.1);
         double xSpeed = MathUtil.applyDeadband(xyRaw.getX(), 0.08); // xbox.getLeftX();
         double ySpeed = MathUtil.applyDeadband(xyRaw.getY(), 0.08); // xbox.getLeftY();
 
@@ -97,12 +96,12 @@ public class DriveCommand extends Command {
         zSpeed *= DriveConstants.Z_SPEED_LIMIT * DriveConstants.MAX_ROBOT_RAD_VELOCITY;
 
         double dmult = dsratelimiter
-                .calculate((DRIVE_MULT - SLOWMODE_MULT) * xbox.getRightTriggerAxis() + SLOWMODE_MULT);
+                .calculate((DRIVE_MULT - SLOWMODE_MULT) * driverXbox.getRightTriggerAxis() + SLOWMODE_MULT);
         xSpeed *= dmult;
         ySpeed *= dmult;
         zSpeed *= dmult;
 
-        if (xbox.getStartButton()) {
+        if (driverXbox.getStartButton()) {
             swerveSubsystem.zeroHeading();
             Translation2d pospose = swerveSubsystem.getOdometryPose().getTranslation();
             swerveSubsystem.odometry.resetPosition(swerveSubsystem.getGyroRotation2d(),
@@ -172,7 +171,7 @@ public class DriveCommand extends Command {
         // State transition logic
         isXstance = false;
         if (isXstance)
-            isXstance = !((xyRaw.getNorm() > 0.08) && !xbox.getBButton());
+            isXstance = !((xyRaw.getNorm() > 0.08) && !driverXbox.getBButton());
 
         // Drive execution logic
 

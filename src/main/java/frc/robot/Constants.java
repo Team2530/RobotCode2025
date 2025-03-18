@@ -336,7 +336,7 @@ public final class Constants {
       public static double CAM_FORWARDS = Units.inchesToMeters(1.141310);
       public static double CAM_LEFT = Units.inchesToMeters(-8.606161);
       public static double CAM_UP = Units.inchesToMeters(36.004011);
-      public static Rotation2d CAM_YAW = Rotation2d.fromDegrees(-80.0);
+      public static Rotation2d CAM_YAW = Rotation2d.fromDegrees(-85.0);
 
       public static Pose3d CAM_POSE = new Pose3d(CAM_FORWARDS, CAM_LEFT, CAM_UP, new Rotation3d(CAM_YAW));
 

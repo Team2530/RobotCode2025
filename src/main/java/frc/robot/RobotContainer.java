@@ -92,7 +92,7 @@ public class RobotContainer {
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
     @Logged
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem(swerveDriveSubsystem);
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(swerveDriveSubsystem, operatorXbox.getHID());
 
     // NOTE: Removed to prevent loop overruns while the robot does not have the
     // algae manipulator installed.
@@ -240,6 +240,7 @@ public class RobotContainer {
     private int selectedLevel = 0;
     private CoralPresets lockedPreset = CoralPresets.STOW;
     private boolean isScoring = false;
+    private boolean opScoringLock = false;
 
     BooleanSupplier coralSafe = new BooleanSupplier() {
         public boolean getAsBoolean() {
@@ -272,7 +273,7 @@ public class RobotContainer {
     };
 
     private Command getStowCommand() {
-        return new InstantCommand(() -> {
+        Command normalStow = new InstantCommand(() -> {
             CoralPresets preset = CoralPresets.STOW;
             // If holding algae, use the corresponding algae stow preset
             if (algaeSubsystem.isHolding()) {
@@ -282,6 +283,7 @@ public class RobotContainer {
                     preset = CoralPresets.ALGAE_STOW_LOW;
                 }
             }
+            isScoring = false;
             lockCoralArmPreset(preset);
             algaeSubsystem.setAlgaePreset(algaeSubsystem.isHolding() ? AlgaePresets.HOLD : AlgaePresets.STOW);
         }).andThen(new ConditionalCommand(
@@ -289,12 +291,26 @@ public class RobotContainer {
                 coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
                         currentLockedPresetSupplier),
                 algaeSubsystem.getIntake().getHoldingSupplier()));
+
+        return normalStow;
+    }
+
+    private Command getSuperStowCommand() {
+        Command algaeSupercycleCommand = new InstantCommand(() -> {
+            lockCoralArmPreset(selectedLevel == 4 ? CoralPresets.ALGAE_REM_HIGH : CoralPresets.ALGAE_REM_LOW);
+        }).andThen(new ParallelCommandGroup(
+                new RemoveAlgaeCommand(algaeSubsystem),
+                coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem,
+                        currentLockedPresetSupplier)));
+
+        return new ConditionalCommand(algaeSupercycleCommand, getStowCommand(), operatorXbox.leftBumper());
     }
 
     private Command getGoToCoralScoringPositionCommand() {
         return new InstantCommand(() -> {
             lockCoralArmPreset(selectedScoringPreset);
             isScoring = true;
+            opScoringLock = true;
             SmartDashboard.putString("Operator Control", "Going to Coral Scoring Preset: " + lockedPreset.toString());
         }).andThen(
                 coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
@@ -386,8 +402,8 @@ public class RobotContainer {
         operatorXbox.rightTrigger().and(coralSafe)
                 .whileTrue(getGoToCoralScoringPositionCommand().onlyIf(coralSubsystem.isHoldingSupplier()));
         // Stow arm
-        operatorXbox.rightTrigger().whileFalse(getStowCommand().alongWith(new InstantCommand(() -> {
-            isScoring = false;
+        operatorXbox.rightTrigger().whileFalse(getSuperStowCommand().alongWith(new InstantCommand(() -> {
+            opScoringLock = false;
         })));
 
         // Driver scoring:
@@ -404,13 +420,13 @@ public class RobotContainer {
 
         // Operator tap-to-stow
         operatorXbox.rightBumper().whileFalse(getStowCommand());
-        driverXbox.rightBumper().whileFalse(getStowCommand());
+        driverXbox.rightBumper().whileFalse(getSuperStowCommand());
 
         // Intake coral
         operatorXbox.rightTrigger().and(coralSafe).and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
-                return !coralSubsystem.isHolding() && !isScoring;
+                return !coralSubsystem.isHolding() && !isScoring && !opScoringLock;
             }
         }).whileTrue(new InstantCommand(() -> {
             SmartDashboard.putString("Operator Control", "Intaking Coral");
@@ -454,7 +470,7 @@ public class RobotContainer {
         operatorXbox.leftBumper().and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
-                return selectedLevel == 2 || selectedLevel == 3;
+                return (selectedLevel == 2 || selectedLevel == 3) && !isScoring;
             }
         }).whileTrue(
                 new InstantCommand(() -> {

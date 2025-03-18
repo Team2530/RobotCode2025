@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.coral.CoralReefVision;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
+import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
 
 public class WristAlignAssist extends Command {
     CoralSubsystem coralSubsystem;
@@ -26,7 +27,7 @@ public class WristAlignAssist extends Command {
 
     @Override
     public void execute() {
-        if (vision.hasValidTarget()) {
+        if (vision.hasValidTarget() && coralSubsystem.getMirror() == MirrorPresets.RIGHT) {
             Translation2d error = vision.getSelectedTargetError();
             coralSubsystem.setCustomRollDegrees(MathUtil.clamp(
                     90.0 - Units
