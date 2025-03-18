@@ -109,6 +109,8 @@ public class DriveCommand extends Command {
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
         }
 
+        double assistMixer = MathUtil.clamp(driverXbox.getLeftTriggerAxis() * 2.0, 0.0, 1.0);
+
         ChassisSpeeds speeds = new ChassisSpeeds();
         switch (driveStyle) {
             case FIELD_ORIENTED:
@@ -137,7 +139,7 @@ public class DriveCommand extends Command {
                                 0.75
                                         * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                        xSpeed, ySpeed, zSpeed + zAssist,
+                        xSpeed, ySpeed, zSpeed + zAssist * assistMixer,
                         swerveSubsystem.getGyroRotation2d());
                 break;
             case INTAKE_ASSIST:
@@ -161,7 +163,8 @@ public class DriveCommand extends Command {
                                 0.75
                                         * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                        xSpeed, ySpeed, zSpeed + zPid,
+                        xSpeed, ySpeed, zSpeed + zPid
+                                * assistMixer,
                         swerveSubsystem.getGyroRotation2d());
 
             default:
