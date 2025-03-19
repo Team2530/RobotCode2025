@@ -288,9 +288,11 @@ public class RobotContainer {
             lockCoralArmPreset(preset);
             algaeSubsystem.setAlgaePreset(algaeSubsystem.isHolding() ? AlgaePresets.HOLD : AlgaePresets.STOW);
         }).andThen(new ConditionalCommand(
+
                 coralSubsystem.getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier),
-                coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
-                        currentLockedPresetSupplier),
+                new WristStowSafety(coralSubsystem)
+                        .andThen(coralSubsystem.getGoToLockedPresetFASTCommand(algaeSubsystem,
+                                currentLockedPresetSupplier)),
                 algaeSubsystem.getIntake().getHoldingSupplier()));
 
         return normalStow;
@@ -315,6 +317,7 @@ public class RobotContainer {
             SmartDashboard.putString("Operator Control", "Going to Coral Scoring Preset: " + lockedPreset.toString());
         }).andThen(
                 coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
+
                         .andThen(new InstantCommand(() -> {
                             operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
                         }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {

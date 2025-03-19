@@ -41,6 +41,7 @@ import frc.robot.commands.coral.motion.WaitRollApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
 import frc.robot.commands.coral.motion.WristAlignAssist;
 import frc.robot.commands.coral.motion.WristAlignAssistManual;
+import frc.robot.commands.coral.motion.WristStowSafety;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -99,7 +100,7 @@ public class CoralSubsystem extends SubsystemBase {
                 false),
 
         ALGAE_ACQUIRE_LOW(0.452, 33.5, 90.0, 42.0, false),
-        ALGAE_ACQUIRE_LOLLIPOP(0.05, 37.5, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_LOLLIPOP(0.05, 39.0, 90.0, 42.0, false),
         ALGAE_ACQUIRE_HIGH(0.832,
                 33.5, 90.0, 42.0, false),
 
@@ -445,14 +446,7 @@ public class CoralSubsystem extends SubsystemBase {
                                                 this, 0.5))
                                 .andThen(new MovePitch(
                                         this, currentLockedPresetSupplier))))
-                // .andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
-                // @Override
-                // public boolean getAsBoolean() {
-                // return currentLockedPresetSupplier.get().allowAimAssist;
-                // }
-                // }))
-
-                .andThen(new WristAlignAssistManual(this, operatorController, swerveSubsystem)
+                .andThen(new WristAlignAssist(this, operatorController, swerveSubsystem)
                         .onlyIf(new BooleanSupplier() {
                             @Override
                             public boolean getAsBoolean() {
@@ -505,8 +499,7 @@ public class CoralSubsystem extends SubsystemBase {
                 this.autoSetMirrorScoring();
             }
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString());
-        }).andThen(new StowArm(
-                this))
+        }).andThen(new StowArm(this))
                 .andThen(new MoveElevator(
                         this, currentLockedPresetSupplier))
                 .andThen(new ParallelCommandGroup(
