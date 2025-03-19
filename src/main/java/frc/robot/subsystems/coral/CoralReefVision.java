@@ -5,6 +5,8 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.math.MathUtil;
@@ -79,13 +81,6 @@ public class CoralReefVision extends SubsystemBase {
         inputAngles = visionRawTable.getDoubleArrayTopic("angles").subscribe(new double[] {});
         inputDistances = visionRawTable.getDoubleArrayTopic("distances").subscribe(new double[] {});
         inputFrame = visionRawTable.getIntegerTopic("frame").subscribe(0);
-
-        // try {
-        // visionDataRecever = new DatagramSocket(2530);
-        // } catch (Exception e) {
-        // visionAlert.setText("Error creating UDP socket on RoboRIO");
-        // visionAlert.set(true);
-        // }
 
         visionTargetPublisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("CoralVision/targets", Translation3d.struct).publish();

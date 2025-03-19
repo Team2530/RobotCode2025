@@ -5,10 +5,12 @@
 package frc.robot;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -235,6 +237,16 @@ public class RobotContainer {
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+
+        autoChooser.onChange(new Consumer<Command>() {
+            @Override
+            public void accept(Command t) {
+                if (t instanceof PathPlannerAuto) {
+                    PathPlannerAuto auto = (PathPlannerAuto) t;
+                    swerveDriveSubsystem.setAutoStartingPose(auto.getStartingPose());
+                }
+            }
+        });
     }
 
     private CoralPresets selectedScoringPreset = CoralPresets.STOW;
