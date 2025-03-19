@@ -254,6 +254,13 @@ public class RobotContainer {
         };
     };
 
+    boolean algaeLock = false;
+    BooleanSupplier algaeManipReady = new BooleanSupplier() {
+        public boolean getAsBoolean() {
+            return !algaeLock;
+        }
+    };
+
     Trigger coralAquisition = new Trigger(coralSubsystem.isHoldingSupplier());
     Trigger coralInPosition = new Trigger(new BooleanSupplier() {
         public boolean getAsBoolean() {
@@ -284,6 +291,7 @@ public class RobotContainer {
                 }
             }
             isScoring = false;
+            algaeLock = false;
             lockCoralArmPreset(preset);
             algaeSubsystem.setAlgaePreset(algaeSubsystem.isHolding() ? AlgaePresets.HOLD : AlgaePresets.STOW);
         }).andThen(new ConditionalCommand(
@@ -355,12 +363,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         // Driver assist controls
-        driverXbox.leftTrigger().and(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return driverXbox.getLeftTriggerAxis() > 0.05;
-            }
-        }).onTrue(new ConditionalCommand(new InstantCommand(() -> {
+        driverXbox.leftTrigger(0.05).onTrue(new ConditionalCommand(new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.REEF_ASSIST);
         }), new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.INTAKE_ASSIST);
@@ -472,8 +475,9 @@ public class RobotContainer {
             public boolean getAsBoolean() {
                 return (selectedLevel == 2 || selectedLevel == 3) && !isScoring;
             }
-        }).whileTrue(
+        }).and(algaeManipReady).whileTrue(
                 new InstantCommand(() -> {
+                    algaeLock = true;
                     lockCoralArmPreset(selectedLevel == 2 ? CoralPresets.ALGAE_REM_LOW : CoralPresets.ALGAE_REM_HIGH);
                 }).andThen(
                         new ParallelCommandGroup(
@@ -483,18 +487,22 @@ public class RobotContainer {
         // Stow
         operatorXbox.leftBumper().onFalse(getStowCommand());
 
+        // TODO: Add proper lockout for intake and scoring like coral
         // Algae intaking
+
         operatorXbox.leftTrigger().and(algaeGrabSafe)
                 .and(new BooleanSupplier() {
                     @Override
                     public boolean getAsBoolean() {
-                        return selectedLevel == 2 || selectedLevel == 3;
+                        return (selectedLevel == 1 || selectedLevel == 2 || selectedLevel == 3)
+                                && !algaeSubsystem.isHolding();
                     }
                 }).whileTrue(
                         new InstantCommand(() -> {
                             lockCoralArmPreset(
                                     selectedLevel == 2 ? CoralPresets.ALGAE_ACQUIRE_LOW
-                                            : CoralPresets.ALGAE_ACQUIRE_HIGH);
+                                            : (selectedLevel == 1 ? CoralPresets.ALGAE_ACQUIRE_LOLLIPOP
+                                                    : CoralPresets.ALGAE_ACQUIRE_HIGH));
                         }).andThen((coralSubsystem
                                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
                                 .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
@@ -503,12 +511,15 @@ public class RobotContainer {
         operatorXbox.leftTrigger().onFalse(getStowCommand());
 
         // Algae scoring
-        operatorXbox.leftTrigger().and(algaeSubsystem.getIntake().getHoldingSupplier()).and(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return selectedLevel == 1 || selectedLevel == 4;
-            }
-        }).whileTrue(getGoToAlgaeScoringPositionCommand());
+        operatorXbox.leftTrigger().and(algaeManipReady).and(algaeSubsystem.getIntake().getHoldingSupplier())
+                .and(new BooleanSupplier() {
+                    @Override
+                    public boolean getAsBoolean() {
+                        return selectedLevel == 1 || selectedLevel == 4;
+                    }
+                }).whileTrue(new InstantCommand(() -> {
+                    algaeLock = true;
+                }).andThen(getGoToAlgaeScoringPositionCommand()));
         operatorXbox.leftTrigger().whileFalse(getStowCommand());
 
         // Driver elevator zeroing
