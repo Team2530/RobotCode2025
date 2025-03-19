@@ -42,6 +42,7 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.LimelightType;
 import frc.robot.subsystems.RobotMechanismLogger;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.algae.AlgaeIntake;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
@@ -254,13 +255,6 @@ public class RobotContainer {
         };
     };
 
-    // boolean algaeLock = false;
-    // BooleanSupplier algaeManipReady = new BooleanSupplier() {
-    // public boolean getAsBoolean() {
-    // return !algaeLock;
-    // }
-    // };
-
     Trigger coralAquisition = new Trigger(coralSubsystem.isHoldingSupplier());
     Trigger coralInPosition = new Trigger(new BooleanSupplier() {
         public boolean getAsBoolean() {
@@ -291,7 +285,6 @@ public class RobotContainer {
                 }
             }
             isScoring = false;
-            // algaeLock = false;
             lockCoralArmPreset(preset);
             algaeSubsystem.setAlgaePreset(algaeSubsystem.isHolding() ? AlgaePresets.HOLD : AlgaePresets.STOW);
         }).andThen(new ConditionalCommand(
@@ -473,7 +466,7 @@ public class RobotContainer {
         operatorXbox.leftBumper().and(new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
-                return (selectedLevel == 2 || selectedLevel == 3) && !isScoring;
+                return (selectedLevel == 2 || selectedLevel == 3);
             }
         }).whileTrue( // .and(algaeManipReady)
                 new InstantCommand(() -> {
@@ -489,37 +482,34 @@ public class RobotContainer {
 
         // TODO: Add proper lockout for intake and scoring like coral
         // Algae intaking
-
-        // && !algaeSubsystem.isHolding()
         operatorXbox.leftTrigger().and(algaeGrabSafe)
                 .and(new BooleanSupplier() {
                     @Override
                     public boolean getAsBoolean() {
-                        return (selectedLevel == 2 || selectedLevel == 3); // (selectedLevel == 1 ||
+                        return (selectedLevel == 2 || selectedLevel == 3 || selectedLevel == 1);
                     }
                 }).whileTrue(
-                        new InstantCommand(() -> {
+                        (new InstantCommand(() -> {
                             lockCoralArmPreset(
                                     selectedLevel == 2 ? CoralPresets.ALGAE_ACQUIRE_LOW
                                             : (selectedLevel == 1 ? CoralPresets.ALGAE_ACQUIRE_LOLLIPOP
                                                     : CoralPresets.ALGAE_ACQUIRE_HIGH));
-                        }).andThen((coralSubsystem
+                        }).andThen(coralSubsystem
                                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
-                                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
-                                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
+                                .alongWith(new IntakeAlgaeCommand(algaeSubsystem))))
+                                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier()));
         // Stow
         operatorXbox.leftTrigger().onFalse(getStowCommand());
 
-        // Algae scoring .and(algaeManipReady)
-        operatorXbox.leftTrigger().and(algaeSubsystem.getIntake().getHoldingSupplier())
+        // Algae scoring
+        operatorXbox.leftTrigger()
                 .and(new BooleanSupplier() {
                     @Override
                     public boolean getAsBoolean() {
                         return selectedLevel == 1 || selectedLevel == 4;
                     }
-                }).whileTrue(new InstantCommand(() -> {
-                    // algaeLock = true;
-                }).andThen(getGoToAlgaeScoringPositionCommand()));
+                }).whileTrue(getGoToAlgaeScoringPositionCommand().onlyIf(
+                        algaeSubsystem.getIntake().getHoldingSupplier()));
         operatorXbox.leftTrigger().whileFalse(getStowCommand());
 
         // Driver elevator zeroing
