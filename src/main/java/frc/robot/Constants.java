@@ -513,7 +513,7 @@ public final class Constants {
     public static final double kVisionStdDevX = 5;
     public static final double kVisionStdDevTheta = 500;
 
-    private static AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    private static AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     public final static HashMap<Integer, Pose2d> tagPoses = new HashMap<Integer, Pose2d>() {
       {

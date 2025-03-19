@@ -110,6 +110,8 @@ public class DriveCommand extends Command {
         }
 
         double assistMixer = MathUtil.clamp(driverXbox.getLeftTriggerAxis() * 2.0, 0.0, 1.0);
+        SmartDashboard.putNumber("Assist Mixer", assistMixer);
+        SmartDashboard.putString("Assist Mode", driveStyle.toString());
 
         ChassisSpeeds speeds = new ChassisSpeeds();
         switch (driveStyle) {

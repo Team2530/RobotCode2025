@@ -99,6 +99,7 @@ public class CoralSubsystem extends SubsystemBase {
                 false),
 
         ALGAE_ACQUIRE_LOW(0.452, 33.5, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_LOLLIPOP(0.05, 37.5, 90.0, 42.0, false),
         ALGAE_ACQUIRE_HIGH(0.832,
                 33.5, 90.0, 42.0, false),
 
