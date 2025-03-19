@@ -12,6 +12,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -82,6 +84,8 @@ public class RobotContainer {
     // private final CommandXboxController debugXboxController = new
     // CommandXboxController(3);
 
+    private final UsbCamera climbCamera;
+
     // private final CommandXboxController debugXbox = new CommandXboxController(0);
 
     private final SendableChooser<Command> autoChooser;
@@ -117,6 +121,8 @@ public class RobotContainer {
 
         DataLogManager.logNetworkTables(true);
         DataLogManager.start();
+
+        climbCamera = CameraServer.startAutomaticCapture();
 
         swerveDriveSubsystem.setDefaultCommand(normalDrive);
 
@@ -384,6 +390,12 @@ public class RobotContainer {
                         || coralSubsystem.getCurrentPreset() == CoralPresets.ALGAE_REM_HIGH;
                 return coralSubsystem.isHolding() || isAlgaeRemove;
             }
+        })).onFalse(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED);
+        }));
+
+        driverXbox.leftBumper().onTrue(new InstantCommand(() -> {
+            normalDrive.setDriveStyle(DriveStyle.ROBOT_ORIENTED);
         })).onFalse(new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.FIELD_ORIENTED);
         }));

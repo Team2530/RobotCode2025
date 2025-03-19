@@ -4,6 +4,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.MjpegServer;
@@ -30,6 +31,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.IntegerArraySubscriber;
@@ -58,6 +60,7 @@ public class CoralReefVision extends SubsystemBase {
     private StructArrayPublisher<Pose3d> visionTargetsFieldSpace;
     private StructPublisher<Pose2d> scoringPoseFieldSpace;
     private StructPublisher<Pose3d> cameraPoseFieldSpace;
+    private BooleanPublisher hasTargetPublisher;
 
     // Inputs from vision coprocessor
     NetworkTable visionRawTable = NetworkTableInstance.getDefault().getTable("CoralVision/raw");
@@ -101,6 +104,8 @@ public class CoralReefVision extends SubsystemBase {
         cameraPoseFieldSpace = NetworkTableInstance.getDefault().getStructTopic("CoralVision/cameraPoseFieldSpace",
                 Pose3d.struct).publish();
 
+        hasTargetPublisher = NetworkTableInstance.getDefault().getBooleanTopic("CoralVision/hasTarget").publish();
+
         // Simulator for testing/debugging
         if (Robot.isSimulation()) {
             sim = new CoralReefVisionSim();
@@ -134,6 +139,18 @@ public class CoralReefVision extends SubsystemBase {
                 }
             }
 
+            // Filter out invalid vision targets
+            visionTargets.removeIf(new Predicate<Translation3d>() {
+                @Override
+                public boolean test(Translation3d t) {
+                    // TODO Auto-generated method stub
+                    double camDist = t.getDistance(Constants.Coral.Vision.CAM_POSE.getTranslation());
+                    if (camDist > 2.0 || camDist < 0.25)
+                        return true;
+                    return false;
+                }
+            });
+
             // Select a target
             double minDistance = Double.MAX_VALUE;
             if (visionTargets.size() == 0) {
@@ -157,6 +174,8 @@ public class CoralReefVision extends SubsystemBase {
             cameraPublisher.set(Constants.Coral.Vision.CAM_POSE);
             visionTargetPublisher.set(visionTargets.toArray(new Translation3d[] {}));
         }
+
+        hasTargetPublisher.set(hasValidTarget());
     }
 
     @Override

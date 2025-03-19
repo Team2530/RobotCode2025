@@ -35,6 +35,7 @@ public class DriveCommand extends Command {
 
     public static enum DriveStyle {
         FIELD_ORIENTED,
+        ROBOT_ORIENTED,
         REEF_ASSIST,
         INTAKE_ASSIST
     };
@@ -119,6 +120,11 @@ public class DriveCommand extends Command {
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, zSpeed,
                         swerveSubsystem.getGyroRotation2d());
+                break;
+            case ROBOT_ORIENTED:
+                speeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+                        xSpeed, ySpeed, zSpeed,
+                        new Rotation2d(Math.PI));
                 break;
             case REEF_ASSIST:
                 Translation2d reefCenter = AllianceFlipUtil.apply(Reef.center);

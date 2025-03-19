@@ -48,7 +48,8 @@ public class WristAlignAssist extends Command {
 
         double adjustCommandForwardsManual = -adjustCommandRight * (directionFlip ? -1.0 : 1.0);
 
-        if (vision.hasValidTarget() && coralSubsystem.getMirror() == MirrorPresets.RIGHT) {
+        if (vision.hasValidTarget() && coralSubsystem.getMirror() == MirrorPresets.RIGHT
+                && !operatorController.getRightStickButton()) {
             Translation2d error = vision.getSelectedTargetError();
             coralSubsystem.setCustomRollDegrees(MathUtil.clamp(
                     90.0 - Units
