@@ -62,13 +62,13 @@ import frc.robot.util.LimelightContainer;
 public class RobotContainer {
 
     // private static final Limelight LL_BF = new Limelight(LimelightType.LL4,
-    //         "limelight-bf", true, true);
+    // "limelight-bf", true, true);
     private static final Limelight LL_BR = new Limelight(LimelightType.LL4, "limelight-br", true, true);
     private static final Limelight LL_BL = new Limelight(LimelightType.LL4, "limelight-bl", true, true);
     private static final Limelight LL_FR = new Limelight(LimelightType.LL4, "limelight-fr", true, true);
 
     @Logged
-    public static final LimelightContainer LLContainer = new LimelightContainer(LL_BR, LL_BL, LL_FR);//, LL_BF);
+    public static final LimelightContainer LLContainer = new LimelightContainer(LL_BR, LL_BL, LL_FR);// , LL_BF);
 
     // @Logged
     private final CommandXboxController driverXbox = new CommandXboxController(
@@ -254,12 +254,12 @@ public class RobotContainer {
         };
     };
 
-    boolean algaeLock = false;
-    BooleanSupplier algaeManipReady = new BooleanSupplier() {
-        public boolean getAsBoolean() {
-            return !algaeLock;
-        }
-    };
+    // boolean algaeLock = false;
+    // BooleanSupplier algaeManipReady = new BooleanSupplier() {
+    // public boolean getAsBoolean() {
+    // return !algaeLock;
+    // }
+    // };
 
     Trigger coralAquisition = new Trigger(coralSubsystem.isHoldingSupplier());
     Trigger coralInPosition = new Trigger(new BooleanSupplier() {
@@ -291,7 +291,7 @@ public class RobotContainer {
                 }
             }
             isScoring = false;
-            algaeLock = false;
+            // algaeLock = false;
             lockCoralArmPreset(preset);
             algaeSubsystem.setAlgaePreset(algaeSubsystem.isHolding() ? AlgaePresets.HOLD : AlgaePresets.STOW);
         }).andThen(new ConditionalCommand(
@@ -475,9 +475,9 @@ public class RobotContainer {
             public boolean getAsBoolean() {
                 return (selectedLevel == 2 || selectedLevel == 3) && !isScoring;
             }
-        }).and(algaeManipReady).whileTrue(
+        }).whileTrue( // .and(algaeManipReady)
                 new InstantCommand(() -> {
-                    algaeLock = true;
+                    // algaeLock = true;
                     lockCoralArmPreset(selectedLevel == 2 ? CoralPresets.ALGAE_REM_LOW : CoralPresets.ALGAE_REM_HIGH);
                 }).andThen(
                         new ParallelCommandGroup(
@@ -490,12 +490,12 @@ public class RobotContainer {
         // TODO: Add proper lockout for intake and scoring like coral
         // Algae intaking
 
+        // && !algaeSubsystem.isHolding()
         operatorXbox.leftTrigger().and(algaeGrabSafe)
                 .and(new BooleanSupplier() {
                     @Override
                     public boolean getAsBoolean() {
-                        return (selectedLevel == 1 || selectedLevel == 2 || selectedLevel == 3)
-                                && !algaeSubsystem.isHolding();
+                        return (selectedLevel == 2 || selectedLevel == 3); // (selectedLevel == 1 ||
                     }
                 }).whileTrue(
                         new InstantCommand(() -> {
@@ -510,15 +510,15 @@ public class RobotContainer {
         // Stow
         operatorXbox.leftTrigger().onFalse(getStowCommand());
 
-        // Algae scoring
-        operatorXbox.leftTrigger().and(algaeManipReady).and(algaeSubsystem.getIntake().getHoldingSupplier())
+        // Algae scoring .and(algaeManipReady)
+        operatorXbox.leftTrigger().and(algaeSubsystem.getIntake().getHoldingSupplier())
                 .and(new BooleanSupplier() {
                     @Override
                     public boolean getAsBoolean() {
                         return selectedLevel == 1 || selectedLevel == 4;
                     }
                 }).whileTrue(new InstantCommand(() -> {
-                    algaeLock = true;
+                    // algaeLock = true;
                 }).andThen(getGoToAlgaeScoringPositionCommand()));
         operatorXbox.leftTrigger().whileFalse(getStowCommand());
 

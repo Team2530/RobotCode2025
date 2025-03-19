@@ -391,7 +391,7 @@ public final class Constants {
       public static final boolean MOTOR_INVERTED = true;
       public static final int LASERCAN_ID = 4; // NOTE: Beambreak will *probably* be a rockwell proximity sensor
                                                // wired into the SPARK max
-      public static final double HOLDING_THRESHOLD = Units.inchesToMeters(6.0);
+      public static final double HOLDING_THRESHOLD = Units.inchesToMeters(4.0);
       public static final double SHOT_THRESHOLD = Units.feetToMeters(1.4);
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;

@@ -21,7 +21,7 @@ public class IntakeAlgaeCommand extends Command {
         subsystem.setAlgaePreset(AlgaePresets.INTAKE);
 
         if (Robot.isSimulation()) {
-            // SmartDashboard.putBoolean("[SIM] Holding Algae", true);
+            SmartDashboard.putBoolean("[SIM] Holding Algae", true);
         }
     }
 
