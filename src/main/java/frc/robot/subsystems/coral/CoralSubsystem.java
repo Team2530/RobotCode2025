@@ -419,6 +419,11 @@ public class CoralSubsystem extends SubsystemBase {
 
     public Command getGoToLockedPresetCommandV2(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier) {
+        return getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier, true);
+    }
+
+    public Command getGoToLockedPresetCommandV2(AlgaeSubsystem algaeSubsystem,
+            Supplier<CoralPresets> currentLockedPresetSupplier, boolean autoAlignEnable) {
         return new InstantCommand(() -> {
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
                 this.autoSetMirrorIntake();
@@ -450,7 +455,7 @@ public class CoralSubsystem extends SubsystemBase {
                         .onlyIf(new BooleanSupplier() {
                             @Override
                             public boolean getAsBoolean() {
-                                return currentLockedPresetSupplier.get().allowAimAssist;
+                                return currentLockedPresetSupplier.get().allowAimAssist && autoAlignEnable;
                             }
                         }))
                 .andThen(new InstantCommand(() -> {

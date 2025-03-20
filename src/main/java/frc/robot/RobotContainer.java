@@ -129,22 +129,46 @@ public class RobotContainer {
         NamedCommands.registerCommand("L1",
                 new InstantCommand(() -> {
                     lockCoralArmPreset(CoralPresets.LEVEL_1);
-                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)));
+                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
+                        false)));
 
+        // Normal scoring preset commands
         NamedCommands.registerCommand("L2",
                 new InstantCommand(() -> {
                     lockCoralArmPreset(CoralPresets.LEVEL_2);
-                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)));
+                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
+                        false)));
 
         NamedCommands.registerCommand("L3",
                 new InstantCommand(() -> {
                     lockCoralArmPreset(CoralPresets.LEVEL_3);
-                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)));
+                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
+                        false)));
 
         NamedCommands.registerCommand("L4",
                 new InstantCommand(() -> {
                     lockCoralArmPreset(CoralPresets.LEVEL_4);
-                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)));
+                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
+                        false)));
+
+        // Aim assist scoring preset commands
+        NamedCommands.registerCommand("L2 Auto",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.LEVEL_2);
+                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
+                        true)));
+
+        NamedCommands.registerCommand("L3 Auto",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.LEVEL_3);
+                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
+                        true)));
+
+        NamedCommands.registerCommand("L4 Auto",
+                new InstantCommand(() -> {
+                    lockCoralArmPreset(CoralPresets.LEVEL_4);
+                }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
+                        true)));
 
         NamedCommands.registerCommand("Score",
                 new WaitCommand(Constants.AutoConstants.SCORE_WAIT_BEFORE_SECONDS).andThen(new ScoreCoralCommand(
