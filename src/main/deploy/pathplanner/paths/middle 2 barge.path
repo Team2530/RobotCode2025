@@ -16,30 +16,46 @@
     },
     {
       "anchor": {
-        "x": 7.41,
-        "y": 5.039
+        "x": 7.566,
+        "y": 5.029249999999999
       },
       "prevControl": {
-        "x": 6.41,
-        "y": 5.039
+        "x": 6.566,
+        "y": 5.029249999999999
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "barge shot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7122807017543831,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Go Barge",
-      "waypointRelativePos": 0.9686354378818767,
+      "waypointRelativePos": 0.7421588594704669,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "Go Barge"
+        }
+      }
+    },
+    {
+      "name": "Shoot Barge",
+      "waypointRelativePos": 0.9832993890020356,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Shoot Barge"
         }
       }
     }

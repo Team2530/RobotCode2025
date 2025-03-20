@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.41,
-        "y": 5.039
+        "x": 7.566,
+        "y": 5.029249999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.9225,
-        "y": 3.2742499999999994
+        "x": 7.0785,
+        "y": 3.264499999999999
       },
       "isLocked": false,
       "linkedName": "barge shot"
@@ -32,6 +32,17 @@
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
+    {
+      "name": "Stow",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow"
+        }
+      }
+    },
     {
       "name": "Grab High",
       "waypointRelativePos": 0.5221995926680211,
