@@ -239,7 +239,7 @@ public class RobotContainer {
 
     // We use BooleanSuppliers because of Triggers.
 
-    /** is NOT olding algae */
+    /** is NOT holding algae */
     BooleanSupplier coralSafe = new BooleanSupplier() {
         public boolean getAsBoolean() {return !algaeSubsystem.isHolding();};
     };
@@ -247,7 +247,7 @@ public class RobotContainer {
     BooleanSupplier algaeGrabSafe = new BooleanSupplier() {
         public boolean getAsBoolean() {return !coralSubsystem.isHolding();};
     };
-    /**  */
+    /** in a level to remove algae */
     BooleanSupplier atAlgaeRemovalHeight = new BooleanSupplier() { // Is the elevator at the right height to intake algae?
         public boolean getAsBoolean() {return selectedLevel==2 || selectedLevel==3;};
     };
@@ -255,7 +255,7 @@ public class RobotContainer {
     // This is a trigger that checks if the coral is in position to be scored
     /** If holding the coral */
     Trigger coralAquisition = new Trigger(coralSubsystem.isHoldingSupplier());
-    /** If supposedly in position (lets not make it 'supposed' later) */
+    /** If supposedly in position */
     Trigger coralInPosition = new Trigger(new BooleanSupplier() {
         public boolean getAsBoolean() {return coralSubsystem.isSupposedToBeInPosition();};
     });
