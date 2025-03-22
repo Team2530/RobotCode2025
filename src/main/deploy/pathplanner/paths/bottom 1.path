@@ -43,7 +43,7 @@
   "eventMarkers": [
     {
       "name": "Start Intake L",
-      "waypointRelativePos": 0.6214014122759356,
+      "waypointRelativePos": 0.3195666892349369,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -54,8 +54,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

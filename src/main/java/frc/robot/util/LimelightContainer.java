@@ -32,7 +32,7 @@ public class LimelightContainer {
     private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
     public LimelightContainer(Limelight... limelights) {
-        int[] validIDs = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
+        int[] validIDs = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
         /*
          * Red coral source: 1, 2
          * Blue coral source: 12, 13

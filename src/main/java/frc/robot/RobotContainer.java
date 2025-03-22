@@ -261,8 +261,10 @@ public class RobotContainer {
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
 
         NamedCommands.registerCommand("Shoot Barge",
-                new ShootAlgaeBargeCommand(algaeSubsystem, false)
-                        .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT));
+                new InstantCommand(() -> {
+                    CommandScheduler.getInstance().schedule(new ShootAlgaeBargeCommand(algaeSubsystem, false)
+                            .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT));
+                }));
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();

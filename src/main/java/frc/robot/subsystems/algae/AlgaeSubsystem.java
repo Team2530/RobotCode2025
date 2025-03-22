@@ -27,7 +27,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         REMOVAL(-1.0, 20),
         PURGE(-1, 20),
         SHOOT(-1, 20),
-        HOLD(0.4, 12),
+        HOLD(0.5, 12),
         STOP(0, 20);
 
         public double outputPercentage;

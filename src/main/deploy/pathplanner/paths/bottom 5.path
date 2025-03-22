@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 2.0933729508196723,
-        "y": 1.4166352459016378
+        "y": 1.416635245901638
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Start Intake L",
-      "waypointRelativePos": 0.34134419551935063,
+      "waypointRelativePos": 0.20853080568720417,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 2.4,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
