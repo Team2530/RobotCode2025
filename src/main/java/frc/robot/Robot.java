@@ -15,6 +15,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,8 +25,10 @@ import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -102,6 +105,8 @@ public class Robot extends TimedRobot {
         versionTable.putValue("BUILD_DATE", NetworkTableValue.makeString(BuildConstants.BUILD_DATE));
         versionTable.putValue("GIT_BRANCH", NetworkTableValue.makeString(BuildConstants.GIT_BRANCH));
         versionTable.putValue("DIRTY", NetworkTableValue.makeBoolean(BuildConstants.DIRTY != 0));
+
+        WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
     }
 
     /**
@@ -139,6 +144,8 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+        Shuffleboard.selectTab("Autonomous");
+
         m_robotContainer.getSwerveSubsystem().stopDrive();
     }
 
@@ -173,6 +180,8 @@ public class Robot extends TimedRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         // m_robotContainer.resetShootake();
+        Shuffleboard.selectTab("Teleoperated");
+
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
