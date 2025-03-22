@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6322745901639335,
-        "y": 2.8561987704918033
+        "x": 7.926749999999999,
+        "y": 4.2395
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.35655737704918,
-        "y": 2.5804815573770488
+        "x": 7.969585293687813,
+        "y": 4.485802938704918
+      },
+      "isLocked": false,
+      "linkedName": "Bump end"
+    },
+    {
+      "anchor": {
+        "x": 7.67325,
+        "y": 4.999999999999999
+      },
+      "prevControl": {
+        "x": 7.901092649914667,
+        "y": 4.897103319393374
+      },
+      "nextControl": {
+        "x": 7.371,
+        "y": 5.1365
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.4385245901639343,
-        "y": 0.9261782786885238
+        "x": 7.3125,
+        "y": 4.999999999999999
       },
       "prevControl": {
-        "x": 1.7142418032786886,
-        "y": 1.3337602459016387
+        "x": 7.065559258667733,
+        "y": 5.038990643368252
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +58,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 53.97262661489648
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Bump auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.743562836470616
+    "rotation": -89.07595464722735
   },
   "useDefaultConstraints": true
 }

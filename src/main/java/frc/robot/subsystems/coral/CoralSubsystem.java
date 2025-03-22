@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.XboxController;
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -39,6 +40,8 @@ import frc.robot.commands.coral.motion.WaitElevatorApproach;
 import frc.robot.commands.coral.motion.WaitRollApproach;
 import frc.robot.commands.coral.motion.WaitRollFinished;
 import frc.robot.commands.coral.motion.WristAlignAssist;
+import frc.robot.commands.coral.motion.WristAlignAssistManual;
+import frc.robot.commands.coral.motion.WristStowSafety;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -60,6 +63,8 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final CoralReefVision vision = new CoralReefVision();
 
+    // Members for aim assisting and other automation
+    private final XboxController operatorController;
     @NotLogged
     private final SwerveSubsystem swerveSubsystem;
 
@@ -95,13 +100,15 @@ public class CoralSubsystem extends SubsystemBase {
                 32.0, 90.0, 42.0,
                 false),
 
-        ALGAE_ACQUIRE_LOW(0.422, 32.0, 90.0, 42.0, false),
-        ALGAE_ACQUIRE_HIGH(0.802,
-                32.0, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_LOW(0.452, 33.5, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_LOLLIPOP(0.05, 39.0, 90.0, 42.0, false),
+        ALGAE_ACQUIRE_HIGH(0.832,
+                33.5, 90.0, 42.0, false),
 
-        ALGAE_PROCESSOR(0.05, 30.0, 90.0, -20.0, false),
-        ALGAE_BARGE(
-                1.45, 15.0, 90.0, 42.0, false),
+        ALGAE_PROCESSOR(0.03, 38.0, 90.0, -20.0, false),
+        ALGAE_BARGE(1.45, -10.0, 90.0, 42.0, false),
+        // ALGAE_BARGE(
+        // 1.44, -45.0, 90.0, -10.0, false),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 
@@ -131,15 +138,14 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public CoralSubsystem(SwerveSubsystem swerveSubsystem) {
+    public CoralSubsystem(SwerveSubsystem swerveSubsystem, XboxController operatorController) {
         this.swerveSubsystem = swerveSubsystem;
+        this.operatorController = operatorController;
     }
 
     public enum MirrorPresets {
         RIGHT(false),
-        LEFT(true),
-        STARBOARD(false),
-        PORT(true);
+        LEFT(true);
 
         boolean isMirrored;
 
@@ -310,6 +316,10 @@ public class CoralSubsystem extends SubsystemBase {
         mirrorSetting = preset;
     }
 
+    public MirrorPresets getMirror() {
+        return mirrorSetting;
+    }
+
     public void autoSetMirrorIntake() {
         Pose2d robotPose = swerveSubsystem.getOdometryPose();
         Pose2d closestSource = robotPose.nearest(FieldConstants.getSourcePoses());
@@ -319,7 +329,7 @@ public class CoralSubsystem extends SubsystemBase {
         this.mirrorSetting = left.getTranslation().getDistance(closestSource.getTranslation()) < right.getTranslation()
                 .getDistance(closestSource.getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
 
-        System.out.println("Mirror Side" + mirrorSetting.name());
+        SmartDashboard.putString("Mirror Side", mirrorSetting.name());
 
         // this.mirrorSetting = (this.leftUltrasonic.get() < this.rightUltrasonic.get())
         // ? MirrorPresets.LEFT
@@ -335,7 +345,7 @@ public class CoralSubsystem extends SubsystemBase {
                 .getTranslation()
                 .getDistance(FieldConstants.getReefPose().getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
 
-        System.out.println("Mirror Side" + mirrorSetting.name());
+        SmartDashboard.putString("Mirror Side", mirrorSetting.name());
     }
 
     public void setCoralIntakePreset(CoralIntakePresets preset) {
@@ -388,11 +398,16 @@ public class CoralSubsystem extends SubsystemBase {
     // Lets move everything
     public Command getGoToLockedPresetCommandV2(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier) {
+        return getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier, true);
+    }
+
+    public Command getGoToLockedPresetCommandV2(AlgaeSubsystem algaeSubsystem,
+            Supplier<CoralPresets> currentLockedPresetSupplier, boolean autoAlignEnable) {
         return new InstantCommand(() -> {
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
                 this.autoSetMirrorIntake();
-                if (!this.mirrorSetting.isMirrored)
-                    algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+                // if (this.mirrorSetting.isMirrored)
+                // algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             } else {
                 this.autoSetMirrorScoring();
             }
@@ -405,12 +420,13 @@ public class CoralSubsystem extends SubsystemBase {
             new WaitRollApproach(this, 60.0)
                 .andThen(new WaitElevatorApproach(this, 0.5))
                 .andThen(new MovePitch(this, currentLockedPresetSupplier))
-        )).andThen(new WristAlignAssist(this).onlyIf(new BooleanSupplier() {
-             @Override
-            public boolean getAsBoolean() {
-                return currentLockedPresetSupplier.get().allowAimAssist;
-            }
-        })).andThen(new InstantCommand(() -> {
+        )).andThen(new WristAlignAssist(this, operatorController, swerveSubsystem)
+                        .onlyIf(new BooleanSupplier() {
+                     @Override
+                    public boolean getAsBoolean() {
+                        return currentLockedPresetSupplier.get().allowAimAssist && autoAlignEnable;
+                    }
+                })).andThen(new InstantCommand(() -> {
             SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
         }));
     }
@@ -418,9 +434,11 @@ public class CoralSubsystem extends SubsystemBase {
     public Command getGoToLockedPresetSideFASTCommand(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier, MirrorPresets mirrorSide) {
         return new InstantCommand(() -> {
-            if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE && !this.mirrorSetting.isMirrored)
-                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+
             this.mirrorArm(mirrorSide);
+            // if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE &&
+            // this.mirrorSetting.isMirrored)
+            // algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             SmartDashboard.putString("Going FAST to", currentLockedPresetSupplier.get().toString());
         }).andThen(new StowArm(this))
         .andThen(new MoveElevator(this, currentLockedPresetSupplier))
@@ -437,9 +455,12 @@ public class CoralSubsystem extends SubsystemBase {
     public Command getGoToLockedPresetFASTCommand(AlgaeSubsystem algaeSubsystem,
             Supplier<CoralPresets> currentLockedPresetSupplier) {
         return new InstantCommand(() -> {
+
             if (currentLockedPresetSupplier.get() == CoralPresets.INTAKE) {
-                algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
+
                 this.autoSetMirrorIntake();
+                // if (!this.mirrorSetting.isMirrored)
+                // algaeSubsystem.setAlgaePreset(AlgaePresets.OUT_OF_THE_WAY);
             } else {
                 this.autoSetMirrorScoring();
             }

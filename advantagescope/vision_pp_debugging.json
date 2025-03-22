@@ -3,23 +3,19 @@
     {
       "x": -8,
       "y": -8,
-      "width": 1536,
-      "height": 920,
+      "width": 1552,
+      "height": 936,
       "state": {
         "sidebar": {
-          "width": 279,
+          "width": 327,
           "expanded": [
             "/DS/joystick0/axes",
             "/NT/Robot/m_robotContainer",
-            "/NT",
             "/NT/PathPlanner/targetPose/translation",
-            "/NT/PathPlanner/currentPose",
             "/NT/PathPlanner/currentPose/translation",
             "/NT/PathPlanner/currentPose/rotation",
             "/NT/PathPlanner/targetPose",
             "/NT/PathPlanner/targetPose/rotation",
-            "/DS",
-            "/NTConnection",
             "/NT/Swerve States/0",
             "/NT/Swerve Target States/0",
             "/NT/Swerve Target States/1",
@@ -27,25 +23,51 @@
             "/NT/Swerve States/1",
             "/NT/Swerve Target States/0/angle",
             "/NT/Swerve States/0/angle",
-            "/NT/Swerve Target States",
-            "/NT/Shuffleboard",
-            "/NT/SmartDashboard",
-            "/NT/SmartDashboard/Coral",
-            "/NT/SmartDashboard/Coral/Roll",
-            "/NT/SmartDashboard/Coral/Pivot",
-            "/NT/URCL",
-            "/NT/URCL/Spark-15",
-            "/SmartDashboard/Algae/Pivot",
             "/CoralVision/targets/0",
             "/CoralVision/targets/1",
+            "/CoralVision/selectedTargetPose/translation",
+            "/SmartDashboard/Coral/Roll",
+            "/DS/joystick0/buttons",
+            "/SmartDashboard/Scheduler/Names",
+            "/SmartDashboard/Scheduler/Ids",
+            "/SmartDashboard/Coral/Pitch",
+            "/Log1/Phoenix6",
+            "/Running Commands",
+            "/NT/PathPlanner/vel",
+            "/DS/joystick1/axes",
+            "/Robot/m_robotContainer/swerveDriveSubsystem/lastChassisSpeeds",
+            "/NT/Version",
+            "/Log1/Phoenix6/TalonFX-34",
+            "/Log2",
+            "/Log2/Phoenix6",
+            "/Log2/Phoenix6/TalonFX-34",
+            "/NT",
+            "/NT/SmartDashboard",
+            "/NT/Swerve States",
+            "/NT/Swerve Target States",
+            "/NT/URCL",
+            "/NT/URCL/Spark-1",
+            "/SmartDashboard/CoralVision",
+            "/SmartDashboard/CoralVision/raw",
+            "/SmartDashboard/CoralVision/raw/distances",
+            "/SmartDashboard/CoralVision/raw/angles",
+            "/SmartDashboard",
+            "/CoralVision",
             "/CoralVision/raw/angles",
             "/CoralVision/raw/distances",
-            "/CoralVision/selectedTargetPose/translation",
-            "/CoralVision",
-            "/SmartDashboard",
+            "/Robot",
+            "/DS",
+            "/CoralVision/raw",
             "/SmartDashboard/Coral",
-            "/SmartDashboard/Coral/Roll",
-            "/SmartDashboard/Coral/Pivot"
+            "/SmartDashboard/Elevator",
+            "/SmartDashboard/Coral/Pivot",
+            "/SmartDashboard/Algae",
+            "/SmartDashboard/Algae/Pivot",
+            "/NT/CoralVision/targets",
+            "/NT/limelight-fr/rawtargets",
+            "/NT/limelight-bf",
+            "/Robot/m_robotContainer",
+            "/Robot/m_robotContainer/normalDrive"
           ]
         },
         "tabs": {
@@ -135,71 +157,6 @@
               "controlsHeight": 200
             },
             {
-              "type": 1,
-              "title": "Line Graph",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/SmartDashboard/Coral/Roll/position",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/SmartDashboard/Coral/Roll/target",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/URCL/Spark-15/AnalogPosition",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#af2437",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/SmartDashboard/Algae/Pivot/position",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#80588e",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [],
-                "discreteSources": [],
-                "leftLockedRange": null,
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "type": null,
-                  "factor": 1
-                },
-                "rightUnitConversion": {
-                  "type": null,
-                  "factor": 1
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "5z5hg0ivqwby5f6tp94dwhh4iz2lgal0",
-              "renderer": null,
-              "controlsHeight": 345
-            },
-            {
               "type": 9,
               "title": "Swerve States",
               "controller": {
@@ -236,9 +193,50 @@
             },
             {
               "type": 1,
-              "title": "Swerve Rotation",
+              "title": "Line Graph",
               "controller": {
-                "leftSources": [],
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Elevator/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Pitch/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Pivot/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Algae/Pivot/position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  }
+                ],
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": null,
@@ -254,9 +252,9 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "46alk30a69vhihak0395endcf6aue4n4",
+              "controllerUUID": "sehy3t58nyc1z42l4y4zzr9ptkru1kt0",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 312
             },
             {
               "type": 5,
@@ -321,10 +319,20 @@
                     }
                   },
                   {
+                    "type": "swerveStates",
+                    "logKey": "NT:Swerve Target States",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
                     "type": "trajectory",
                     "logKey": "NT:/PathPlanner/activePath",
                     "logType": "Pose2d[]",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#00ff00",
                       "size": "normal"
@@ -334,7 +342,7 @@
                     "type": "ghost",
                     "logKey": "NT:/PathPlanner/currentPose",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#ff0000"
                     }
@@ -342,6 +350,42 @@
                   {
                     "type": "ghost",
                     "logKey": "NT:/PathPlanner/targetPose",
+                    "logType": "Pose2d",
+                    "visible": false,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:limelight-bf",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:limelight-bl",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:limelight-br",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:limelight-fr",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -357,7 +401,63 @@
               },
               "controllerUUID": "qmx56d8q2yb01eyzidcu8tl091od50ei",
               "renderer": null,
-              "controlsHeight": 263
+              "controlsHeight": 276
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:Swerve States/0/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:Swerve Target States/0/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/URCL/Spark-1/Voltage",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "qgq951ijzzm7ft7i64hqdl7gr3g4dzfp",
+              "renderer": null,
+              "controlsHeight": 200
             },
             {
               "type": 3,
@@ -469,6 +569,26 @@
                     "options": {
                       "variant": "Algae"
                     }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/PathPlanner/targetPose",
+                    "logType": "Pose2d",
+                    "visible": false,
+                    "options": {
+                      "model": "Shrieking Eel",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/PathPlanner/activePath",
+                    "logType": "Pose2d[]",
+                    "visible": false,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
                   }
                 ],
                 "game": "2025 Field (Welded)",
@@ -479,26 +599,36 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -6.207182740539282e-15,
-                  4.810584712709552,
-                  -8.106401149702496
+                  2.667186236863164,
+                  1.8554552081687488,
+                  4.131655271905313
                 ],
                 "cameraTarget": [
-                  0,
-                  0.5,
-                  0
+                  1.19486194727207,
+                  0.2906220825046136,
+                  0.8752633556329479
                 ]
               },
-              "controlsHeight": 475
+              "controlsHeight": 0
+            },
+            {
+              "type": 4,
+              "title": "Table",
+              "controller": [
+                "NT:Running Commands"
+              ],
+              "controllerUUID": "ktiliw8rqfuhxgiriskw949kyhhpuj57",
+              "renderer": null,
+              "controlsHeight": 0
             },
             {
               "type": 1,
-              "title": "Line Graph",
+              "title": "Debugging Roll",
               "controller": {
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/SmartDashboard/Coral/Pivot/target",
+                    "logKey": "NT:/SmartDashboard/Coral/Roll/position",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -508,17 +638,96 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/SmartDashboard/Coral/Pivot/position",
+                    "logKey": "NT:/SmartDashboard/Coral/Roll/target",
                     "logType": "Number",
                     "visible": true,
                     "options": {
                       "color": "#e5b31b",
                       "size": "normal"
                     }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Roll/motor_position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Roll/out",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Roll/sim_mechanism_position",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
                   }
                 ],
-                "rightSources": [],
-                "discreteSources": [],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Pitch/target",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Coral/Pitch/position",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/SmartDashboard/Going to",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "Robot/m_robotContainer/coralSubsystem/currentPreset",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "Robot/m_robotContainer/coralSubsystem/arm/rollreset",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa"
+                    }
+                  }
+                ],
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -532,7 +741,58 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "nds733eby3sttyrsteo2suiow00i2ows",
+              "controllerUUID": "rf6v3vfi95awd8jfa147d2z79vvczasw",
+              "renderer": null,
+              "controlsHeight": 350
+            },
+            {
+              "type": 6,
+              "title": "Statistics",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "independent",
+                    "logKey": "NT:/limelight-bf/tid",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "NT:/limelight-bl/tid",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "NT:/limelight-br/tid",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "NT:/limelight-fr/tid",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  }
+                ],
+                "timeRange": "visible",
+                "rangeMin": 12,
+                "rangeMax": 22,
+                "stepSize": 1
+              },
+              "controllerUUID": "pt4ry3yz159fb4lybdxpfubjm8yf0xew",
               "renderer": null,
               "controlsHeight": 200
             }

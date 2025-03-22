@@ -183,7 +183,7 @@ public final class Constants {
     public static final double FULL_ROBOT_WIDTH = Units.inchesToMeters(37.50);
 
     public static final PIDConstants TRANSLATION_ASSIST = new PIDConstants(8, 0, 0.01);
-    public static final PIDConstants ROTATION_ASSIST = new PIDConstants(5.0, 0, 0.02);
+    public static final PIDConstants ROTATION_ASSIST = new PIDConstants(7.0, 0, 0.02);
 
     public static final class ModuleIndices {
       public static final int FRONT_LEFT = 0;
@@ -219,7 +219,7 @@ public final class Constants {
     public static double GEAR_RATIO = 45.0;
 
     public static double DEPLOY_SOFT_LIMIT = -6.0;
-    public static double CLIMB_SOFT_LIMIT = -2.8;
+    public static double CLIMB_SOFT_LIMIT = -2.5;
   }
 
   public static class Coral {
@@ -268,10 +268,10 @@ public final class Constants {
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          10.5,
+          7.0,
           0.0,
-          0.07,
-          new TrapezoidProfile.Constraints(13, 40.0));
+          0.1,
+          new TrapezoidProfile.Constraints(13, 20.0));
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90 + 40.0);
 
@@ -336,7 +336,7 @@ public final class Constants {
       public static double CAM_FORWARDS = Units.inchesToMeters(1.141310);
       public static double CAM_LEFT = Units.inchesToMeters(-8.606161);
       public static double CAM_UP = Units.inchesToMeters(36.004011);
-      public static Rotation2d CAM_YAW = Rotation2d.fromDegrees(-80.0);
+      public static Rotation2d CAM_YAW = Rotation2d.fromDegrees(-85.0);
 
       public static Pose3d CAM_POSE = new Pose3d(CAM_FORWARDS, CAM_LEFT, CAM_UP, new Rotation3d(CAM_YAW));
 
@@ -391,7 +391,7 @@ public final class Constants {
       public static final boolean MOTOR_INVERTED = true;
       public static final int LASERCAN_ID = 4; // NOTE: Beambreak will *probably* be a rockwell proximity sensor
                                                // wired into the SPARK max
-      public static final double HOLDING_THRESHOLD = Units.inchesToMeters(6.0);
+      public static final double HOLDING_THRESHOLD = Units.inchesToMeters(4.0);
       public static final double SHOT_THRESHOLD = Units.feetToMeters(1.4);
 
       public static final double POSITIVE_RATE_LIMIT = 5.0;
@@ -501,6 +501,7 @@ public final class Constants {
   public static final class AutoConstants {
     public static final double SCORE_WAIT_BEFORE_SECONDS = 0.25;
     public static final double SCORE_WAIT_AFTER_SECONDS = 0.15;
+    public static final double ALGAE_BARGE_SCORE_WAIT = 0.75;
   }
 
   public static final class PoseConstants {
@@ -512,7 +513,7 @@ public final class Constants {
     public static final double kVisionStdDevX = 5;
     public static final double kVisionStdDevTheta = 500;
 
-    private static AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    private static AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     public final static HashMap<Integer, Pose2d> tagPoses = new HashMap<Integer, Pose2d>() {
       {

@@ -26,8 +26,7 @@ import frc.robot.util.Reef;
 public class DriveCommand extends Command {
     @NotLogged
     private final SwerveSubsystem swerveSubsystem;
-    @NotLogged
-    private final XboxController xbox;
+    private final XboxController driverXbox;
 
     private SlewRateLimiter dsratelimiter = new SlewRateLimiter(4);
 
@@ -36,6 +35,7 @@ public class DriveCommand extends Command {
 
     public static enum DriveStyle {
         FIELD_ORIENTED,
+        ROBOT_ORIENTED,
         REEF_ASSIST,
         INTAKE_ASSIST
     };
@@ -54,7 +54,7 @@ public class DriveCommand extends Command {
 
     public DriveCommand(SwerveSubsystem swerveSubsystem, XboxController xbox) {
         this.swerveSubsystem = swerveSubsystem;
-        this.xbox = xbox;
+        this.driverXbox = xbox;
 
         rotationAssist.enableContinuousInput(-Math.PI, Math.PI);
         dsratelimiter.reset(SLOWMODE_MULT);
@@ -87,8 +87,8 @@ public class DriveCommand extends Command {
 
     @Override
     public void execute() {
-        Translation2d xyRaw = new Translation2d(-xbox.getLeftY(), -xbox.getLeftX());
-        double zSpeed = -MathUtil.applyDeadband(xbox.getRightX(), 0.1);
+        Translation2d xyRaw = new Translation2d(-driverXbox.getLeftY(), -driverXbox.getLeftX());
+        double zSpeed = -MathUtil.applyDeadband(driverXbox.getRightX(), 0.1);
         double xSpeed = MathUtil.applyDeadband(xyRaw.getX(), 0.08); // xbox.getLeftX();
         double ySpeed = MathUtil.applyDeadband(xyRaw.getY(), 0.08); // xbox.getLeftY();
 
@@ -97,12 +97,12 @@ public class DriveCommand extends Command {
         zSpeed *= DriveConstants.Z_SPEED_LIMIT * DriveConstants.MAX_ROBOT_RAD_VELOCITY;
 
         double dmult = dsratelimiter
-                .calculate((DRIVE_MULT - SLOWMODE_MULT) * xbox.getRightTriggerAxis() + SLOWMODE_MULT);
+                .calculate((DRIVE_MULT - SLOWMODE_MULT) * driverXbox.getRightTriggerAxis() + SLOWMODE_MULT);
         xSpeed *= dmult;
         ySpeed *= dmult;
         zSpeed *= dmult;
 
-        if (xbox.getStartButton()) {
+        if (driverXbox.getStartButton()) {
             swerveSubsystem.zeroHeading();
             Translation2d pospose = swerveSubsystem.getOdometryPose().getTranslation();
             swerveSubsystem.odometry.resetPosition(swerveSubsystem.getGyroRotation2d(),
@@ -110,12 +110,21 @@ public class DriveCommand extends Command {
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
         }
 
+        double assistMixer = MathUtil.clamp(driverXbox.getLeftTriggerAxis() * 2.0, 0.0, 1.0);
+        SmartDashboard.putNumber("Assist Mixer", assistMixer);
+        SmartDashboard.putString("Assist Mode", driveStyle.toString());
+
         ChassisSpeeds speeds = new ChassisSpeeds();
         switch (driveStyle) {
             case FIELD_ORIENTED:
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, zSpeed,
                         swerveSubsystem.getGyroRotation2d());
+                break;
+            case ROBOT_ORIENTED:
+                speeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+                        xSpeed, ySpeed, zSpeed,
+                        new Rotation2d(Math.PI));
                 break;
             case REEF_ASSIST:
                 Translation2d reefCenter = AllianceFlipUtil.apply(Reef.center);
@@ -134,11 +143,11 @@ public class DriveCommand extends Command {
 
                 double zAssist = MathUtil
                         .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
-                                rotationState.angle.getRadians()), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
-                                0.5
+                                rotationState.angle.getRadians()), -0.75 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.75
                                         * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                        xSpeed, ySpeed, zSpeed + zAssist,
+                        xSpeed, ySpeed, zSpeed + zAssist * assistMixer,
                         swerveSubsystem.getGyroRotation2d());
                 break;
             case INTAKE_ASSIST:
@@ -158,11 +167,12 @@ public class DriveCommand extends Command {
 
                 double zPid = MathUtil
                         .clamp(rotationAssist.calculate(swerveSubsystem.getOdometryPose().getRotation().getRadians(),
-                                targetRotation), -0.5 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
-                                0.5
+                                targetRotation), -0.75 * DriveConstants.MAX_ROBOT_RAD_VELOCITY,
+                                0.75
                                         * DriveConstants.MAX_ROBOT_RAD_VELOCITY);
                 speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                        xSpeed, ySpeed, zSpeed + zPid,
+                        xSpeed, ySpeed, zSpeed + zPid
+                                * assistMixer,
                         swerveSubsystem.getGyroRotation2d());
 
             default:
@@ -172,7 +182,7 @@ public class DriveCommand extends Command {
         // State transition logic
         isXstance = false;
         if (isXstance)
-            isXstance = !((xyRaw.getNorm() > 0.08) && !xbox.getBButton());
+            isXstance = !((xyRaw.getNorm() > 0.08) && !driverXbox.getBButton());
 
         // Drive execution logic
 

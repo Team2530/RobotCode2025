@@ -65,6 +65,8 @@ public class AlgaeIntake extends SubsystemBase {
         } else {
             holding_internal = false;
         }
+        SmartDashboard.putBoolean("Holding Algae", isHolding());
+
     }
 
     @Override

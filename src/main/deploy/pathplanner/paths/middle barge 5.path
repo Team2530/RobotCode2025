@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4764344262295084,
-        "y": 5.001997950819672
+        "x": 7.566,
+        "y": 5.029249999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4844877049180334,
-        "y": 5.685297131147542
+        "x": 7.0785,
+        "y": 3.264499999999999
       },
       "isLocked": false,
-      "linkedName": "top 6 end"
+      "linkedName": "barge shot"
     },
     {
       "anchor": {
-        "x": 1.55,
-        "y": 7.31
+        "x": 5.343,
+        "y": 2.972
       },
       "prevControl": {
-        "x": 2.089725409836065,
-        "y": 6.986331967213115
+        "x": 5.78175,
+        "y": 2.27
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "High Source"
+      "linkedName": "middle algae 3 end"
     }
   ],
   "rotationTargets": [],
@@ -33,20 +33,31 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Start Intake L",
-      "waypointRelativePos": 0.30635524171646056,
+      "name": "Stow",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Start Intake L"
+          "name": "Stow"
+        }
+      }
+    },
+    {
+      "name": "Grab High",
+      "waypointRelativePos": 0.5221995926680211,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Grab High"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -54,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": -150.0
   },
   "reversed": false,
-  "folder": "top autos",
+  "folder": "middle Barge",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 90.0
   },
   "useDefaultConstraints": false
 }

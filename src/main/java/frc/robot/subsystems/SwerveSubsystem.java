@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -31,6 +33,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -43,6 +46,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -93,6 +97,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
 
     private Field2d field = new Field2d();
+    private FieldObject2d fieldRobot = field.getRobotObject();
+
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
             .getStructTopic("Odometry Pose", Pose2d.struct).publish();
     StructArrayPublisher<SwerveModuleState> swerveStatesPublisher = NetworkTableInstance.getDefault()
@@ -196,7 +202,8 @@ public class SwerveSubsystem extends SubsystemBase {
         // SmartDashboard.putString("Odometry current pos",
         // getOdometryPose().toString());
 
-        field.setRobotPose(getOdometryPose());
+        fieldRobot.setPose(getOdometryPose());
+
         posePublisher.set(getOdometryPose());
 
         SmartDashboard.putData("Field", field);
@@ -349,5 +356,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public Vector<N3> createVisionMeasurementStdDevs(double x, double y, double theta) {
         return VecBuilder.fill(x, y, Units.degreesToRadians(theta));
+    }
+
+    public void setAutoStartingPose(Pose2d pose) {
+        // Trajectory autoVizTraj = new Trajectory(
+        // Arrays.asList(new Trajectory.State(0.0, 0.0, 0.0, pose, 0.0)));
+        FieldObject2d obj = field.getObject("autoStart");
+        obj.setPose(pose);
     }
 }

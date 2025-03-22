@@ -9,10 +9,11 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     public enum AlgaePresets {
         STOW(0.0),
-        REMOVE(100.0),
+        REMOVE(90.0),
         INTAKE(80.0),
         HOLD(80.0),
-        OUT_OF_THE_WAY(30.0);
+        OUT_OF_THE_WAY(30.0),
+        BARGE(130.0);
 
         public double armAngle;
 
@@ -26,7 +27,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         REMOVAL(-1.0, 20),
         PURGE(-1, 20),
         SHOOT(-1, 20),
-        HOLD(0.25, 15),
+        HOLD(0.4, 12),
         STOP(0, 20);
 
         public double outputPercentage;

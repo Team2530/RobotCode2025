@@ -1,11 +1,19 @@
 package frc.robot.subsystems.coral;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.function.Predicate;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -23,9 +31,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.IntegerArraySubscriber;
 import edu.wpi.first.networktables.IntegerSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -48,11 +60,17 @@ public class CoralReefVision extends SubsystemBase {
     private StructArrayPublisher<Pose3d> visionTargetsFieldSpace;
     private StructPublisher<Pose2d> scoringPoseFieldSpace;
     private StructPublisher<Pose3d> cameraPoseFieldSpace;
+    private BooleanPublisher hasTargetPublisher;
 
     // Inputs from vision coprocessor
+    NetworkTable visionRawTable = NetworkTableInstance.getDefault().getTable("CoralVision/raw");
     private final DoubleArraySubscriber inputAngles;
     private final DoubleArraySubscriber inputDistances;
-    private IntegerSubscriber inputFrame;
+    private final IntegerSubscriber inputFrame;
+
+    // private DatagramSocket visionDataRecever;
+    // private Alert visionAlert = new Alert("Vision Error", AlertType.kError);
+    // private byte[] dataBuf = new byte[1024];
 
     @Logged
     private ArrayList<Translation3d> visionTargets = new ArrayList<Translation3d>();
@@ -62,12 +80,10 @@ public class CoralReefVision extends SubsystemBase {
     private CoralReefVisionSim sim;
 
     public CoralReefVision() {
-        inputAngles = NetworkTableInstance.getDefault()
-                .getDoubleArrayTopic("CoralVision/raw/angles").subscribe(new double[] {});
-        inputDistances = NetworkTableInstance.getDefault()
-                .getDoubleArrayTopic("CoralVision/raw/distances").subscribe(new double[] {});
-        inputFrame = NetworkTableInstance.getDefault()
-                .getIntegerTopic("CoralVision/raw/frame").subscribe(0);
+        visionRawTable = NetworkTableInstance.getDefault().getTable("CoralVision/raw");
+        inputAngles = visionRawTable.getDoubleArrayTopic("angles").subscribe(new double[] {});
+        inputDistances = visionRawTable.getDoubleArrayTopic("distances").subscribe(new double[] {});
+        inputFrame = visionRawTable.getIntegerTopic("frame").subscribe(0);
 
         visionTargetPublisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("CoralVision/targets", Translation3d.struct).publish();
@@ -88,6 +104,8 @@ public class CoralReefVision extends SubsystemBase {
         cameraPoseFieldSpace = NetworkTableInstance.getDefault().getStructTopic("CoralVision/cameraPoseFieldSpace",
                 Pose3d.struct).publish();
 
+        hasTargetPublisher = NetworkTableInstance.getDefault().getBooleanTopic("CoralVision/hasTarget").publish();
+
         // Simulator for testing/debugging
         if (Robot.isSimulation()) {
             sim = new CoralReefVisionSim();
@@ -96,11 +114,13 @@ public class CoralReefVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        long frame = inputFrame.get();
-        if (frame != lastFrame) {
-            double[] angles = inputAngles.get();
-            double[] distances = inputDistances.get();
 
+        long frame = inputFrame.getAsLong();
+        double[] angles = inputAngles.get();
+        double[] distances = inputDistances.get();
+
+        boolean dataUpdated = true;// frame != lastFrame
+        if (dataUpdated) {
             lastFrame = frame;
 
             visionTargets.clear();
@@ -118,6 +138,18 @@ public class CoralReefVision extends SubsystemBase {
                     visionTargets.add(targetPos);
                 }
             }
+
+            // Filter out invalid vision targets
+            visionTargets.removeIf(new Predicate<Translation3d>() {
+                @Override
+                public boolean test(Translation3d t) {
+                    // TODO Auto-generated method stub
+                    double camDist = t.getDistance(Constants.Coral.Vision.CAM_POSE.getTranslation());
+                    if (camDist > 2.0 || camDist < 0.25)
+                        return true;
+                    return false;
+                }
+            });
 
             // Select a target
             double minDistance = Double.MAX_VALUE;
@@ -142,6 +174,8 @@ public class CoralReefVision extends SubsystemBase {
             cameraPublisher.set(Constants.Coral.Vision.CAM_POSE);
             visionTargetPublisher.set(visionTargets.toArray(new Translation3d[] {}));
         }
+
+        hasTargetPublisher.set(hasValidTarget());
     }
 
     @Override

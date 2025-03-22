@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.115,
-        "y": 5.2
+        "x": 5.09,
+        "y": 5.17
       },
       "prevControl": {
-        "x": 5.664749999999999,
-        "y": 5.155999999999999
+        "x": 5.6397499999999985,
+        "y": 5.125999999999999
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,13 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L4",
+      "name": "L4 Auto",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "L4"
+          "name": "L4 Auto"
         }
       }
     }

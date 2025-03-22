@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4764344262295084,
-        "y": 5.001997950819672
+        "x": 5.8305,
+        "y": 4.07
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4844877049180334,
-        "y": 5.685297131147542
+        "x": 7.089184426229508,
+        "y": 3.9590676229508195
       },
       "isLocked": false,
-      "linkedName": "top 6 end"
+      "linkedName": "middle start end"
     },
     {
       "anchor": {
-        "x": 1.55,
-        "y": 7.31
+        "x": 5.874,
+        "y": 4.246772540983606
       },
       "prevControl": {
-        "x": 2.089725409836065,
-        "y": 6.986331967213115
+        "x": 6.197643442622951,
+        "y": 4.354661885245902
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "High Source"
+      "linkedName": "middle algae end"
     }
   ],
   "rotationTargets": [],
@@ -33,20 +33,31 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Start Intake L",
-      "waypointRelativePos": 0.30635524171646056,
+      "name": "Stow",
+      "waypointRelativePos": 0.035030549898167326,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Start Intake L"
+          "name": "Stow"
+        }
+      }
+    },
+    {
+      "name": "Grab Low",
+      "waypointRelativePos": 0.3299389002036788,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Grab Low"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -54,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "top autos",
+  "folder": "middle Barge",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": -90.0
   },
   "useDefaultConstraints": false
 }

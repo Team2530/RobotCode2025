@@ -32,7 +32,17 @@ public class LimelightContainer {
     private static ArrayList<Limelight> limelights = new ArrayList<Limelight>();
 
     public LimelightContainer(Limelight... limelights) {
-        int[] validIDs = { 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18, 19, 20, 21, 22 };
+        int[] validIDs = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
+        /*
+         * Red coral source: 1, 2
+         * Blue coral source: 12, 13
+         * Blue processor: 3
+         * Red processor: 16
+         * Blue-side barge tags: 14, 15
+         * Red-side barge tags: 4, 5
+         * Red reef tags: 6, 7, ... 11
+         * Blue reef tags: 17, 18, ... 22
+         */
         for (Limelight limelight : limelights) {
             LimelightContainer.limelights.add(limelight);
             LimelightHelpers.SetFiducialIDFiltersOverride(limelight.getName(), validIDs);
@@ -124,6 +134,8 @@ public class LimelightContainer {
                         mt1.pose,
                         mt1.timestampSeconds);
                 limelight.pushPoseToShuffleboard(limelight.getName(), mt1.pose);
+            } else {
+                limelight.pushPoseToShuffleboard(limelight.getName(), new Pose2d());
             }
 
         }
@@ -157,6 +169,8 @@ public class LimelightContainer {
                         mt1.pose,
                         mt1.timestampSeconds);
                 limelight.pushPoseToShuffleboard(limelight.getName(), mt1.pose);
+            } else {
+                limelight.pushPoseToShuffleboard(limelight.getName(), new Pose2d());
             }
 
         }
@@ -198,6 +212,8 @@ public class LimelightContainer {
                         mt2.timestampSeconds);
                 limelight.pushPoseToShuffleboard(limelight.getName(), mt2.pose);
 
+            } else {
+                limelight.pushPoseToShuffleboard(limelight.getName(), new Pose2d());
             }
         }
 
