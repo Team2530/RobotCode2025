@@ -41,7 +41,7 @@ public class LimelightContainer {
          * Blue-side barge tags: 14, 15
          * Red-side barge tags: 4, 5
          * Red reef tags: 6, 7, ... 11
-         * Blu9e reef tags: 17, 18, ... 22
+         * Blue reef tags: 17, 18, ... 22
          */
         for (Limelight limelight : limelights) {
             LimelightContainer.limelights.add(limelight);
