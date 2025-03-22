@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.926749999999999,
+        "y": 4.2395
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.969585293687813,
+        "y": 4.485802938704918
+      },
+      "isLocked": false,
+      "linkedName": "Bump 1 end"
+    },
+    {
+      "anchor": {
+        "x": 7.67325,
+        "y": 4.999999999999999
+      },
+      "prevControl": {
+        "x": 7.901092649914669,
+        "y": 4.8971033193933735
+      },
+      "nextControl": {
+        "x": 7.371,
+        "y": 5.1365
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.67325,
+        "y": 4.999999999999999
+      },
+      "prevControl": {
+        "x": 7.426309258667733,
+        "y": 5.038990643368252
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Bump 2 end"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Bump auto",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -89.07595464722735
+  },
+  "useDefaultConstraints": true
+}
