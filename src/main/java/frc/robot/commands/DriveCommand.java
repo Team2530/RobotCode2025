@@ -110,7 +110,7 @@ public class DriveCommand extends Command {
                     new Pose2d(pospose, new Rotation2d(FieldConstants.getAlliance() == Alliance.Blue ? 0.0 : Math.PI)));
         }
 
-        double assistMixer = MathUtil.clamp(driverXbox.getLeftTriggerAxis() * 2.0, 0.0, 1.0);
+        double assistMixer = MathUtil.clamp(driverXbox.getLeftTriggerAxis(), 0.0, 1.0);
         SmartDashboard.putNumber("Assist Mixer", assistMixer);
         SmartDashboard.putString("Assist Mode", driveStyle.toString());
 
