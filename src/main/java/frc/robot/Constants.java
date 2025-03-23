@@ -519,7 +519,7 @@ public final class Constants {
   public static final class AutoConstants {
     public static final double SCORE_WAIT_BEFORE_SECONDS = 0.25;
     public static final double SCORE_WAIT_AFTER_SECONDS = 0.15;
-    public static final double ALGAE_BARGE_SCORE_WAIT = 1.0;
+    public static final double ALGAE_BARGE_SCORE_WAIT = 0.75;
   }
 
   public static final class PoseConstants {
