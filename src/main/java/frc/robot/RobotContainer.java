@@ -53,6 +53,7 @@ import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
 import frc.robot.util.LimelightContainer;
+import frc.robot.util.Reef;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -401,7 +402,6 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
-
         // Driver assist controls
         driverXbox.leftTrigger(0.05).onTrue(new ConditionalCommand(new InstantCommand(() -> {
             normalDrive.setDriveStyle(DriveStyle.REEF_ASSIST);
