@@ -58,6 +58,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.SwerveModuleConstants;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.RobotContainer;
 import frc.robot.Robot;
 
@@ -362,6 +363,6 @@ public class SwerveSubsystem extends SubsystemBase {
         // Trajectory autoVizTraj = new Trajectory(
         // Arrays.asList(new Trajectory.State(0.0, 0.0, 0.0, pose, 0.0)));
         FieldObject2d obj = field.getObject("autoStart");
-        obj.setPose(pose);
+        obj.setPose(AllianceFlipUtil.apply(pose));
     }
 }

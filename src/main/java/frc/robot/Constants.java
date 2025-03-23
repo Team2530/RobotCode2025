@@ -25,6 +25,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.util.AllianceFlipUtil;
@@ -87,10 +89,8 @@ public final class Constants {
           Units.inchesToMeters(25.824),
           Rotation2d.fromDegrees(144.011 - 90));
 
-      if (getAlliance() == Alliance.Red) {
-        leftCenterFace = AllianceFlipUtil.flip(leftCenterFace);
-        rightCenterFace = AllianceFlipUtil.flip(rightCenterFace);
-      }
+      leftCenterFace = AllianceFlipUtil.apply(leftCenterFace);
+      rightCenterFace = AllianceFlipUtil.apply(rightCenterFace);
 
       ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
 
@@ -102,10 +102,7 @@ public final class Constants {
 
     public static Pose2d getReefPose() {
       Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d());
-      if (getAlliance() == Alliance.Red) {
-        AllianceFlipUtil.flip(reef);
-      }
-      return reef;
+      return AllianceFlipUtil.apply(reef);
     }
   }
 

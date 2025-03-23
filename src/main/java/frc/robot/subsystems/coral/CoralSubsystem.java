@@ -51,6 +51,7 @@ import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.util.LimelightAssistance;
 
 import frc.robot.util.LimelightContainer;
+import frc.robot.util.Reef;
 
 @Logged
 public class CoralSubsystem extends SubsystemBase {
@@ -77,6 +78,12 @@ public class CoralSubsystem extends SubsystemBase {
             new MechanismLigament2d("Pitch", Constants.Coral.Pitch.PhysicalConstants.JOINT_LENGTH_METERS, 0));
     private final MechanismLigament2d rollMechanism = pivotMechanism.append(
             new MechanismLigament2d("Roll", Constants.Coral.Roll.PhysicalConstants.ARM_LENGTH_METERS, 90));
+
+    StructPublisher<Pose2d> leftPosePub = NetworkTableInstance.getDefault().getStructTopic("Debug/Left", Pose2d.struct)
+            .publish();
+    StructPublisher<Pose2d> rightPosePub = NetworkTableInstance.getDefault()
+            .getStructTopic("Debug/Right", Pose2d.struct)
+            .publish();
 
     public enum CoralPresets {
         LEVEL_1(0.05, Units.radiansToDegrees(0.662), 65, Units.radiansToDegrees(1.41), true),
@@ -194,6 +201,13 @@ public class CoralSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Pivot SUPPOSED to be in position", isPivotSupposedToBeInPosition());
 
         vision.publishDebugData(swerveSubsystem);
+
+        Pose2d left = swerveSubsystem.getOdometryPose().transformBy(new Transform2d(0, 0.2, new Rotation2d()));
+        Pose2d right = swerveSubsystem.getOdometryPose().transformBy(new Transform2d(0, -0.2, new Rotation2d()));
+        leftPosePub.set(left);
+        rightPosePub.set(right);
+        // Reef.putToShuffleboard();
+
     }
 
     private CoralPresets currentPreset = CoralPresets.STOW;
@@ -337,6 +351,8 @@ public class CoralSubsystem extends SubsystemBase {
         Pose2d closestSource = robotPose.nearest(FieldConstants.getSourcePoses());
         Pose2d left = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
         Pose2d right = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
+        leftPosePub.set(left);
+        rightPosePub.set(right);
 
         this.mirrorSetting = left.getTranslation().getDistance(closestSource.getTranslation()) < right.getTranslation()
                 .getDistance(closestSource.getTranslation()) ? MirrorPresets.LEFT : MirrorPresets.RIGHT;
@@ -352,6 +368,8 @@ public class CoralSubsystem extends SubsystemBase {
         Pose2d robotPose = swerveSubsystem.getOdometryPose();
         Pose2d left = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
         Pose2d right = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
+        leftPosePub.set(left);
+        rightPosePub.set(right);
 
         this.mirrorSetting = left.getTranslation().getDistance(FieldConstants.getReefPose().getTranslation()) < right
                 .getTranslation()
