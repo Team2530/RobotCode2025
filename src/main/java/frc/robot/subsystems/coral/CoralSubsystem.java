@@ -348,7 +348,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     public void autoSetMirrorIntake() {
         Pose2d robotPose = swerveSubsystem.getOdometryPose();
-        Pose2d closestSource = robotPose.nearest(FieldConstants.getSourcePoses());
+        Pose2d closestSource = robotPose.nearest(FieldConstants.getSourceSidePoses());
         Pose2d left = robotPose.transformBy(new Transform2d(0, 0.2, new Rotation2d()));
         Pose2d right = robotPose.transformBy(new Transform2d(0, -0.2, new Rotation2d()));
         leftPosePub.set(left);
