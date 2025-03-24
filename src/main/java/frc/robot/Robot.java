@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Second;
+
+import java.util.concurrent.TimeUnit;
+
 import org.littletonrobotics.urcl.URCL;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -107,6 +111,14 @@ public class Robot extends TimedRobot {
         versionTable.putValue("DIRTY", NetworkTableValue.makeBoolean(BuildConstants.DIRTY != 0));
 
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
+        // Start the faster control loop in RobotContainer.
+        addPeriodic(new Runnable() {
+            @Override
+            public void run() {
+                m_robotContainer.tight200HzLoop();
+            }
+        }, 1. / 200.);
     }
 
     /**

@@ -82,8 +82,7 @@ public class RobotContainer {
     // @Logged
     private final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
-    // private final CommandXboxController debugXboxController = new
-    // CommandXboxController(3);
+    private final CommandXboxController debugXboxController = new CommandXboxController(3);
 
     private final UsbCamera climbCamera;
 
@@ -262,11 +261,11 @@ public class RobotContainer {
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
 
         NamedCommands.registerCommand("Shoot Barge",
-                //new InstantCommand(() -> {
-                    //CommandScheduler.getInstance().schedule(
-                        new ShootAlgaeBargeCommand(algaeSubsystem, false)
-                            .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT));
-                //}));
+                // new InstantCommand(() -> {
+                // CommandScheduler.getInstance().schedule(
+                new ShootAlgaeBargeCommand(algaeSubsystem, false)
+                        .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT));
+        // }));
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -600,11 +599,11 @@ public class RobotContainer {
         // coralSubsystem.setCoralPresetRoll(CoralPresets.STOW);
         // }));
 
-        // debugXboxController.x().onTrue(new InstantCommand(() -> {
-        // coralSubsystem.setCoralPresetPivot(CoralPresets.LEVEL_4);
-        // })).onFalse(new InstantCommand(() -> {
-        // coralSubsystem.setCoralPresetPivot(CoralPresets.STOW);
-        // }));
+        debugXboxController.x().onTrue(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetPivot(CoralPresets.LEVEL_4);
+        })).onFalse(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetPivot(CoralPresets.STOW);
+        }));
         // debugXboxController.y().onTrue(new InstantCommand(() -> {
         // coralSubsystem.setCoralPresetElevator(CoralPresets.LEVEL_4);
         // })).onFalse(new InstantCommand(() -> {
@@ -654,5 +653,9 @@ public class RobotContainer {
 
     public CommandXboxController getOperatorXbox() {
         return operatorXbox;
+    }
+
+    public void tight200HzLoop() {
+        coralSubsystem.getCoralArm().periodic200Hz();
     }
 }

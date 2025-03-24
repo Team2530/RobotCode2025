@@ -1,6 +1,9 @@
 package frc.robot.subsystems.coral;
 
+import static edu.wpi.first.units.Units.Hertz;
+
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkAnalogSensorSim;
 import com.revrobotics.sim.SparkFlexSim;
@@ -64,7 +67,8 @@ public class CoralArm extends SubsystemBase {
             Coral.Pivot.PhysicalConstants.MOI,
             Coral.Pivot.PhysicalConstants.ARM_LENGTH_METERS,
             0.5 * Math.PI - Coral.Pivot.MAXIMUM_ANGLE,
-            0.5 * Math.PI + Coral.Pivot.MAXIMUM_ANGLE, true, 0.5 * Math.PI);
+            0.5 * Math.PI + Coral.Pivot.MAXIMUM_ANGLE, true, 0.5 * Math.PI, Units.degreesToRadians(0.01),
+            Units.degreesToRadians(0.01));
     private final SingleJointedArmSim simRollPhysics = new SingleJointedArmSim(
             Coral.Roll.PhysicalConstants.MOTOR,
             Coral.Roll.PhysicalConstants.NET_REDUCTION,
@@ -193,6 +197,10 @@ public class CoralArm extends SubsystemBase {
             readPitchEncoderPositionUpdate();
             readRollEncoderPositionUpdate();
         }
+
+        // Set pivot parts to faster update rates
+        pivotEncoder.getPosition().setUpdateFrequency(Hertz.of(200.0));
+        pivotMotor.setControlFramePeriodMs(1000 / 200);
     }
 
     double lastPitchReading = 0.0;
@@ -274,26 +282,6 @@ public class CoralArm extends SubsystemBase {
 
         // double pivotPosition = Robot.isSimulation() ? readPivotEncoderPosition()
         // : pivotMotor.getEncoder().getPosition();// readPivotEncoderPosition();
-        double pivotPosition = readPivotEncoderPosition();
-
-        double pivotFFout = pivotFeedforward.calculate(
-                Math.PI * 0.5 + pivotPosition,
-                pivotPID.getSetpoint().velocity);
-        double pivotPIDout = pivotPID.calculate(pivotPosition);
-        SmartDashboard.putNumber("Coral/Pivot/pid_out", pivotPIDout);
-        SmartDashboard.putNumber("Coral/Pivot/ff_out", pivotFFout);
-        SmartDashboard.putNumber("Coral/Pivot/out", pivotFFout + pivotPIDout);
-        SmartDashboard.putNumber("Coral/Pivot/position", pivotPosition);
-        SmartDashboard.putNumber("Coral/Pivot/target", pivotPID.getSetpoint().position);
-        SmartDashboard.putNumber("Coral/Pivot/velocity_target", pivotPID.getSetpoint().velocity);
-        SmartDashboard.putNumber("Coral/Pivot/velocity", readPivotEncoderVelocity());
-        SmartDashboard.putNumber("Coral/Pivot/goal", pivotPID.getGoal().position);
-        if (!Constants.Coral.Pivot.DBG_DISABLED)
-            pivotMotor.setVoltage(
-                    (Math.abs(pivotGoal) < Units.degreesToRadians(3)) ? MathUtil.applyDeadband(
-                            pivotPIDout + pivotFFout, 0.6) : pivotPIDout + pivotFFout);
-        if (Robot.isSimulation())
-            simPivotMotor.setAppliedOutput((pivotPIDout + pivotFFout) / 12.0);
 
         // TODO: Swap to roll motor relative encoder?
         // NEW: Use motor encoder
@@ -332,12 +320,52 @@ public class CoralArm extends SubsystemBase {
             simPitchMotor.setAppliedOutput(pitchPIDout / 12.0);
     }
 
+    public double lastPivotSetpointV = 0.0;
+
+    public void periodic200Hz() {
+        double pivotPosition = readPivotEncoderPosition();
+
+        double dSetpointVelDt = (pivotPID.getSetpoint().velocity - lastPivotSetpointV) / (1.0 / 200.0);
+        lastPivotSetpointV = pivotPID.getSetpoint().velocity;
+
+        double pivotFFout = pivotFeedforward.calculate(pivotPosition + Math.PI * 0.5, pivotPID.getSetpoint().velocity,
+                dSetpointVelDt);
+        double pivotPIDout = pivotPID.calculate(pivotPosition);
+        SmartDashboard.putNumber("Coral/Pivot/pid_out", pivotPIDout);
+        SmartDashboard.putNumber("Coral/Pivot/ff_out", pivotFFout);
+        SmartDashboard.putNumber("Coral/Pivot/out", pivotFFout + pivotPIDout);
+        SmartDashboard.putNumber("Coral/Pivot/position", pivotPosition);
+        SmartDashboard.putNumber("Coral/Pivot/target", pivotPID.getSetpoint().position);
+        SmartDashboard.putNumber("Coral/Pivot/velocity_target", pivotPID.getSetpoint().velocity);
+        SmartDashboard.putNumber("Coral/Pivot/velocity", readPivotEncoderVelocity());
+        SmartDashboard.putNumber("Coral/Pivot/goal", pivotPID.getGoal().position);
+
+        double outVoltage = (Math.abs(pivotPID.getSetpoint().position) < Units.degreesToRadians(3.0))
+                ? MathUtil.applyDeadband(
+                        pivotPIDout + pivotFFout, 0.5)
+                : pivotPIDout + pivotFFout;
+        // double outVoltage = pivotPIDout + pivotFFout;
+
+        // double outVoltage = 0.001;
+        if (!Constants.Coral.Pivot.DBG_DISABLED)
+            pivotMotor.setVoltage(outVoltage);
+
+        if (Robot.isSimulation()) {
+            simPivotPhysics.setInput(MathUtil.clamp(outVoltage, -12.0, 12.0));
+
+            simPivotPhysics.update(1.0 / 200.0);
+
+            simPivotEncoder.setPosition(simPivotPhysics.getAngleRads() - Math.PI * 0.5);
+            simPivotEncoder.iterate(simPivotPhysics.getVelocityRadPerSec(), 1.0 / 200.0);
+
+            pivotEncoder.setPosition(Units.radiansToRotations(simPivotPhysics.getAngleRads() - Math.PI * 0.5));
+        }
+    }
+
     @Override
     public void simulationPeriodic() {
         // update physics
-        simPivotPhysics
-                .setInput(MathUtil.clamp(simPivotMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(),
-                        -12.0, 12.0));
+
         simRollPhysics
                 .setInput(MathUtil.clamp(simRollMotor.getAppliedOutput() * RoboRioSim.getVInVoltage(),
                         -12.0, 12.0));
@@ -349,15 +377,14 @@ public class CoralArm extends SubsystemBase {
         SmartDashboard.putNumber("Coral/Pitch/sim_mechanism_position", simPitchPhysics.getAngleRads());
         SmartDashboard.putNumber("Coral/Pivot/sim_mechanism_position", simPivotPhysics.getAngleRads());
 
-        simPivotPhysics.update(0.02);
         simRollPhysics.update(0.02);
         simPitchPhysics.update(0.02);
 
         // update sim objects
-        simPivotMotor.iterate(
-                simPivotPhysics.getVelocityRadPerSec(),
-                RoboRioSim.getVInVoltage(),
-                0.02);
+        // simPivotMotor.iterate(
+        // simPivotPhysics.getVelocityRadPerSec(),
+        // RoboRioSim.getVInVoltage(),
+        // 0.02);
         simRollMotor.iterate(
                 simRollPhysics.getVelocityRadPerSec(),
                 RoboRioSim.getVInVoltage(),
@@ -384,8 +411,6 @@ public class CoralArm extends SubsystemBase {
                 0.02);
 
         // Pivot encoder simulation
-        simPivotEncoder.setPosition(simPivotPhysics.getAngleRads() - Math.PI * 0.5);
-        simPivotEncoder.iterate(simPivotPhysics.getVelocityRadPerSec(), 0.02);
     }
 
     // this should be relative to straight upwards.
@@ -531,9 +556,8 @@ public class CoralArm extends SubsystemBase {
     // }
 
     public double readPivotEncoderPosition() {
-        return Robot.isSimulation() ? (simPivotPhysics.getAngleRads() - Math.PI * 0.5)
-                : Units.rotationsToRadians((pivotEncoder.getPosition().getValueAsDouble()
-                        * (Constants.Coral.Pivot.ENCODER_INVERTED ? -1.0 : 1.0)));
+        return Units.rotationsToRadians((pivotEncoder.getPosition().getValueAsDouble()
+                * (Constants.Coral.Pivot.ENCODER_INVERTED ? -1.0 : 1.0)));
     }
 
     public double readPivotEncoderVelocity() {

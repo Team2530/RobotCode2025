@@ -255,26 +255,29 @@ public final class Constants {
 
       // TODO: Tune in simulation
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          12.0,
+          // 12.0,
+          // 0.0,
+          // 0.005,
+          25.0,
           0.0,
-          0.005,
-          new TrapezoidProfile.Constraints(7.0, 15.0));
+          1.0,
+          new TrapezoidProfile.Constraints(7.0, 7.0), 1.0 / 200.0);
 
       // Updated with THEORETICAL values
       public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(
           0.0,
-          0.0, // V
-          0.0, // 1.0, // V*s/rad
-          0.00// V*s^2/rad
+          0.45, // V
+          1.62, // 1.0, // V*s/rad
+          0.04// V*s^2/rad
       );
 
       public static class PhysicalConstants {
         public static final DCMotor MOTOR = DCMotor.getNeoVortex(1);
         public static final double NET_REDUCTION = 96.0;
-        public static final double MASS_KG = 4.7727;
-        public static final double ARM_LENGTH_METERS = 0.510;
+        public static final double MASS_KG = 6.35;
+        public static final double ARM_LENGTH_METERS = 0.4;
         public static final double JOINT_LENGTH_METERS = Units.inchesToMeters(23.0);
-        public static final double MOI = 0.2875548495; // Kg*m^2
+        public static final double MOI = 0.35; // Kg*m^2
       }
     }
 
