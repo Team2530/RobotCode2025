@@ -81,10 +81,9 @@ public class CoralElevator extends SubsystemBase {
         leader.getConfigurator().apply(elevatorConfig);
         leader.getConfigurator()
                 .apply(new MotorOutputConfigs()
-                        .withInverted(Constants.Elevator.Leader.INVERTED
-                                ? InvertedValue.Clockwise_Positive
-                                : InvertedValue.CounterClockwise_Positive)
-                        .withNeutralMode(NeutralModeValue.Brake));
+                    .withInverted(Constants.Elevator.Leader.INVERTED
+                        ? InvertedValue.Clockwise_Positive
+                        : InvertedValue.CounterClockwise_Positive).withNeutralMode(NeutralModeValue.Brake));
 
         follower.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
         follower.setControl(new Follower(Constants.Elevator.Leader.MOTOR_PORT, true));
