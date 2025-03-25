@@ -100,6 +100,27 @@ public final class Constants {
       return poses;
     }
 
+    public static ArrayList<Pose2d> getSourceSidePoses() {
+      Pose2d leftCenterFace = new Pose2d(
+          Units.inchesToMeters(33.526),
+          Units.inchesToMeters(291.176 + 300.0),
+          Rotation2d.fromDegrees(90 - 144.011));
+      Pose2d rightCenterFace = new Pose2d(
+          Units.inchesToMeters(33.526),
+          Units.inchesToMeters(25.824 - 300.0),
+          Rotation2d.fromDegrees(144.011 - 90));
+
+      leftCenterFace = AllianceFlipUtil.apply(leftCenterFace);
+      rightCenterFace = AllianceFlipUtil.apply(rightCenterFace);
+
+      ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
+
+      poses.add(leftCenterFace);
+      poses.add(rightCenterFace);
+
+      return poses;
+    }
+
     public static Pose2d getReefPose() {
       Pose2d reef = new Pose2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501), new Rotation2d());
       return AllianceFlipUtil.apply(reef);
@@ -216,7 +237,7 @@ public final class Constants {
     public static double GEAR_RATIO = 45.0;
 
     public static double DEPLOY_SOFT_LIMIT = -6.0;
-    public static double CLIMB_SOFT_LIMIT = -2.75;
+    public static double CLIMB_SOFT_LIMIT = -2.5;
   }
 
   public static class Coral {
