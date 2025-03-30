@@ -107,6 +107,13 @@ public class Robot extends TimedRobot {
         versionTable.putValue("DIRTY", NetworkTableValue.makeBoolean(BuildConstants.DIRTY != 0));
 
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
+        addPeriodic(new Runnable() {
+            @Override
+            public void run() {
+                m_robotContainer.periodic200Hz();
+            }
+        }, 1.0 / 200.0);
     }
 
     /**

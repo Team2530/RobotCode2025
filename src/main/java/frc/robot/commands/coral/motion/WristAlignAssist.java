@@ -21,6 +21,7 @@ public class WristAlignAssist extends Command {
     CoralReefVision vision;
     XboxController operatorController;
     SwerveSubsystem swerveSubsystem;
+    boolean resetAfter = true;
 
     public WristAlignAssist(CoralSubsystem coralSub, XboxController operatorController,
             SwerveSubsystem swerveSubsystem) {
@@ -28,6 +29,15 @@ public class WristAlignAssist extends Command {
         vision = coralSub.getVisionSubsystem();
         this.operatorController = operatorController;
         this.swerveSubsystem = swerveSubsystem;
+    }
+
+    public WristAlignAssist(CoralSubsystem coralSub, XboxController operatorController,
+            SwerveSubsystem swerveSubsystem, boolean resetAfter) {
+        coralSubsystem = coralSub;
+        vision = coralSub.getVisionSubsystem();
+        this.operatorController = operatorController;
+        this.swerveSubsystem = swerveSubsystem;
+        this.resetAfter = resetAfter;
     }
 
     @Override
@@ -83,6 +93,7 @@ public class WristAlignAssist extends Command {
     @Override
     public void end(boolean interrupted) {
         // Restore roll setting
-        coralSubsystem.setCoralPresetRoll(startingPreset);
+        if (resetAfter)
+            coralSubsystem.setCoralPresetRoll(startingPreset);
     }
 }

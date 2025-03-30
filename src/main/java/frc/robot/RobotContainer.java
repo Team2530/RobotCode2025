@@ -40,6 +40,7 @@ import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
 import frc.robot.commands.coral.ScoreCoralCommand;
+import frc.robot.commands.coral.motion.WristAlignAssist;
 import frc.robot.commands.coral.motion.WristStowSafety;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.Limelight;
@@ -171,6 +172,9 @@ public class RobotContainer {
                 }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
                         true)));
 
+        NamedCommands.registerCommand("Auto Aim",
+                new WristAlignAssist(coralSubsystem, operatorXbox.getHID(), swerveDriveSubsystem, false));
+
         NamedCommands.registerCommand("Score",
                 new WaitCommand(Constants.AutoConstants.SCORE_WAIT_BEFORE_SECONDS).andThen(new ScoreCoralCommand(
                         coralSubsystem).withTimeout(Constants.AutoConstants.SCORE_WAIT_AFTER_SECONDS)));
@@ -262,11 +266,11 @@ public class RobotContainer {
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
 
         NamedCommands.registerCommand("Shoot Barge",
-                //new InstantCommand(() -> {
-                    //CommandScheduler.getInstance().schedule(
-                        new ShootAlgaeBargeCommand(algaeSubsystem, false)
-                            .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT));
-                //}));
+                // new InstantCommand(() -> {
+                // CommandScheduler.getInstance().schedule(
+                new ShootAlgaeBargeCommand(algaeSubsystem, false)
+                        .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT));
+        // }));
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -654,5 +658,9 @@ public class RobotContainer {
 
     public CommandXboxController getOperatorXbox() {
         return operatorXbox;
+    }
+
+    public void periodic200Hz() {
+        coralSubsystem.getCoralArm().periodic200Hz();
     }
 }
