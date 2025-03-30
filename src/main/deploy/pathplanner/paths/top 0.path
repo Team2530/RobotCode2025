@@ -42,6 +42,17 @@
           "name": "L4"
         }
       }
+    },
+    {
+      "name": "Auto Aim",
+      "waypointRelativePos": 0.8453747467927094,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Auto Aim"
+        }
+      }
     }
   ],
   "globalConstraints": {

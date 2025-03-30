@@ -40,6 +40,7 @@ import frc.robot.commands.algae.ShootAlgaeCommand;
 import frc.robot.commands.coral.IntakeCoralCommand;
 import frc.robot.commands.coral.PurgeCoralIntakeCommand;
 import frc.robot.commands.coral.ScoreCoralCommand;
+import frc.robot.commands.coral.motion.WristAlignAssist;
 import frc.robot.commands.coral.motion.WristStowSafety;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.Limelight;
@@ -170,6 +171,9 @@ public class RobotContainer {
                     lockCoralArmPreset(CoralPresets.LEVEL_4);
                 }).andThen(coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier,
                         true)));
+
+        NamedCommands.registerCommand("Auto Aim",
+                new WristAlignAssist(coralSubsystem, operatorXbox.getHID(), swerveDriveSubsystem, false));
 
         NamedCommands.registerCommand("Score",
                 new WaitCommand(Constants.AutoConstants.SCORE_WAIT_BEFORE_SECONDS).andThen(new ScoreCoralCommand(
