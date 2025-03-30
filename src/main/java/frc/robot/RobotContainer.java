@@ -655,4 +655,8 @@ public class RobotContainer {
     public CommandXboxController getOperatorXbox() {
         return operatorXbox;
     }
+
+    public void periodic200Hz() {
+        coralSubsystem.getCoralArm().periodic200Hz();
+    }
 }

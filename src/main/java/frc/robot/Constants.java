@@ -306,6 +306,8 @@ public final class Constants {
     }
 
     public static class Pitch {
+      public static boolean DEBUG_PIDS = true;
+
       public static final int MOTOR_PORT = 16;
       public static final boolean MOTOR_INVERTED = true;
       public static final boolean ENCODER_INVERTED = true;
@@ -316,10 +318,12 @@ public final class Constants {
       public static final double MINIMUM_ANGLE = Units.degreesToRadians(-20.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          7.0,
+          7.0, // was 7.0
           0.0,
           0.0,
-          new TrapezoidProfile.Constraints(10.0, 30.0)); // Radians
+          new TrapezoidProfile.Constraints(10.0, 30.0), 1.0 / 200.0); // Radians
+
+      public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(0.0, 0.2, 0.91, 0.0);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);
