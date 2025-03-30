@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.343,
-        "y": 2.972
+        "x": 5.3235,
+        "y": 5.77025
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.343,
-        "y": 2.972
+        "x": 6.3235,
+        "y": 5.77025
       },
       "isLocked": false,
       "linkedName": "middle algae 3 end"
@@ -60,7 +60,7 @@
   "folder": "middle autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -150.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
