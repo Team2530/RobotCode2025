@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.1857500000000005,
-        "y": 3.313249999999999
+        "x": 6.7860000000000005,
+        "y": 5.204749999999999
       },
       "isLocked": false,
       "linkedName": "barge shot"
     },
     {
       "anchor": {
-        "x": 5.343,
-        "y": 2.972
+        "x": 5.3235,
+        "y": 5.77025
       },
       "prevControl": {
-        "x": 5.78175,
-        "y": 2.27
+        "x": 6.09375,
+        "y": 5.468
       },
       "nextControl": null,
       "isLocked": false,
@@ -56,8 +56,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -65,7 +65,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -150.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "middle Barge",
