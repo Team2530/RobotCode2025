@@ -48,14 +48,12 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Limelight.LimelightType;
 import frc.robot.subsystems.RobotMechanismLogger;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.algae.AlgaeIntake;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
 import frc.robot.subsystems.coral.CoralSubsystem.MirrorPresets;
 import frc.robot.util.LimelightContainer;
-import frc.robot.util.Reef;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -79,10 +77,10 @@ public class RobotContainer {
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BR, LL_BL, LL_FR);// , LL_BF);
 
     // @Logged
-    public final CommandXboxController driverXbox = new CommandXboxController(
+    private final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
     // @Logged
-    public final CommandXboxController operatorXbox = new CommandXboxController(
+    private final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
     private final CommandXboxController debugXboxController = new CommandXboxController(3);
 
@@ -262,27 +260,30 @@ public class RobotContainer {
             lockCoralArmPreset(CoralPresets.ALGAE_BARGE);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
-
+        
         NamedCommands.registerCommand("Go Processor", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_PROCESSOR);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
+        
+        NamedCommands.registerCommand("Shoot Processor",
+                // new InstantCommand(() -> {
+                // CommandScheduler.getInstance().schedule(
+                (new ShootAlgaeCommand(algaeSubsystem).andThen(new WaitCommand(1.25))).withTimeout(1.0));
+                
 
         NamedCommands.registerCommand("Shoot Barge", new ScheduleCommand(
-                new ShootAlgaeBargeCommand(algaeSubsystem, false)
-                        .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
-
-        NamedCommands.registerCommand("Shoot Processor",
-                (new ShootAlgaeCommand(algaeSubsystem).andThen(new WaitCommand(1.25))).withTimeout(1.0));
-
+                 new ShootAlgaeBargeCommand(algaeSubsystem, false)
+                         .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
+        
         NamedCommands.registerCommand("Auto Barge", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_BARGE);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))).andThen(
                         new ShootAlgaeBargeCommand(algaeSubsystem, false)
                                 .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
-
-        swerveDriveSubsystem.configurePathplanner();
+        
+                                swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 

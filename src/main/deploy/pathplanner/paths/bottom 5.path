@@ -57,7 +57,7 @@
     "rotation": 145.0
   },
   "reversed": false,
-  "folder": "processor autos",
+  "folder": "processor side autos",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 150.0
