@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.AnalogSensorConfig;
 import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SignalsConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -151,6 +152,7 @@ public class CoralArm extends SubsystemBase {
                         / Constants.Coral.Pitch.PhysicalConstants.NET_REDUCTION)
                         .velocityConversionFactor((2.0 * Math.PI)
                                 / (60.0 * Constants.Coral.Pitch.PhysicalConstants.NET_REDUCTION)))
+                .apply(new SignalsConfig().analogPositionPeriodMs(1000 / 200))
                 .apply(new SparkMaxConfig().inverted(Constants.Coral.Pitch.MOTOR_INVERTED)),
                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -332,12 +334,10 @@ public class CoralArm extends SubsystemBase {
 
         // Feedforwardsing
         // 0 is flat to the ground, pi/2 is straight up.
-        // double pitchGlobalPosition = ((Math.PI * 0.5 - pitchPosition) -
-        // lastPivotReading)
-        // * Math.sin(readRollEncoderPosition());
-        // double pitchFFout = Constants.Coral.Pitch.FEEDFORWARD
-        // .calculate(pitchGlobalPosition, pitchPID.getSetpoint().velocity);
-        double pitchFFout = 0.0;
+        double pitchGlobalPosition = ((pitchPosition + Math.PI / 2.0) - Math.abs(lastPivotReading));
+        double pitchFFout = Constants.Coral.Pitch.FEEDFORWARD
+                .calculate(pitchGlobalPosition, pitchPID.getSetpoint().velocity);
+        // double pitchFFout = 0.0;
 
         SmartDashboard.putNumber("Coral/Pitch/position", pitchPosition);
         SmartDashboard.putNumber("Coral/Pitch/velocity", dPitchDt);

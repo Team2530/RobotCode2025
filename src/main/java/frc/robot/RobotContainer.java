@@ -84,8 +84,7 @@ public class RobotContainer {
     // @Logged
     public final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
-    // private final CommandXboxController debugXboxController = new
-    // CommandXboxController(3);
+    private final CommandXboxController debugXboxController = new CommandXboxController(3);
 
     private final UsbCamera climbCamera;
 
@@ -603,11 +602,12 @@ public class RobotContainer {
         // }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
 
         /////////////////// DEBUGGING //////////////////
-        // debugXboxController.a().onTrue(new InstantCommand(() -> {
-        // coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
-        // })).onFalse(new InstantCommand(() -> {
-        // coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
-        // }));
+        debugXboxController.a().onTrue(new InstantCommand(() -> {
+            System.out.println("Going L4 Pitch");
+            coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
+        })).onFalse(new InstantCommand(() -> {
+            coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
+        }));
 
         // debugXboxController.b().onTrue(new InstantCommand(() -> {
         // coralSubsystem.setCoralPresetRoll(CoralPresets.LEVEL_4);
