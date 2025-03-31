@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Processor"
     }
   ],
   "rotationTargets": [
@@ -38,13 +38,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Processor Preset",
+      "name": "Go Processor",
       "waypointRelativePos": 0.2636190476190485,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Processor Preset"
+          "name": "Go Processor"
         }
       }
     }

@@ -39,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "Go Barge",
-      "waypointRelativePos": 0.7634285714285686,
+      "waypointRelativePos": 0.6158001350438894,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -50,7 +50,7 @@
     },
     {
       "name": "Shoot Barge",
-      "waypointRelativePos": 0.9447619047619045,
+      "waypointRelativePos": 0.9507089804186348,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

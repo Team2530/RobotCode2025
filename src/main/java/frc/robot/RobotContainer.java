@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -248,15 +249,13 @@ public class RobotContainer {
             lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_LOW);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
-                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
-                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
+                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))));
 
         NamedCommands.registerCommand("Grab High", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_ACQUIRE_HIGH);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
-                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))
-                .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier())));
+                .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))));
 
         NamedCommands.registerCommand("Go Barge", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_BARGE);

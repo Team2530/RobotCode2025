@@ -20,7 +20,7 @@ public class ShootAlgaeBargeCommand extends Command {
     public ShootAlgaeBargeCommand(AlgaeSubsystem subsystem, boolean autoExit) {
         this.subsystem = subsystem;
         this.autoExit = autoExit;
-        addRequirements(subsystem);
+        // addRequirements(subsystem);
     }
 
     @Override
