@@ -78,10 +78,10 @@ public class RobotContainer {
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BR, LL_BL, LL_FR);// , LL_BF);
 
     // @Logged
-    private final CommandXboxController driverXbox = new CommandXboxController(
+    public final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
     // @Logged
-    private final CommandXboxController operatorXbox = new CommandXboxController(
+    public final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
     // private final CommandXboxController debugXboxController = new
     // CommandXboxController(3);
