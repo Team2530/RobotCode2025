@@ -318,12 +318,12 @@ public final class Constants {
       public static final double MINIMUM_ANGLE = Units.degreesToRadians(-20.0);
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
-          22.0, // was 7.0
+          20.0, // was 7.0
           0.0,
-          0.05,
+          0.065,
           new TrapezoidProfile.Constraints(10.0, 30.0), 1.0 / 200.0); // Radians
 
-      public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(0.070, 0.19, 0.45, 0.0);
+      public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(0.050, 0.21, 0.44, 0.005);
 
       public static class PhysicalConstants {
         public static DCMotor MOTOR = DCMotor.getNeo550(1);

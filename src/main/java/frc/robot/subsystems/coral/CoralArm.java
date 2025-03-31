@@ -318,6 +318,8 @@ public class CoralArm extends SubsystemBase {
 
     }
 
+    double lastPitchVelTgt = 0.0;
+
     public void periodic200Hz() {
         if (Constants.Coral.Pitch.DEBUG_PIDS) {
             pitchPID.setP(SmartDashboard.getNumber("Coral/Pitch/PID/P", pitchPID.getP()));
@@ -329,6 +331,9 @@ public class CoralArm extends SubsystemBase {
         double dPitchDt = (pitchPosition - lastPitchReading) / (1.0 / 200.0);
         lastPitchReading = pitchPosition;
 
+        double dVelDt = (pitchPID.getSetpoint().velocity - lastPitchVelTgt) / (1.0 / 200.0);
+        lastPitchVelTgt = pitchPID.getSetpoint().velocity;
+
         // Pitch in here
         double pitchPIDout = pitchPID.calculate(pitchPosition);
 
@@ -336,7 +341,7 @@ public class CoralArm extends SubsystemBase {
         // 0 is flat to the ground, pi/2 is straight up.
         double pitchGlobalPosition = ((pitchPosition + Math.PI / 2.0) - Math.abs(lastPivotReading));
         double pitchFFout = Constants.Coral.Pitch.FEEDFORWARD
-                .calculate(pitchGlobalPosition, pitchPID.getSetpoint().velocity);
+                .calculate(pitchGlobalPosition, pitchPID.getSetpoint().velocity, dVelDt);
         // double pitchFFout = 0.0;
 
         SmartDashboard.putNumber("Coral/Pitch/position", pitchPosition);
