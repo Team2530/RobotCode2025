@@ -262,7 +262,7 @@ public class RobotContainer {
         }).andThen((coralSubsystem
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
         
-        NamedCommands.registerCommand("Processor Preset", new InstantCommand(() -> {
+        NamedCommands.registerCommand("Go Processor", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_PROCESSOR);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
@@ -270,17 +270,21 @@ public class RobotContainer {
         NamedCommands.registerCommand("Shoot Processor",
                 // new InstantCommand(() -> {
                 // CommandScheduler.getInstance().schedule(
-                new ShootAlgaeCommand(algaeSubsystem)
-                );
+                (new ShootAlgaeCommand(algaeSubsystem).andThen(new WaitCommand(1.25))).withTimeout(1.0));
+                
 
-        NamedCommands.registerCommand("Shoot Barge",
-                // new InstantCommand(() -> {
-                // CommandScheduler.getInstance().schedule(
-                new ShootAlgaeBargeCommand(algaeSubsystem)
-                        .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT));
-        // }));
-
-        swerveDriveSubsystem.configurePathplanner();
+        NamedCommands.registerCommand("Shoot Barge", new ScheduleCommand(
+                 new ShootAlgaeBargeCommand(algaeSubsystem, false)
+                         .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
+        
+        NamedCommands.registerCommand("Auto Barge", new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_BARGE);
+        }).andThen((coralSubsystem
+                .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))).andThen(
+                        new ShootAlgaeBargeCommand(algaeSubsystem, false)
+                                .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
+        
+                                swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
