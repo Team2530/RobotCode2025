@@ -33,6 +33,24 @@
           "data": {
             "name": "Shoot Processor"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Processor auto 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Processor auto 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Processor"
+          }
         }
       ]
     }

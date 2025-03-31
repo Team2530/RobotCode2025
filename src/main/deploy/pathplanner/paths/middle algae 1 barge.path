@@ -33,19 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow",
-      "waypointRelativePos": 0.035030549898167326,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Stow"
-        }
-      }
-    },
-    {
       "name": "Grab Low",
-      "waypointRelativePos": 0.3299389002036788,
+      "waypointRelativePos": 0.09723160027009274,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
