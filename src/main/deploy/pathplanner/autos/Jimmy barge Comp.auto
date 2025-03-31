@@ -61,6 +61,18 @@
               }
             ]
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle barge 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle barge 5"
+          }
         }
       ]
     }
