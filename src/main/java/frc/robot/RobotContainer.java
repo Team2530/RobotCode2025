@@ -77,10 +77,10 @@ public class RobotContainer {
     public static final LimelightContainer LLContainer = new LimelightContainer(LL_BR, LL_BL, LL_FR);// , LL_BF);
 
     // @Logged
-    private final CommandXboxController driverXbox = new CommandXboxController(
+    public final CommandXboxController driverXbox = new CommandXboxController(
             ControllerConstants.DRIVER_CONTROLLER_PORT);
     // @Logged
-    private final CommandXboxController operatorXbox = new CommandXboxController(
+    public final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
     private final CommandXboxController debugXboxController = new CommandXboxController(3);
 
@@ -260,30 +260,29 @@ public class RobotContainer {
             lockCoralArmPreset(CoralPresets.ALGAE_BARGE);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
-        
+
         NamedCommands.registerCommand("Go Processor", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_PROCESSOR);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))));
-        
+
         NamedCommands.registerCommand("Shoot Processor",
                 // new InstantCommand(() -> {
                 // CommandScheduler.getInstance().schedule(
                 (new ShootAlgaeCommand(algaeSubsystem).andThen(new WaitCommand(1.25))).withTimeout(1.0));
-                
 
         NamedCommands.registerCommand("Shoot Barge", new ScheduleCommand(
-                 new ShootAlgaeBargeCommand(algaeSubsystem, false)
-                         .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
-        
+                new ShootAlgaeBargeCommand(algaeSubsystem, false)
+                        .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
+
         NamedCommands.registerCommand("Auto Barge", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_BARGE);
         }).andThen((coralSubsystem
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))).andThen(
                         new ShootAlgaeBargeCommand(algaeSubsystem, false)
                                 .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
-        
-                                swerveDriveSubsystem.configurePathplanner();
+
+        swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -484,7 +483,10 @@ public class RobotContainer {
                         new ScoreCoralCommand(coralSubsystem), algaeSubsystem.getIntake().getHoldingSupplier()));
 
         // Operator tap-to-stow
-        operatorXbox.rightBumper().whileFalse(getStowCommand());
+        operatorXbox.rightBumper().whileFalse(getStowCommand()).onTrue(new InstantCommand(() -> {
+            selectedLevel = 0;
+            selectedScoringPreset = CoralPresets.STOW;
+        }));
         driverXbox.rightBumper().whileFalse(getSuperStowCommand());
 
         // Intake coral
@@ -555,17 +557,27 @@ public class RobotContainer {
                 .and(new BooleanSupplier() {
                     @Override
                     public boolean getAsBoolean() {
-                        return (selectedLevel == 2 || selectedLevel == 3 || selectedLevel == 1);
+                        return (selectedLevel == 2 || selectedLevel == 3 || selectedLevel == 1 || selectedLevel == 0);
                     }
                 }).whileTrue(
                         (new InstantCommand(() -> {
                             lockCoralArmPreset(
                                     selectedLevel == 2 ? CoralPresets.ALGAE_ACQUIRE_LOW
                                             : (selectedLevel == 1 ? CoralPresets.ALGAE_ACQUIRE_LOLLIPOP
-                                                    : CoralPresets.ALGAE_ACQUIRE_HIGH));
+                                                    : (selectedLevel == 0 ? CoralPresets.ALGAE_ACQUIRE_FLOOR
+                                                            : CoralPresets.ALGAE_ACQUIRE_HIGH)));
                         }).andThen(coralSubsystem
                                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
-                                .alongWith(new IntakeAlgaeCommand(algaeSubsystem))))
+                                .alongWith(new ConditionalCommand(new IntakeAlgaeCommand(
+                                        algaeSubsystem, true),
+                                        new IntakeAlgaeCommand(
+                                                algaeSubsystem),
+                                        new BooleanSupplier() {
+                                            @Override
+                                            public boolean getAsBoolean() {
+                                                return selectedLevel == 0;
+                                            }
+                                        }))))
                                 .onlyIf(algaeSubsystem.getIntake().getNotHoldingSupplier()));
         // Stow
         operatorXbox.leftTrigger().onFalse(getStowCommand());

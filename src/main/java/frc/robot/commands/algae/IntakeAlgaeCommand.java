@@ -9,16 +9,22 @@ import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 
 public class IntakeAlgaeCommand extends Command {
     private final AlgaeSubsystem subsystem;
+    private boolean isGround = false;
 
     public IntakeAlgaeCommand(AlgaeSubsystem subsystem) {
+        this(subsystem, false);
+    }
+
+    public IntakeAlgaeCommand(AlgaeSubsystem subsystem, boolean floor) {
         this.subsystem = subsystem;
         addRequirements(subsystem);
+        this.isGround = floor;
     }
 
     @Override
     public void initialize() {
         subsystem.setAlgaeIntakePreset(AlgaeIntakePresets.INTAKING);
-        subsystem.setAlgaePreset(AlgaePresets.INTAKE);
+        subsystem.setAlgaePreset(isGround ? AlgaePresets.INTAKE_FLOOR : AlgaePresets.INTAKE);
 
         if (Robot.isSimulation()) {
             SmartDashboard.putBoolean("[SIM] Holding Algae", true);

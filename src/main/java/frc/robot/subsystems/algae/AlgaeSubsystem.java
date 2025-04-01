@@ -11,6 +11,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         STOW(0.0),
         REMOVE(90.0),
         INTAKE(80.0),
+        INTAKE_FLOOR(95),
         HOLD(80.0),
         OUT_OF_THE_WAY(30.0),
         BARGE(130.0);
