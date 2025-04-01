@@ -256,6 +256,8 @@ public class RobotContainer {
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
                 .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))));
 
+        NamedCommands.registerCommand("Intake Algae", new IntakeAlgaeCommand(algaeSubsystem));
+
         NamedCommands.registerCommand("Go Barge", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_BARGE);
         }).andThen((coralSubsystem

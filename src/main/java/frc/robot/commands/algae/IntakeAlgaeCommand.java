@@ -1,5 +1,6 @@
 package frc.robot.commands.algae;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
@@ -38,7 +39,7 @@ public class IntakeAlgaeCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if (subsystem.isHolding()) {
+        if (subsystem.isHolding() || DriverStation.isAutonomous()) {
             subsystem.setAlgaeIntakePreset(AlgaeIntakePresets.HOLD);
             subsystem.setAlgaePreset(AlgaePresets.HOLD);
         } else {

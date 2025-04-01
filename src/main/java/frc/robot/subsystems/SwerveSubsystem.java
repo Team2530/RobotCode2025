@@ -92,7 +92,7 @@ public class SwerveSubsystem extends SubsystemBase {
             SwerveModuleConstants.BL_MOTOR_REVERSED,
             SwerveModuleConstants.BL_STEERING_MOTOR_REVERSED);
 
-    public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI);
+    public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
     private double navxSim;
 
     private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
@@ -142,6 +142,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
                 DriveFeedforwards.zeros(config.numModules));
+
+        navX.enableLogging(true);
     }
 
     public void configurePathplanner() {
@@ -209,6 +211,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         SmartDashboard.putData("Field", field);
         swerveStatesPublisher.set(getModuleStates());
+
+        SmartDashboard.putBoolean("NavX Connected", navX.isConnected());
     }
 
     public void zeroHeading() {
