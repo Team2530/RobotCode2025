@@ -98,13 +98,14 @@ public class RobotContainer {
     @Logged
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    @Logged
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem(swerveDriveSubsystem, operatorXbox.getHID());
-
     // NOTE: Removed to prevent loop overruns while the robot does not have the
     // algae manipulator installed.
     @Logged
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
+
+    @Logged
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(swerveDriveSubsystem, operatorXbox.getHID(),
+            algaeSubsystem);
 
     @Logged
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());

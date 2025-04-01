@@ -56,7 +56,7 @@ import frc.robot.util.Reef;
 @Logged
 public class CoralSubsystem extends SubsystemBase {
 
-    private final CoralArm arm = new CoralArm();
+    private final CoralArm arm;
     private final CoralIntake intake = new CoralIntake();
 
     private final CoralElevator elevator = new CoralElevator();
@@ -149,9 +149,14 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public CoralSubsystem(SwerveSubsystem swerveSubsystem, XboxController operatorController) {
+    @NotLogged
+    AlgaeSubsystem algaeSub;
+
+    public CoralSubsystem(SwerveSubsystem swerveSubsystem, XboxController operatorController, AlgaeSubsystem algae) {
         this.swerveSubsystem = swerveSubsystem;
         this.operatorController = operatorController;
+        this.algaeSub = algae;
+        arm = new CoralArm(this.algaeSub);
     }
 
     public enum MirrorPresets {
