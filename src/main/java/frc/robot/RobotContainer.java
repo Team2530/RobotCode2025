@@ -338,11 +338,51 @@ public class RobotContainer {
             CoralPresets preset = CoralPresets.STOW;
             // If holding algae, use the corresponding algae stow preset
             if (algaeSubsystem.isHolding()) {
-                if (lockedPreset == CoralPresets.ALGAE_ACQUIRE_HIGH || lockedPreset == CoralPresets.ALGAE_STOW_HIGH) {
-                    preset = CoralPresets.ALGAE_STOW_HIGH;
+                if (lockedPreset == CoralPresets.ALGAE_ACQUIRE_FLOOR || lockedPreset == CoralPresets.ALGAE_ACQUIRE_HIGH
+                        || lockedPreset == CoralPresets.ALGAE_ACQUIRE_LOW
+                        || lockedPreset == CoralPresets.ALGAE_ACQUIRE_LOLLIPOP) {
+                    switch (lockedPreset) {
+                        case ALGAE_ACQUIRE_HIGH:
+                            preset = CoralPresets.ALGAE_STOW_HIGH;
+                            break;
+                        case ALGAE_ACQUIRE_LOW:
+                            preset = CoralPresets.ALGAE_STOW_LOW;
+                            break;
+                        case ALGAE_ACQUIRE_FLOOR:
+                            preset = CoralPresets.ALGAE_STOW_GROUND;
+                            break;
+                        case ALGAE_ACQUIRE_LOLLIPOP:
+                            preset = CoralPresets.ALGAE_STOW_GROUND;
+                            break;
+                        default:
+                            preset = CoralPresets.STOW;
+                            break;
+                    }
                 } else {
-                    preset = CoralPresets.ALGAE_STOW_LOW;
+                    switch (selectedLevel) {
+                        case 0:
+                            preset = CoralPresets.ALGAE_STOW_GROUND;
+                            break;
+                        case 1:
+                            preset = CoralPresets.ALGAE_STOW_GROUND;
+                            break;
+                        case 2:
+                            preset = CoralPresets.ALGAE_STOW_LOW;
+                            break;
+                        case 3:
+                            preset = CoralPresets.ALGAE_STOW_HIGH;
+                            break;
+                        default:
+                            preset = CoralPresets.ALGAE_STOW_LOW;
+                            break;
+                    }
                 }
+                // if (lockedPreset == CoralPresets.ALGAE_ACQUIRE_HIGH || lockedPreset ==
+                // CoralPresets.ALGAE_STOW_HIGH) {
+                // preset = CoralPresets.ALGAE_STOW_HIGH;
+                // } else {
+                // preset = CoralPresets.ALGAE_STOW_LOW;
+                // }
             }
             isScoring = false;
             lockCoralArmPreset(preset);
@@ -526,6 +566,14 @@ public class RobotContainer {
 
         // Rumble on coral acquisition
         coralAquisition.onChange(new InstantCommand(() -> {
+            operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
+            driverXbox.setRumble(RumbleType.kBothRumble, 1.0);
+        }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
+            operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
+            driverXbox.setRumble(RumbleType.kBothRumble, 0.0);
+        })));
+
+        new Trigger(algaeSubsystem.getIntake().getHoldingSupplier()).onChange(new InstantCommand(() -> {
             operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
             driverXbox.setRumble(RumbleType.kBothRumble, 1.0);
         }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {

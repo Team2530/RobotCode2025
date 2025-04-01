@@ -25,7 +25,7 @@ public class ShootAlgaeBargeCommand extends Command {
 
     @Override
     public void initialize() {
-        subsystem.setAlgaeIntakePreset(AlgaeIntakePresets.SHOOT);
+        subsystem.setAlgaeIntakePreset(AlgaeIntakePresets.SHOOT_BARGE);
         subsystem.setAlgaePreset(AlgaePresets.BARGE);
 
         if (Robot.isSimulation()) {
