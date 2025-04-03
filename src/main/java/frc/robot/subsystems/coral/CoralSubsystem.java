@@ -91,9 +91,9 @@ public class CoralSubsystem extends SubsystemBase {
         LEVEL_3(0.650 - 0.085 - 0.003, 15 - 0.7, 90, 98.0
                 + 0.7, true,
                 true),
-        LEVEL_4(1.342 - 0.02, 19.5, 90, 110.062, true,
+        LEVEL_4(1.342 - 0.02, 19.5, 90, 114.5, true,
                 true),
-        INTAKE(0.08, 19.0, 90, 39, true),
+        INTAKE(0.08, 19.0, 90, 43, true),
         STOW(0.05, 0.0, 0.0, 0.0, true),
         ZERO(0.0, 0.0, 0.0, 0.0, false),
 

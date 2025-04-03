@@ -289,7 +289,7 @@ public final class Constants {
           7.0,
           0.0,
           0.1,
-          new TrapezoidProfile.Constraints(13, 20.0));
+          new TrapezoidProfile.Constraints(13, 21.5));
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90 + 40.0);
 
