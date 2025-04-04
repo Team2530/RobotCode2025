@@ -37,7 +37,7 @@ public class SwerveModule {
     private final RelativeEncoder steerMotorEncoder;
 
     private double driveEncSim = 0;
-    private double steerEncSim = 0;
+    private double steerEncSim = -10.0;
     double drive_command = 0;
     double steer_command = 0;
 
@@ -145,7 +145,7 @@ public class SwerveModule {
 
         if (Robot.isSimulation()) {
             driveEncSim = 0.f;
-            steerEncSim = 0.f;
+            steerEncSim = -10.f;
         }
     }
 
@@ -173,7 +173,7 @@ public class SwerveModule {
 
         driveMotor.set(drive_command);
 
-        steer_command = steerPID.calculate(getSteerPosition(), state.angle.getRadians());
+        steer_command = steerPID.calculate(getSteerPosition(), MathUtil.angleModulus(state.angle.getRadians()));
 
         steerMotor.setVoltage(12 * steer_command);
 
