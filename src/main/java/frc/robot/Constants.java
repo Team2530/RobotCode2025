@@ -289,7 +289,7 @@ public final class Constants {
           7.0,
           0.0,
           0.1,
-          new TrapezoidProfile.Constraints(13, 21.5));
+          new TrapezoidProfile.Constraints(13, 21.0));
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90 + 40.0);
 
@@ -306,7 +306,7 @@ public final class Constants {
     }
 
     public static class Pitch {
-      public static boolean DEBUG_PIDS = true;
+      public static boolean DEBUG_PIDS = false;
 
       public static final int MOTOR_PORT = 16;
       public static final boolean MOTOR_INVERTED = true;

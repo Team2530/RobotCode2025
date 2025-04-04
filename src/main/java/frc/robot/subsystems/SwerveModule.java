@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -150,19 +151,24 @@ public class SwerveModule {
 
     public SwerveModuleState getModuleState() {
         // FIXME: Negative?
-        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerPosition()));
+        return new SwerveModuleState(getDriveVelocity(), getSteerRotation()); // Go back to old if broke
     }
 
     public SwerveModulePosition getModulePosition() {
         // FIXME: Negative?
         return new SwerveModulePosition(getDrivePosition(),
-                new Rotation2d(getSteerPosition()));
+                getSteerRotation()); // Go back to old if broke
+    }
+
+    public Rotation2d getSteerRotation() {
+        return new Rotation2d(MathUtil.angleModulus(getSteerPosition()));
     }
 
     public void setModuleStateRaw(SwerveModuleState state) {
-        state.optimize(new Rotation2d(getSteerPosition()));
-        // COSINE COMPENSATION!!!
-        state.cosineScale(new Rotation2d(getSteerPosition()));
+        Rotation2d currentRotation = getSteerRotation();
+        state.optimize(currentRotation);
+        state.cosineScale(currentRotation);
+
         drive_command = state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY;
 
         driveMotor.set(drive_command);
