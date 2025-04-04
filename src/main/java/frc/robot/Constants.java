@@ -501,7 +501,7 @@ public final class Constants {
     // public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0,
     // 0.02);
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(12.0, 0, 0.005);
-    public static final PIDConstants ROTATION_PID = new PIDConstants(6.5, 0, 0.10); // was 10 and 9
+    public static final PIDConstants ROTATION_PID = new PIDConstants(7.0, 0, 0.10); // was 10 and 9
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
         TRANSLATION_PID,
