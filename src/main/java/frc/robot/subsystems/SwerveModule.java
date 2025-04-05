@@ -31,6 +31,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
@@ -68,8 +69,13 @@ public class SwerveModule {
 
     SimpleMotorFeedforward steerFeedforward = new SimpleMotorFeedforward(0.6, 0.4184);
 
-    private FlywheelSim steerSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1),
-            0.004096955, SwerveModuleConstants.STEERING_GEAR_RATIO), DCMotor.getNEO(1), 0.005);
+    // private FlywheelSim steerSim = new
+    // FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1),
+    // 0.004096955, SwerveModuleConstants.STEERING_GEAR_RATIO), DCMotor.getNEO(1),
+    // 0.005);
+    private SingleJointedArmSim steerSim = new SingleJointedArmSim(DCMotor.getNEO(1),
+            SwerveModuleConstants.STEERING_GEAR_RATIO, 0.004, 1.0, -Math.PI * 1000, Math.PI * 1000.0, false, 0.0,
+            0.005, 0.005);
 
     public SwerveModule(int steerCanID, int driveCanID, int absoluteEncoderPort, double absEncoderOffsetRadians,
             boolean isAbsoluteEncoderReversed, boolean motorReversed, boolean steerMotorReversed) {
@@ -137,11 +143,10 @@ public class SwerveModule {
 
         steerSim.setInputVoltage(steerMotor.getAppliedOutput() * 12.0);
 
-        steerMotorSim.setVelocity(steerSim.getAngularVelocityRadPerSec());
-        steerEncSim += steerSim.getAngularVelocityRadPerSec() * 0.02;
-        steerEncoderSim.setPosition(steerEncSim);
+        steerMotorSim.setVelocity(steerSim.getVelocityRadPerSec());
+        steerEncoderSim.setPosition(steerSim.getAngleRads());
 
-        steerMotorSim.iterate(steerSim.getAngularVelocityRadPerSec(), 12.0, 0.02);
+        steerMotorSim.iterate(steerSim.getVelocityRadPerSec(), 12.0, 0.02);
         steerSim.update(0.02);
     }
 
@@ -160,8 +165,8 @@ public class SwerveModule {
     }
 
     public double getSteerPosition() {
-        if (Robot.isSimulation())
-            return steerEncSim;
+        // if (Robot.isSimulation())
+        // return steerEncSim;
         return steerMotorEncoder.getPosition();
     }
 
