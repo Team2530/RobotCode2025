@@ -5,17 +5,21 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.google.flatbuffers.Constants;
 import com.revrobotics.*;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
@@ -51,7 +55,7 @@ public class SwerveModule {
     private static int moduleNumber = 0;
     int thisModuleNumber;
 
-    SlewRateLimiter turnratelimiter = new SlewRateLimiter(4.d);
+    SimpleMotorFeedforward steerFeedforward = new SimpleMotorFeedforward(0.6, 0.4184);
 
     public SwerveModule(int steerCanID, int driveCanID, int absoluteEncoderPort, double absEncoderOffsetRadians,
             boolean isAbsoluteEncoderReversed, boolean motorReversed, boolean steerMotorReversed) {
@@ -173,9 +177,17 @@ public class SwerveModule {
 
         driveMotor.set(drive_command);
 
-        steer_command = steerPID.calculate(getSteerPosition(), MathUtil.angleModulus(state.angle.getRadians()));
+        if (Robot.isSimulation()) {
+            steer_command = steerPID.calculate(getSteerPosition(),
+                    MathUtil.angleModulus(state.angle.getRadians()));
+        } else {
+            steer_command = steerPID.calculate(getSteerPosition(),
+                    MathUtil.angleModulus(state.angle.getRadians()));
+            steer_command += Math.abs(steer_command) < 0.025 ? 0.0
+                    : Math.signum(steer_command) * steerFeedforward.getKs();
+        }
 
-        steerMotor.setVoltage(12 * steer_command);
+        // steerMotor.setVoltage(12 * steer_command);
 
         SmartDashboard.putNumber("Steer" + thisModuleNumber, getSteerPosition());
         SmartDashboard.putNumber("Drive" + thisModuleNumber, drive_command);

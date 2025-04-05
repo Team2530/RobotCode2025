@@ -147,8 +147,8 @@ public final class Constants {
     // public static final double MODULE_KD = 0.03;
 
     // NOTE: This may need additional tuning!
-    public static final double MODULE_KP = 0.46368;// 0.75628;// 0.7491; //.5;
-    public static final double MODULE_KD = 0.0066806;// 0.0057682; //0.0076954;
+    public static final double MODULE_KP = 1.0;// 0.46368 goooood // 0.75628;// 0.7491; //.5;
+    public static final double MODULE_KD = 0.1;// 0.0066806 gooood // 0.0057682; //0.0076954;
 
     // --------- Front Left Module --------- \\
     public static final int FL_DRIVE_ID = 34;
@@ -190,8 +190,8 @@ public final class Constants {
   public static class DriveConstants {
     // TODO: Make sure that this is correct - this is from the SDS website but needs
     // empirical verification
-    public static final double MAX_MODULE_VELOCITY = 4.7244;
-    public static final double MAX_ROBOT_VELOCITY = 4.7244;
+    public static final double MAX_MODULE_VELOCITY = 4.2;
+    public static final double MAX_ROBOT_VELOCITY = 4.2;
     public static final double MAX_ROBOT_RAD_VELOCITY = 12.0; // Approx. Measured rads/sec
 
     public static final double MAX_MODULE_CURRENT = 70;
@@ -501,7 +501,7 @@ public final class Constants {
     // public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0,
     // 0.02);
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(12.0, 0, 0.005);
-    public static final PIDConstants ROTATION_PID = new PIDConstants(7.0, 0, 0.10); // was 10 and 9
+    public static final PIDConstants ROTATION_PID = new PIDConstants(7.0, 0, 0.20); // was 10 and 9
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
         TRANSLATION_PID,

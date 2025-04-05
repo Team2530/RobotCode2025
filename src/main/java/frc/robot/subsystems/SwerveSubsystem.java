@@ -161,7 +161,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                             // pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 (speeds, feedforward) -> {
-                    setChassisSpeedsAuto(speeds);
+                    setChassisSpeeds(speeds);
                 }, // Method that will drive the robot given ROBOT
                    // RELATIVE ChassisSpeeds
                 Constants.PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
