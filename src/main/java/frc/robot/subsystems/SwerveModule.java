@@ -7,17 +7,13 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.google.flatbuffers.Constants;
 import com.revrobotics.*;
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.epilogue.Logged;
@@ -27,11 +23,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Constants.*;
@@ -44,10 +36,6 @@ public class SwerveModule {
     private final MotorOutputConfigs driveConfig;
     private final SparkMax steerMotor;
     private final SparkMaxConfig steerConfig;
-    private final SparkClosedLoopController steerController;
-
-    private final SparkMaxSim steerMotorSim;
-    private final SparkRelativeEncoderSim steerEncoderSim;
 
     // private final RelativeEncoder driveMotorEncoder;
     private final RelativeEncoder steerMotorEncoder;
@@ -62,20 +50,12 @@ public class SwerveModule {
     private final double motorOffsetRadians;
     private final boolean isAbsoluteEncoderReversed;
 
-    // private final PIDController steerPID;
+    private final PIDController steerPID;
 
     private static int moduleNumber = 0;
     int thisModuleNumber;
 
     SimpleMotorFeedforward steerFeedforward = new SimpleMotorFeedforward(0.6, 0.4184);
-
-    // private FlywheelSim steerSim = new
-    // FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1),
-    // 0.004096955, SwerveModuleConstants.STEERING_GEAR_RATIO), DCMotor.getNEO(1),
-    // 0.005);
-    private SingleJointedArmSim steerSim = new SingleJointedArmSim(DCMotor.getNEO(1),
-            SwerveModuleConstants.STEERING_GEAR_RATIO, 0.004, 1.0, -Math.PI * 1000, Math.PI * 1000.0, false, 0.0,
-            0.005, 0.005);
 
     public SwerveModule(int steerCanID, int driveCanID, int absoluteEncoderPort, double absEncoderOffsetRadians,
             boolean isAbsoluteEncoderReversed, boolean motorReversed, boolean steerMotorReversed) {
@@ -97,10 +77,6 @@ public class SwerveModule {
         steerConfig.encoder
                 .positionConversionFactor(SwerveModuleConstants.STEER_ROTATION_TO_RADIANS)
                 .velocityConversionFactor(SwerveModuleConstants.STEER_RADIANS_PER_MINUTE);
-        steerConfig.closedLoop.p(SwerveModuleConstants.MODULE_KP).d(SwerveModuleConstants.MODULE_KD);
-        steerConfig.closedLoop.positionWrappingMinInput(-Math.PI).positionWrappingMaxInput(Math.PI)
-                .positionWrappingEnabled(true).feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        steerConfig.voltageCompensation(12.0);
         steerMotor.configure(steerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // driveMotorEncoder = driveMotor.get();
@@ -122,32 +98,18 @@ public class SwerveModule {
         // TalonFXConfiguration talon_cfg = new TalonFXConfiguration();
         // driveMotor.getConfigurator().apply(cfg);
 
-        // steerPID = new PIDController(SwerveModuleConstants.MODULE_KP, 0,
-        // SwerveModuleConstants.MODULE_KD);
-        // steerPID.enableContinuousInput(-Math.PI, Math.PI);
+        steerPID = new PIDController(SwerveModuleConstants.MODULE_KP, 0, SwerveModuleConstants.MODULE_KD);
+        steerPID.enableContinuousInput(-Math.PI, Math.PI);
 
         thisModuleNumber = moduleNumber;
         moduleNumber++;
 
         resetEncoders();
-
-        steerController = steerMotor.getClosedLoopController();
-        steerMotorSim = new SparkMaxSim(steerMotor, DCMotor.getNEO(1));
-        steerEncoderSim = new SparkRelativeEncoderSim(steerMotor);
     }
-
-    double lastSteerSim = 0.0;
 
     public void simulate_step() {
         driveEncSim += 0.02 * drive_command * (DriveConstants.MAX_MODULE_VELOCITY);
-
-        steerSim.setInputVoltage(steerMotor.getAppliedOutput() * 12.0);
-
-        steerMotorSim.setVelocity(steerSim.getVelocityRadPerSec());
-        steerEncoderSim.setPosition(steerSim.getAngleRads());
-
-        steerMotorSim.iterate(steerSim.getVelocityRadPerSec(), 12.0, 0.02);
-        steerSim.update(0.02);
+        steerEncSim += 0.02 * steer_command * (SwerveModuleConstants.STEER_MAX_RAD_SEC);
     }
 
     public double getDrivePosition() {
@@ -165,8 +127,8 @@ public class SwerveModule {
     }
 
     public double getSteerPosition() {
-        // if (Robot.isSimulation())
-        // return steerEncSim;
+        if (Robot.isSimulation())
+            return steerEncSim;
         return steerMotorEncoder.getPosition();
     }
 
@@ -215,19 +177,17 @@ public class SwerveModule {
 
         driveMotor.set(drive_command);
 
-        // if (Robot.isSimulation()) {
-        // steer_command = steerPID.calculate(getSteerPosition(),
-        // MathUtil.angleModulus(state.angle.getRadians()));
-        // } else {
-        // steer_command = steerPID.calculate(getSteerPosition(),
-        // MathUtil.angleModulus(state.angle.getRadians()));
-        // steer_command += Math.abs(steer_command) < 0.025 ? 0.0
-        // : Math.signum(steer_command) * steerFeedforward.getKs();
-        // }
+        if (Robot.isSimulation()) {
+            steer_command = steerPID.calculate(getSteerPosition(),
+                    MathUtil.angleModulus(state.angle.getRadians()));
+        } else {
+            steer_command = steerPID.calculate(getSteerPosition(),
+                    MathUtil.angleModulus(state.angle.getRadians()));
+            steer_command += Math.abs(steer_command) < 0.025 ? 0.0
+                    : Math.signum(steer_command) * steerFeedforward.getKs();
+        }
 
-        // steerMotor.setVoltage(12 * steer_command);
-
-        steerController.setReference(state.angle.getRadians(), ControlType.kPosition);
+        steerMotor.setVoltage(12 * steer_command);
 
         SmartDashboard.putNumber("Steer" + thisModuleNumber, getSteerPosition());
         SmartDashboard.putNumber("Drive" + thisModuleNumber, drive_command);
