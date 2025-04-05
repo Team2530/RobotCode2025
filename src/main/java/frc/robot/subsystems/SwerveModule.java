@@ -187,7 +187,7 @@ public class SwerveModule {
                     : Math.signum(steer_command) * steerFeedforward.getKs();
         }
 
-        // steerMotor.setVoltage(12 * steer_command);
+        steerMotor.setVoltage(12 * steer_command);
 
         SmartDashboard.putNumber("Steer" + thisModuleNumber, getSteerPosition());
         SmartDashboard.putNumber("Drive" + thisModuleNumber, drive_command);
