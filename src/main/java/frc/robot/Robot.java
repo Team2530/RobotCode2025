@@ -65,23 +65,7 @@ public class Robot extends TimedRobot {
     DoublePublisher csTimePublisher = NetworkTableInstance.getDefault()
             .getDoubleTopic("csTime").publish();
 
-    /**
-     * This function is run when the robot is first started up and should be used
-     * for any
-     * initialization code.
-     */
-    @Override
-    public void robotInit() {
-        m_robotContainer = new RobotContainer();
-
-        CanBridge.runTCP();
-
-        // Instantiate our RobotContainer. This will perform all our button bindings,
-        // and put our
-        // autonomous chooser on the dashboard.
-        // Shuffleboard.getTab("SmartDashboard").add(autoChooser);
-        SmartDashboard.putData(autoChooser);
-
+    public Robot() {
         DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog());
 
@@ -94,11 +78,30 @@ public class Robot extends TimedRobot {
         } else {
             URCL.start(DataLogManager.getLog());
         }
+
         Epilogue.configure(config -> {
             config.backend = new FileBackend(DataLogManager.getLog());
             config.minimumImportance = Logged.Importance.DEBUG;
         });
         Epilogue.bind(this);
+    }
+
+    /**
+     * This function is run when the robot is first started up and should be used
+     * for any
+     * initialization code.
+     */
+    @Override
+    public void robotInit() {
+        m_robotContainer = new RobotContainer();
+
+        // CanBridge.runTCP();
+
+        // Instantiate our RobotContainer. This will perform all our button bindings,
+        // and put our
+        // autonomous chooser on the dashboard.
+        // Shuffleboard.getTab("SmartDashboard").add(autoChooser);
+        SmartDashboard.putData(autoChooser);
 
         // Put git/code version metadata on networktables
         NetworkTable versionTable = NetworkTableInstance.getDefault().getTable("Version");

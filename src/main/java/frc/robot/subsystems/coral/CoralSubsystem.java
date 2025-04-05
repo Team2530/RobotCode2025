@@ -199,16 +199,20 @@ public class CoralSubsystem extends SubsystemBase {
         rollMechanism.setLength(Math.cos(Units.degreesToRadians(arm.getRollPositionDegrees()))
                 * Constants.Coral.Roll.PhysicalConstants.JOINT_LENGTH_METERS);
 
-        SmartDashboard.putData("Coral Mechanism", coralMechanism);
-        SmartDashboard.putBoolean("Elevator in position", isElevatorInPosition());
-        SmartDashboard.putBoolean("Roll in position", isRollInPosition());
-        SmartDashboard.putBoolean("Pitch in position", isPitchInPosition());
-        SmartDashboard.putBoolean("Pivot in position", isPivotInPosition());
+        // SmartDashboard.putData("Coral Mechanism", coralMechanism);
+        // SmartDashboard.putBoolean("Elevator in position", isElevatorInPosition());
+        // SmartDashboard.putBoolean("Roll in position", isRollInPosition());
+        // SmartDashboard.putBoolean("Pitch in position", isPitchInPosition());
+        // SmartDashboard.putBoolean("Pivot in position", isPivotInPosition());
 
-        SmartDashboard.putBoolean("Elevator SUPPOSED to be in position", isElevatorSupposedToBeInPosition());
-        SmartDashboard.putBoolean("Roll SUPPOSED to be in position", isRollSupposedToBeInPosition());
-        SmartDashboard.putBoolean("Pitch SUPPOSED to be in position", isPitchSupposedToBeInPosition());
-        SmartDashboard.putBoolean("Pivot SUPPOSED to be in position", isPivotSupposedToBeInPosition());
+        // SmartDashboard.putBoolean("Elevator SUPPOSED to be in position",
+        // isElevatorSupposedToBeInPosition());
+        // SmartDashboard.putBoolean("Roll SUPPOSED to be in position",
+        // isRollSupposedToBeInPosition());
+        // SmartDashboard.putBoolean("Pitch SUPPOSED to be in position",
+        // isPitchSupposedToBeInPosition());
+        // SmartDashboard.putBoolean("Pivot SUPPOSED to be in position",
+        // isPivotSupposedToBeInPosition());
 
         vision.publishDebugData(swerveSubsystem);
 
