@@ -148,7 +148,7 @@ public final class Constants {
 
     // NOTE: This may need additional tuning!
     public static final double MODULE_KP = 0.46368;// goooood // 0.75628;// 0.7491; //.5;
-    public static final double MODULE_KD = 0.0066806;// gooood // 0.0057682; //0.0076954;
+    public static final double MODULE_KD = 0.0050806;// gooood // 0.0057682; //0.0076954;
 
     // --------- Front Left Module --------- \\
     public static final int FL_DRIVE_ID = 34;

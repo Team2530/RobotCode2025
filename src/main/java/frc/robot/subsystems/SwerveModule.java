@@ -55,7 +55,7 @@ public class SwerveModule {
     private static int moduleNumber = 0;
     int thisModuleNumber;
 
-    SimpleMotorFeedforward steerFeedforward = new SimpleMotorFeedforward(0.3 / 12.0, 0.4184);
+    SimpleMotorFeedforward steerFeedforward = new SimpleMotorFeedforward(0.425 / 12.0, 0.4184);
 
     public SwerveModule(int steerCanID, int driveCanID, int absoluteEncoderPort, double absEncoderOffsetRadians,
             boolean isAbsoluteEncoderReversed, boolean motorReversed, boolean steerMotorReversed) {
