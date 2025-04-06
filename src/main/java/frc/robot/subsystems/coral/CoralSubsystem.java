@@ -474,22 +474,23 @@ public class CoralSubsystem extends SubsystemBase {
                         new MovePivot(
                                 this, currentLockedPresetSupplier),
                         new MoveRoll(
-                                this, currentLockedPresetSupplier),
+                                this, currentLockedPresetSupplier)
+                                .andThen(new WristAlignAssist(this, operatorController, swerveSubsystem)
+                                        .onlyIf(new BooleanSupplier() {
+                                            @Override
+                                            public boolean getAsBoolean() {
+                                                return currentLockedPresetSupplier.get().allowAimAssist
+                                                        && autoAlignEnable;
+                                            }
+                                        })),
                         new WaitRollApproach(this, 60.0).andThen(
                                 new WaitElevatorApproach(
                                         this, 0.5))
                                 .andThen(new MovePitch(
-                                        this, currentLockedPresetSupplier))))
-                .andThen(new WristAlignAssist(this, operatorController, swerveSubsystem)
-                        .onlyIf(new BooleanSupplier() {
-                            @Override
-                            public boolean getAsBoolean() {
-                                return currentLockedPresetSupplier.get().allowAimAssist && autoAlignEnable;
-                            }
-                        }))
-                .andThen(new InstantCommand(() -> {
-                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
-                }));
+                                        this, currentLockedPresetSupplier).andThen(new InstantCommand(() -> {
+                                            SmartDashboard.putString("Going to",
+                                                    currentLockedPresetSupplier.get().toString() + " - Done");
+                                        })))));
     }
 
     public Command getGoToLockedPresetSideFASTCommand(AlgaeSubsystem algaeSubsystem,
