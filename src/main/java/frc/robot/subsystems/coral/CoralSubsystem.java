@@ -473,14 +473,11 @@ public class CoralSubsystem extends SubsystemBase {
                                 this, currentLockedPresetSupplier),
                         new MovePivot(
                                 this, currentLockedPresetSupplier),
-                        new WaitArmClearance(
-                                this)
-                                .andThen(new MoveRoll(
-                                        this, currentLockedPresetSupplier)),
-                        new WaitRollApproach(
-                                this, 60.0).andThen(
-                                        new WaitElevatorApproach(
-                                                this, 0.5))
+                        new MoveRoll(
+                                this, currentLockedPresetSupplier),
+                        new WaitRollApproach(this, 60.0).andThen(
+                                new WaitElevatorApproach(
+                                        this, 0.5))
                                 .andThen(new MovePitch(
                                         this, currentLockedPresetSupplier))))
                 .andThen(new WristAlignAssist(this, operatorController, swerveSubsystem)
