@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -168,14 +170,25 @@ public class SwerveModule {
         return new Rotation2d(MathUtil.angleModulus(getSteerPosition()));
     }
 
+    double currentAcceleration = 0.0;
+
+    public void setAcceleration(double m_ss_acc) {
+        currentAcceleration = m_ss_acc;
+    }
+
     public void setModuleStateRaw(SwerveModuleState state) {
         Rotation2d currentRotation = getSteerRotation();
+        double orig_statevel = state.speedMetersPerSecond;
         state.optimize(currentRotation);
         state.cosineScale(currentRotation);
 
-        drive_command = state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY;
+        double state_comp = state.speedMetersPerSecond / orig_statevel;
 
-        driveMotor.set(drive_command);
+        drive_command = (state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY);
+
+        driveMotor.setVoltage(
+                drive_command * 12.0
+                        + currentAcceleration * DriveConstants.GLOBAL_kA * state_comp);
 
         if (Robot.isSimulation()) {
             steer_command = steerPID.calculate(getSteerPosition(),
@@ -187,7 +200,7 @@ public class SwerveModule {
                     : Math.signum(steer_command) * steerFeedforward.getKs();
         }
 
-        steerMotor.setVoltage(12 * steer_command);
+        steerMotor.setVoltage(12.0 * steer_command);
 
         // SmartDashboard.putNumber("Steer" + thisModuleNumber, getSteerPosition());
         // SmartDashboard.putNumber("Drive" + thisModuleNumber, drive_command);

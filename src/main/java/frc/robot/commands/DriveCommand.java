@@ -186,6 +186,7 @@ public class DriveCommand extends Command {
 
         // Drive execution logic
 
+        swerveSubsystem.zeroFeedforwards();
         if (isXstance) {
             swerveSubsystem.setXstance();
         } else {
