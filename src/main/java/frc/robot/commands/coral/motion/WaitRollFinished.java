@@ -13,6 +13,7 @@ public class WaitRollFinished extends Command {
     public WaitRollFinished(CoralSubsystem coralSub) {
         this.coralSub = coralSub;
         // addRequirements(coralSub);
+        SmartDashboard.putString("WaitRollFinish", "waiting");
     }
 
     @Override
@@ -22,6 +23,10 @@ public class WaitRollFinished extends Command {
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(coralSub.getRollGoalDegrees()) > 10) && coralSub.isRollSupposedToBeInPosition();
+        boolean finished = (Math.abs(coralSub.getRollGoalDegrees()) > 10) && coralSub.isRollSupposedToBeInPosition();
+        if (finished) {
+            SmartDashboard.putString("WaitRollFinish", "finished");
+        }
+        return finished;
     }
 }
