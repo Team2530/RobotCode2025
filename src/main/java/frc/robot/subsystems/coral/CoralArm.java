@@ -21,6 +21,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.Coral;
+import frc.robot.subsystems.algae.AlgaeSubsystem;
 
 @Logged
 public class CoralArm extends SubsystemBase {
@@ -116,7 +118,11 @@ public class CoralArm extends SubsystemBase {
     LinearFilter pitchEncFilter = LinearFilter.singlePoleIIR((0.02 / 2.0) * 4.0, (1.0 / 200.0));
     LinearFilter rollEncFilter = LinearFilter.singlePoleIIR(0.02 * 4.0, 0.02);
 
-    public CoralArm() {
+    @NotLogged
+    AlgaeSubsystem algaeSub;
+
+    public CoralArm(AlgaeSubsystem algae) {
+        this.algaeSub = algae;
         AnalogSensorConfig wristEncConfig = new AnalogSensorConfig();
 
         pivotMotor.configure(
@@ -353,7 +359,12 @@ public class CoralArm extends SubsystemBase {
         SmartDashboard.putNumber("Coral/Pitch/pid_out", pitchPIDout);
         SmartDashboard.putNumber("Coral/Pitch/ff_out", pitchFFout);
         if (!Constants.Coral.Pitch.DBG_DISABLED)
-            pitchMotor.setVoltage(pitchPIDout + pitchFFout);
+            if (algaeSub.isHolding()) {
+                pitchMotor.setVoltage(pitchPIDout * 0.25 + pitchFFout * 0.75);
+            } else {
+                pitchMotor.setVoltage(pitchPIDout + pitchFFout);
+            }
+
         if (Robot.isSimulation())
             simPitchMotor.setAppliedOutput(pitchPIDout / 12.0);
     }

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.045,
-        "y": 5.53625
+        "x": 7.072745901639344,
+        "y": 5.907069672131148
       },
       "isLocked": false,
       "linkedName": "middle algae end"
     },
     {
       "anchor": {
-        "x": 7.7025,
-        "y": 5.22425
+        "x": 7.720081967213115,
+        "y": 5.619364754098362
       },
       "prevControl": {
-        "x": 6.766500000000001,
-        "y": 5.24375
+        "x": 6.701127049180327,
+        "y": 5.607377049180328
       },
       "nextControl": null,
       "isLocked": false,

@@ -82,7 +82,8 @@ public class RobotContainer {
     // @Logged
     public final CommandXboxController operatorXbox = new CommandXboxController(
             ControllerConstants.OPERATOR_CONTROLLER_PORT);
-    private final CommandXboxController debugXboxController = new CommandXboxController(3);
+    // private final CommandXboxController debugXboxController = new
+    // CommandXboxController(3);
 
     private final UsbCamera climbCamera;
 
@@ -98,13 +99,14 @@ public class RobotContainer {
     @Logged
     private final DriveCommand normalDrive = new DriveCommand(swerveDriveSubsystem, driverXbox.getHID());
 
-    @Logged
-    private final CoralSubsystem coralSubsystem = new CoralSubsystem(swerveDriveSubsystem, operatorXbox.getHID());
-
     // NOTE: Removed to prevent loop overruns while the robot does not have the
     // algae manipulator installed.
     @Logged
     private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
+
+    @Logged
+    private final CoralSubsystem coralSubsystem = new CoralSubsystem(swerveDriveSubsystem, operatorXbox.getHID(),
+            algaeSubsystem);
 
     @Logged
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorXbox.getHID());
@@ -256,6 +258,8 @@ public class RobotContainer {
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
                 .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))));
 
+        NamedCommands.registerCommand("Intake Algae", new IntakeAlgaeCommand(algaeSubsystem));
+
         NamedCommands.registerCommand("Go Barge", new InstantCommand(() -> {
             lockCoralArmPreset(CoralPresets.ALGAE_BARGE);
         }).andThen((coralSubsystem
@@ -338,11 +342,51 @@ public class RobotContainer {
             CoralPresets preset = CoralPresets.STOW;
             // If holding algae, use the corresponding algae stow preset
             if (algaeSubsystem.isHolding()) {
-                if (lockedPreset == CoralPresets.ALGAE_ACQUIRE_HIGH || lockedPreset == CoralPresets.ALGAE_STOW_HIGH) {
-                    preset = CoralPresets.ALGAE_STOW_HIGH;
+                if (lockedPreset == CoralPresets.ALGAE_ACQUIRE_FLOOR || lockedPreset == CoralPresets.ALGAE_ACQUIRE_HIGH
+                        || lockedPreset == CoralPresets.ALGAE_ACQUIRE_LOW
+                        || lockedPreset == CoralPresets.ALGAE_ACQUIRE_LOLLIPOP) {
+                    switch (lockedPreset) {
+                        case ALGAE_ACQUIRE_HIGH:
+                            preset = CoralPresets.ALGAE_STOW_HIGH;
+                            break;
+                        case ALGAE_ACQUIRE_LOW:
+                            preset = CoralPresets.ALGAE_STOW_LOW;
+                            break;
+                        case ALGAE_ACQUIRE_FLOOR:
+                            preset = CoralPresets.ALGAE_STOW_GROUND;
+                            break;
+                        case ALGAE_ACQUIRE_LOLLIPOP:
+                            preset = CoralPresets.ALGAE_STOW_GROUND;
+                            break;
+                        default:
+                            preset = CoralPresets.STOW;
+                            break;
+                    }
                 } else {
-                    preset = CoralPresets.ALGAE_STOW_LOW;
+                    switch (selectedLevel) {
+                        case 0:
+                            preset = CoralPresets.ALGAE_STOW_GROUND;
+                            break;
+                        case 1:
+                            preset = CoralPresets.ALGAE_STOW_GROUND;
+                            break;
+                        case 2:
+                            preset = CoralPresets.ALGAE_STOW_LOW;
+                            break;
+                        case 3:
+                            preset = CoralPresets.ALGAE_STOW_HIGH;
+                            break;
+                        default:
+                            preset = CoralPresets.ALGAE_STOW_LOW;
+                            break;
+                    }
                 }
+                // if (lockedPreset == CoralPresets.ALGAE_ACQUIRE_HIGH || lockedPreset ==
+                // CoralPresets.ALGAE_STOW_HIGH) {
+                // preset = CoralPresets.ALGAE_STOW_HIGH;
+                // } else {
+                // preset = CoralPresets.ALGAE_STOW_LOW;
+                // }
             }
             isScoring = false;
             lockCoralArmPreset(preset);
@@ -533,6 +577,14 @@ public class RobotContainer {
             driverXbox.setRumble(RumbleType.kBothRumble, 0.0);
         })));
 
+        new Trigger(algaeSubsystem.getIntake().getHoldingSupplier()).onChange(new InstantCommand(() -> {
+            operatorXbox.setRumble(RumbleType.kBothRumble, 1.0);
+            driverXbox.setRumble(RumbleType.kBothRumble, 1.0);
+        }).andThen(new WaitCommand(0.1)).andThen(new InstantCommand(() -> {
+            operatorXbox.setRumble(RumbleType.kBothRumble, 0.0);
+            driverXbox.setRumble(RumbleType.kBothRumble, 0.0);
+        })));
+
         // Algae removal
         operatorXbox.leftBumper().and(new BooleanSupplier() {
             @Override
@@ -615,12 +667,12 @@ public class RobotContainer {
         // }).whileTrue(new ShootAlgaeCommand(algaeSubsystem));
 
         /////////////////// DEBUGGING //////////////////
-        debugXboxController.a().onTrue(new InstantCommand(() -> {
-            System.out.println("Going L4 Pitch");
-            coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
-        })).onFalse(new InstantCommand(() -> {
-            coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
-        }));
+        // debugXboxController.a().onTrue(new InstantCommand(() -> {
+        // System.out.println("Going L4 Pitch");
+        // coralSubsystem.setCoralPresetPitch(CoralPresets.LEVEL_4);
+        // })).onFalse(new InstantCommand(() -> {
+        // coralSubsystem.setCoralPresetPitch(CoralPresets.STOW);
+        // }));
 
         // debugXboxController.b().onTrue(new InstantCommand(() -> {
         // coralSubsystem.setCoralPresetRoll(CoralPresets.LEVEL_4);

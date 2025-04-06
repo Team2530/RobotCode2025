@@ -27,7 +27,8 @@ public class AlgaeSubsystem extends SubsystemBase {
         INTAKING(1.0, 20),
         REMOVAL(-1.0, 20),
         PURGE(-1, 20),
-        SHOOT(-1, 20),
+        SHOOT_BARGE(-1, 20),
+        SHOOT(-0.5, 20),
         HOLD(0.8, 12), // Used to be 0.5 percent
         STOP(0, 20);
 

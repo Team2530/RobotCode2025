@@ -18,11 +18,16 @@ public class WaitElevatorApproach extends Command {
 
     @Override
     public void initialize() {
-        System.out.printf("Finishing %f meters before\n", metersBefore);
+        SmartDashboard.putString("WaitElevatorApproach", "waiting " + (Double.toString(metersBefore)) + "m");
     }
 
     @Override
     public boolean isFinished() {
-        return coralSub.getElevator().getPosition() > (coralSub.getElevator().getGoalPosition() - metersBefore);
+        boolean finished = coralSub.getElevator()
+                .getPosition() > (coralSub.getElevator().getGoalPosition() - metersBefore);
+        if (finished) {
+            SmartDashboard.putString("WaitElevatorApproach", "finished");
+        }
+        return finished;
     }
 }

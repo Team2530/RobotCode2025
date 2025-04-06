@@ -1,20 +1,27 @@
 package frc.robot.subsystems;
 
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.google.flatbuffers.Constants;
 import com.revrobotics.*;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
@@ -36,7 +43,7 @@ public class SwerveModule {
     private final RelativeEncoder steerMotorEncoder;
 
     private double driveEncSim = 0;
-    private double steerEncSim = 0;
+    private double steerEncSim = -10.0;
     double drive_command = 0;
     double steer_command = 0;
 
@@ -50,7 +57,7 @@ public class SwerveModule {
     private static int moduleNumber = 0;
     int thisModuleNumber;
 
-    SlewRateLimiter turnratelimiter = new SlewRateLimiter(4.d);
+    SimpleMotorFeedforward steerFeedforward = new SimpleMotorFeedforward(0.425 / 12.0, 0.4184);
 
     public SwerveModule(int steerCanID, int driveCanID, int absoluteEncoderPort, double absEncoderOffsetRadians,
             boolean isAbsoluteEncoderReversed, boolean motorReversed, boolean steerMotorReversed) {
@@ -144,35 +151,59 @@ public class SwerveModule {
 
         if (Robot.isSimulation()) {
             driveEncSim = 0.f;
-            steerEncSim = 0.f;
+            steerEncSim = -10.f;
         }
     }
 
     public SwerveModuleState getModuleState() {
         // FIXME: Negative?
-        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerPosition()));
+        return new SwerveModuleState(getDriveVelocity(), getSteerRotation()); // Go back to old if broke
     }
 
     public SwerveModulePosition getModulePosition() {
         // FIXME: Negative?
         return new SwerveModulePosition(getDrivePosition(),
-                new Rotation2d(getSteerPosition()));
+                getSteerRotation()); // Go back to old if broke
+    }
+
+    public Rotation2d getSteerRotation() {
+        return new Rotation2d(MathUtil.angleModulus(getSteerPosition()));
+    }
+
+    double currentAcceleration = 0.0;
+
+    public void setAcceleration(double m_ss_acc) {
+        currentAcceleration = m_ss_acc;
     }
 
     public void setModuleStateRaw(SwerveModuleState state) {
-        state.optimize(new Rotation2d(getSteerPosition()));
-        // COSINE COMPENSATION!!!
-        state.cosineScale(new Rotation2d(getSteerPosition()));
-        drive_command = state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY;
+        Rotation2d currentRotation = getSteerRotation();
+        double orig_statevel = state.speedMetersPerSecond;
+        state.optimize(currentRotation);
+        state.cosineScale(currentRotation);
 
-        driveMotor.set(drive_command);
+        double state_comp = state.speedMetersPerSecond / orig_statevel;
 
-        steer_command = steerPID.calculate(getSteerPosition(), state.angle.getRadians());
+        drive_command = (state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY);
 
-        steerMotor.setVoltage(12 * steer_command);
+        driveMotor.setVoltage(
+                drive_command * 12.0
+                        + currentAcceleration * DriveConstants.GLOBAL_kA * state_comp);
 
-        SmartDashboard.putNumber("Steer" + thisModuleNumber, getSteerPosition());
-        SmartDashboard.putNumber("Drive" + thisModuleNumber, drive_command);
+        if (Robot.isSimulation()) {
+            steer_command = steerPID.calculate(getSteerPosition(),
+                    MathUtil.angleModulus(state.angle.getRadians()));
+        } else {
+            steer_command = steerPID.calculate(getSteerPosition(),
+                    MathUtil.angleModulus(state.angle.getRadians()));
+            steer_command += Math.abs(steer_command) < 0.025 ? 0.0
+                    : Math.signum(steer_command) * steerFeedforward.getKs();
+        }
+
+        steerMotor.setVoltage(12.0 * steer_command);
+
+        // SmartDashboard.putNumber("Steer" + thisModuleNumber, getSteerPosition());
+        // SmartDashboard.putNumber("Drive" + thisModuleNumber, drive_command);
     }
 
     public void setModuleState(SwerveModuleState state) {

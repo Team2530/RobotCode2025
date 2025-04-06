@@ -17,12 +17,17 @@ public class WaitArmClearance extends Command {
 
     @Override
     public void initialize() {
+        SmartDashboard.putString("WaitArmClearance", "waiting");
 
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(coralSub.getPivotPositionDegrees()) > Units
+        boolean finished = Math.abs(coralSub.getPivotPositionDegrees()) > Units
                 .radiansToDegrees(Constants.Coral.Pivot.ELEVATOR_BORDER_ANGLE);
+        if (finished) {
+            SmartDashboard.putString("WaitArmClearance", "finished");
+        }
+        return finished;
     }
 }

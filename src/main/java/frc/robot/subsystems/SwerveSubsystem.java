@@ -92,7 +92,7 @@ public class SwerveSubsystem extends SubsystemBase {
             SwerveModuleConstants.BL_MOTOR_REVERSED,
             SwerveModuleConstants.BL_STEERING_MOTOR_REVERSED);
 
-    public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI);
+    public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
     private double navxSim;
 
     private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
@@ -142,6 +142,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
                 DriveFeedforwards.zeros(config.numModules));
+
+        navX.enableLogging(true);
     }
 
     public void configurePathplanner() {
@@ -159,7 +161,8 @@ public class SwerveSubsystem extends SubsystemBase {
                                             // pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 (speeds, feedforward) -> {
-                    setChassisSpeedsAuto(speeds);
+                    setChassisSpeeds(speeds);
+                    setFeedforwards(feedforward);
                 }, // Method that will drive the robot given ROBOT
                    // RELATIVE ChassisSpeeds
                 Constants.PathPlannerConstants.HOLONOMIC_FOLLOWER_CONTROLLER,
@@ -209,6 +212,23 @@ public class SwerveSubsystem extends SubsystemBase {
 
         SmartDashboard.putData("Field", field);
         swerveStatesPublisher.set(getModuleStates());
+
+        SmartDashboard.putBoolean("NavX Connected", navX.isConnected());
+    }
+
+    public void setFeedforwards(DriveFeedforwards ffs) {
+        double[] accs = ffs.accelerationsMPSSq();
+        frontLeft.setAcceleration(accs[0]);
+        frontRight.setAcceleration(accs[1]);
+        backLeft.setAcceleration(accs[2]);
+        backRight.setAcceleration(accs[3]);
+    }
+
+    public void zeroFeedforwards() {
+        frontLeft.setAcceleration(0.0);
+        frontRight.setAcceleration(0.0);
+        backLeft.setAcceleration(0.0);
+        backRight.setAcceleration(0.0);
     }
 
     public void zeroHeading() {

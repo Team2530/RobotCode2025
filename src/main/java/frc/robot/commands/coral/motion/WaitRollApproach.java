@@ -18,12 +18,16 @@ public class WaitRollApproach extends Command {
 
     @Override
     public void initialize() {
-
+        SmartDashboard.putString("WaitRollApproach", "waiting");
     }
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(coralSub.getRollGoalDegrees()) > 10) && (Math
+        boolean finished = (Math.abs(coralSub.getRollGoalDegrees()) > 10) && (Math
                 .abs(coralSub.getRollGoalDegrees() - coralSub.getCoralArm().getRollPositionDegrees()) < degreesBefore);
+        if (finished) {
+            SmartDashboard.putString("WaitRollApproach", "finished");
+        }
+        return finished;
     }
 }

@@ -56,7 +56,7 @@ import frc.robot.util.Reef;
 @Logged
 public class CoralSubsystem extends SubsystemBase {
 
-    private final CoralArm arm = new CoralArm();
+    private final CoralArm arm;
     private final CoralIntake intake = new CoralIntake();
 
     private final CoralElevator elevator = new CoralElevator();
@@ -91,15 +91,18 @@ public class CoralSubsystem extends SubsystemBase {
         LEVEL_3(0.650 - 0.085 - 0.003, 15 - 0.7, 90, 98.0
                 + 0.7, true,
                 true),
-        LEVEL_4(1.342 - 0.02, 19.5, 90, 110.062, true,
+        LEVEL_4(1.342 - 0.02, 19.5, 90, 114.5, true,
                 true),
-        INTAKE(0.08, 19.0, 90, 39, true),
+        INTAKE(0.08, 19.0, 90, 43, true),
         STOW(0.05, 0.0, 0.0, 0.0, true),
         ZERO(0.0, 0.0, 0.0, 0.0, false),
 
         ALGAE_REM_LOW(0.62, 32.0, 0.0, 0.0, false),
         ALGAE_REM_HIGH(1.05, 32.0, 0.0, 0.0, false),
 
+        ALGAE_STOW_GROUND(0.05,
+                32.0, 90.0, 42.0,
+                false),
         ALGAE_STOW_LOW(0.44,
                 32.0, 90.0, 42.0,
                 false),
@@ -109,7 +112,7 @@ public class CoralSubsystem extends SubsystemBase {
 
         ALGAE_ACQUIRE_LOW(0.452, 33.5, 90.0, 42.0, false),
         ALGAE_ACQUIRE_LOLLIPOP(0.05, 39.0, 90.0, 42.0, false),
-        ALGAE_ACQUIRE_FLOOR(0.03, 60.0, 90.0, 25.0, false),
+        ALGAE_ACQUIRE_FLOOR(0.03, 65.0, 90.0, 25.0, false),
         ALGAE_ACQUIRE_HIGH(0.832,
                 33.5, 90.0, 42.0, false),
 
@@ -146,9 +149,14 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public CoralSubsystem(SwerveSubsystem swerveSubsystem, XboxController operatorController) {
+    @NotLogged
+    AlgaeSubsystem algaeSub;
+
+    public CoralSubsystem(SwerveSubsystem swerveSubsystem, XboxController operatorController, AlgaeSubsystem algae) {
         this.swerveSubsystem = swerveSubsystem;
         this.operatorController = operatorController;
+        this.algaeSub = algae;
+        arm = new CoralArm(this.algaeSub);
     }
 
     public enum MirrorPresets {
@@ -191,16 +199,20 @@ public class CoralSubsystem extends SubsystemBase {
         rollMechanism.setLength(Math.cos(Units.degreesToRadians(arm.getRollPositionDegrees()))
                 * Constants.Coral.Roll.PhysicalConstants.JOINT_LENGTH_METERS);
 
-        SmartDashboard.putData("Coral Mechanism", coralMechanism);
-        SmartDashboard.putBoolean("Elevator in position", isElevatorInPosition());
-        SmartDashboard.putBoolean("Roll in position", isRollInPosition());
-        SmartDashboard.putBoolean("Pitch in position", isPitchInPosition());
-        SmartDashboard.putBoolean("Pivot in position", isPivotInPosition());
+        // SmartDashboard.putData("Coral Mechanism", coralMechanism);
+        // SmartDashboard.putBoolean("Elevator in position", isElevatorInPosition());
+        // SmartDashboard.putBoolean("Roll in position", isRollInPosition());
+        // SmartDashboard.putBoolean("Pitch in position", isPitchInPosition());
+        // SmartDashboard.putBoolean("Pivot in position", isPivotInPosition());
 
-        SmartDashboard.putBoolean("Elevator SUPPOSED to be in position", isElevatorSupposedToBeInPosition());
-        SmartDashboard.putBoolean("Roll SUPPOSED to be in position", isRollSupposedToBeInPosition());
-        SmartDashboard.putBoolean("Pitch SUPPOSED to be in position", isPitchSupposedToBeInPosition());
-        SmartDashboard.putBoolean("Pivot SUPPOSED to be in position", isPivotSupposedToBeInPosition());
+        // SmartDashboard.putBoolean("Elevator SUPPOSED to be in position",
+        // isElevatorSupposedToBeInPosition());
+        // SmartDashboard.putBoolean("Roll SUPPOSED to be in position",
+        // isRollSupposedToBeInPosition());
+        // SmartDashboard.putBoolean("Pitch SUPPOSED to be in position",
+        // isPitchSupposedToBeInPosition());
+        // SmartDashboard.putBoolean("Pivot SUPPOSED to be in position",
+        // isPivotSupposedToBeInPosition());
 
         vision.publishDebugData(swerveSubsystem);
 
@@ -461,26 +473,24 @@ public class CoralSubsystem extends SubsystemBase {
                                 this, currentLockedPresetSupplier),
                         new MovePivot(
                                 this, currentLockedPresetSupplier),
-                        new WaitArmClearance(
-                                this)
-                                .andThen(new MoveRoll(
-                                        this, currentLockedPresetSupplier)),
-                        new WaitRollApproach(
-                                this, 60.0).andThen(
-                                        new WaitElevatorApproach(
-                                                this, 0.5))
+                        new MoveRoll(
+                                this, currentLockedPresetSupplier)
+                                .andThen(new WristAlignAssist(this, operatorController, swerveSubsystem)
+                                        .onlyIf(new BooleanSupplier() {
+                                            @Override
+                                            public boolean getAsBoolean() {
+                                                return currentLockedPresetSupplier.get().allowAimAssist
+                                                        && autoAlignEnable;
+                                            }
+                                        })),
+                        new WaitRollApproach(this, 60.0).andThen(
+                                new WaitElevatorApproach(
+                                        this, 0.5))
                                 .andThen(new MovePitch(
-                                        this, currentLockedPresetSupplier))))
-                .andThen(new WristAlignAssist(this, operatorController, swerveSubsystem)
-                        .onlyIf(new BooleanSupplier() {
-                            @Override
-                            public boolean getAsBoolean() {
-                                return currentLockedPresetSupplier.get().allowAimAssist && autoAlignEnable;
-                            }
-                        }))
-                .andThen(new InstantCommand(() -> {
-                    SmartDashboard.putString("Going to", currentLockedPresetSupplier.get().toString() + " - Done");
-                }));
+                                        this, currentLockedPresetSupplier).andThen(new InstantCommand(() -> {
+                                            SmartDashboard.putString("Going to",
+                                                    currentLockedPresetSupplier.get().toString() + " - Done");
+                                        })))));
     }
 
     public Command getGoToLockedPresetSideFASTCommand(AlgaeSubsystem algaeSubsystem,

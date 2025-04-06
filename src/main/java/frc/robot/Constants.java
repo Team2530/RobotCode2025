@@ -147,8 +147,8 @@ public final class Constants {
     // public static final double MODULE_KD = 0.03;
 
     // NOTE: This may need additional tuning!
-    public static final double MODULE_KP = 0.46368;// 0.75628;// 0.7491; //.5;
-    public static final double MODULE_KD = 0.0066806;// 0.0057682; //0.0076954;
+    public static final double MODULE_KP = 0.46368;// goooood // 0.75628;// 0.7491; //.5;
+    public static final double MODULE_KD = 0.0050806;// gooood // 0.0057682; //0.0076954;
 
     // --------- Front Left Module --------- \\
     public static final int FL_DRIVE_ID = 34;
@@ -190,11 +190,14 @@ public final class Constants {
   public static class DriveConstants {
     // TODO: Make sure that this is correct - this is from the SDS website but needs
     // empirical verification
-    public static final double MAX_MODULE_VELOCITY = 4.7244;
-    public static final double MAX_ROBOT_VELOCITY = 4.7244;
+    public static final double MAX_MODULE_VELOCITY = 4.2;
+    public static final double MAX_ROBOT_VELOCITY = 4.2;
     public static final double MAX_ROBOT_RAD_VELOCITY = 12.0; // Approx. Measured rads/sec
 
     public static final double MAX_MODULE_CURRENT = 70;
+
+    // (((((65kg×1(m/s^2))/4)×(4in/2))/6.75)/(0.0194Nm/A))×(0.033ohm)
+    public static final double GLOBAL_kA = 0.2; // V/(m/ss)
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.675);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.675);
@@ -289,7 +292,7 @@ public final class Constants {
           7.0,
           0.0,
           0.1,
-          new TrapezoidProfile.Constraints(13, 20.0));
+          new TrapezoidProfile.Constraints(13, 21.0));
 
       public static final double MAXIMUM_ANGLE = Units.degreesToRadians(90 + 40.0);
 
@@ -306,7 +309,7 @@ public final class Constants {
     }
 
     public static class Pitch {
-      public static boolean DEBUG_PIDS = true;
+      public static boolean DEBUG_PIDS = false;
 
       public static final int MOTOR_PORT = 16;
       public static final boolean MOTOR_INVERTED = true;
