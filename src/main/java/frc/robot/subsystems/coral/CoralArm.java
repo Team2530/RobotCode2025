@@ -547,7 +547,7 @@ public class CoralArm extends SubsystemBase {
         return MathUtil
                 .angleModulus(((rollEncFilter.lastValue()
                         + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS) / 3.3)
-                        * 2 * Math.PI);
+                        * 2 * Math.PI * 0.93);
     }
 
     public double readRollEncoderPositionUpdate() {
@@ -555,7 +555,7 @@ public class CoralArm extends SubsystemBase {
                 .angleModulus(((rollEncFilter
                         .calculate(rollEncoder.getPosition())
                         + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS) / 3.3)
-                        * 2 * Math.PI);
+                        * 2 * Math.PI * 0.93);
     }
 
     // public double readRollEncoderVelocity() {
