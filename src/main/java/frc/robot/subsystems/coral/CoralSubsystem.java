@@ -483,7 +483,7 @@ public class CoralSubsystem extends SubsystemBase {
                                                         && autoAlignEnable;
                                             }
                                         })),
-                        new WaitRollApproach(this, 60.0).andThen(
+                        new WaitRollApproach(this, 40.0).andThen(
                                 new WaitElevatorApproach(
                                         this, 0.5))
                                 .andThen(new MovePitch(
