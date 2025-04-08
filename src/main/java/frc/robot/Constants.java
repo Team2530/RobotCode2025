@@ -285,7 +285,14 @@ public final class Constants {
       public static final int MOTOR_PORT = 15;
       public static final boolean MOTOR_INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
-      public static final double ENCODER_OFFSET_VOLTS = -1.86;
+
+      public static final double ENCODER_SCORE_SIDE_VOLTS = 2.75;
+      public static final double ENCODER_INTAKE_SIDE_VOLTS = 1.0; // TODO: SET THIS!!!
+
+      public static final double ENCODER_OFFSET_VOLTS = -(ENCODER_INTAKE_SIDE_VOLTS + ENCODER_SCORE_SIDE_VOLTS) / 2.0;// -1.86;
+      public static final double ENCODER_VOLTS_TO_RAD = Math.PI
+          / (ENCODER_SCORE_SIDE_VOLTS - ENCODER_INTAKE_SIDE_VOLTS);
+
       public static boolean DBG_DISABLED = false;
 
       public static final ProfiledPIDController PID = new ProfiledPIDController(
