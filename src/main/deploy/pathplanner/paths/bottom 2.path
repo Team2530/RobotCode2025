@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.235147540983607,
-        "y": 1.3973749999999985
+        "x": 2.5642499999999995,
+        "y": 1.2559999999999991
       },
       "isLocked": false,
       "linkedName": "Low Source"
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.0974949221394718,
+      "waypointRelativePos": 0.652109181141442,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

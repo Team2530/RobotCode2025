@@ -197,7 +197,7 @@ public final class Constants {
     public static final double MAX_MODULE_CURRENT = 70;
 
     // (((((65kg×1(m/s^2))/4)×(4in/2))/6.75)/(0.0194Nm/A))×(0.033ohm)
-    public static final double GLOBAL_kA = 0.2; // V/(m/ss)
+    // public static final double GLOBAL_kA = 0.0; // V/(m/ss)
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.675);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.675);
@@ -286,7 +286,7 @@ public final class Constants {
       public static final boolean MOTOR_INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
 
-      public static final double ENCODER_SCORE_SIDE_VOLTS = 2.75;
+      public static final double ENCODER_SCORE_SIDE_VOLTS = 2.70;
       public static final double ENCODER_INTAKE_SIDE_VOLTS = 1.0; // TODO: SET THIS!!!
 
       public static final double ENCODER_OFFSET_VOLTS = -(ENCODER_INTAKE_SIDE_VOLTS + ENCODER_SCORE_SIDE_VOLTS) / 2.0;// -1.86;
