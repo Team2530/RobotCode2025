@@ -545,17 +545,15 @@ public class CoralArm extends SubsystemBase {
 
     public double readRollEncoderPosition() {
         return MathUtil
-                .angleModulus(((rollEncFilter.lastValue()
-                        + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS) / 3.3)
-                        * 2 * Math.PI);
+                .angleModulus((rollEncFilter.lastValue() + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS)
+                        * Constants.Coral.Roll.ENCODER_VOLTS_TO_RAD);
     }
 
     public double readRollEncoderPositionUpdate() {
         return MathUtil
-                .angleModulus(((rollEncFilter
+                .angleModulus((rollEncFilter
                         .calculate(rollEncoder.getPosition())
-                        + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS) / 3.3)
-                        * 2 * Math.PI);
+                        + Constants.Coral.Roll.ENCODER_OFFSET_VOLTS) * Constants.Coral.Roll.ENCODER_VOLTS_TO_RAD);
     }
 
     // public double readRollEncoderVelocity() {
