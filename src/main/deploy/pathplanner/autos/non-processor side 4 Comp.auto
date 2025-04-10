@@ -137,6 +137,12 @@
               }
             ]
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "top 2"
+          }
         }
       ]
     }
