@@ -68,7 +68,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Score"
+                  "name": "Score Waitless"
                 }
               }
             ]
@@ -119,7 +119,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Score"
+                  "name": "Score Waitless"
                 }
               }
             ]
@@ -139,9 +139,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "top 2"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "top 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Waitless"
           }
         }
       ]

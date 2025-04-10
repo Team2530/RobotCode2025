@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.33220796758947213,
+      "waypointRelativePos": 0.296774193548388,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -45,7 +45,7 @@
     },
     {
       "name": "Auto Aim",
-      "waypointRelativePos": 0.8453747467927094,
+      "waypointRelativePos": 0.6997518610421779,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

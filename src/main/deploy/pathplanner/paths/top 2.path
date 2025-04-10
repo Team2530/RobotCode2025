@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.327852459016393,
-        "y": 6.765229508196721
+        "x": 1.6867500000000002,
+        "y": 6.8915
       },
       "isLocked": false,
       "linkedName": "High Source"
     },
     {
       "anchor": {
-        "x": 4.824,
-        "y": 5.36
+        "x": 3.159,
+        "y": 3.9762499999999994
       },
       "prevControl": {
-        "x": 4.15572131147541,
-        "y": 5.843112704918033
+        "x": 2.964,
+        "y": 4.346749999999999
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.8912896691424751,
+      "waypointRelativePos": 0.7493796526054585,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -46,7 +46,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 3.7,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -54,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -29.999999999999996
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "non-processor autos",
