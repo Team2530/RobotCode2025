@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6867500000000002,
-        "y": 6.8915
+        "x": 1.8531714586051882,
+        "y": 6.390059997435793
       },
       "isLocked": false,
       "linkedName": "High Source"
@@ -20,8 +20,8 @@
         "y": 3.9762499999999994
       },
       "prevControl": {
-        "x": 2.964,
-        "y": 4.346749999999999
+        "x": 3.0724549269523256,
+        "y": 4.210792001209106
       },
       "nextControl": null,
       "isLocked": false,
