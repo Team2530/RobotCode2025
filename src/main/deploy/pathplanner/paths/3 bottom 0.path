@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.95175,
+        "x": 7.192622950819672,
         "y": 3.05
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.300719633843483,
+        "x": 6.541592584663156,
         "y": 3.05
       },
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.42971428571428405,
+      "waypointRelativePos": 0.6049966239027643,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -57,7 +57,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 2.8,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -68,10 +68,10 @@
     "rotation": -150.0
   },
   "reversed": false,
-  "folder": "processor side autos",
+  "folder": "Processor side 3 autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -150.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }

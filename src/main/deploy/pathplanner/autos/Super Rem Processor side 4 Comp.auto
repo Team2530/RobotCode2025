@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "top 0"
+                  "pathName": "bottom 0"
                 }
               },
               {
@@ -34,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "top 1"
+                        "pathName": "bottom 1"
                       }
                     },
                     {
@@ -62,13 +62,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "top 2"
+                  "pathName": "bottom 2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Score"
+                  "name": "Score Waitless"
                 }
               }
             ]
@@ -85,7 +85,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "top 3"
+                        "pathName": "bottom 3"
                       }
                     },
                     {
@@ -113,64 +113,39 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "top 4"
+                  "pathName": "bottom 4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Score"
+                  "name": "Score Waitless"
                 }
               }
             ]
           }
         },
         {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "top 5"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Stow"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Wait Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "top 6"
+                  "pathName": "bottom 5"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Score"
+                  "pathName": "Super Rem bottom 6"
                 }
               },
               {
@@ -180,6 +155,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Waitless"
           }
         }
       ]

@@ -289,6 +289,12 @@ public class RobotContainer {
                 .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier))).andThen(
                         new ShootAlgaeBargeCommand(algaeSubsystem, false)
                                 .withTimeout(AutoConstants.ALGAE_BARGE_SCORE_WAIT)));
+        NamedCommands.registerCommand("Super Rem Low", new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_REM_LOW);
+        }).andThen(new ParallelCommandGroup(
+                new RemoveAlgaeCommand(algaeSubsystem),
+                coralSubsystem.getGoToLockedPresetCommandV2(algaeSubsystem,
+                        currentLockedPresetSupplier))));
 
         swerveDriveSubsystem.configurePathplanner();
         autoChooser = AutoBuilder.buildAutoChooser();
