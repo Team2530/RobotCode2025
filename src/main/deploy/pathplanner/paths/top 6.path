@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.148036885245901,
-        "y": 6.369635245901639
+        "x": 1.623322068747944,
+        "y": 7.0499791889741505
       },
       "isLocked": false,
       "linkedName": "High Source"
@@ -20,8 +20,8 @@
         "y": 5.001997950819672
       },
       "prevControl": {
-        "x": 2.936987704918033,
-        "y": 5.76921106557377
+        "x": 3.2366803278688523,
+        "y": 5.2597336065573765
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.07739307535641769,
+      "waypointRelativePos": 0.6671168129642098,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
