@@ -485,7 +485,7 @@ public class CoralSubsystem extends SubsystemBase {
                                         })),
                         new WaitRollApproach(this, 40.0).andThen(
                                 new WaitElevatorApproach(
-                                        this, 0.5))
+                                        this, 0.4))
                                 .andThen(new MovePitch(
                                         this, currentLockedPresetSupplier).andThen(new InstantCommand(() -> {
                                             SmartDashboard.putString("Going to",

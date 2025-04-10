@@ -182,13 +182,13 @@ public class SwerveModule {
         state.optimize(currentRotation);
         state.cosineScale(currentRotation);
 
-        double state_comp = state.speedMetersPerSecond / orig_statevel;
+        // double state_comp = state.speedMetersPerSecond / orig_statevel;
 
         drive_command = (state.speedMetersPerSecond / DriveConstants.MAX_MODULE_VELOCITY);
 
         driveMotor.setVoltage(
-                drive_command * 12.0
-                        + currentAcceleration * DriveConstants.GLOBAL_kA * state_comp);
+                drive_command * 12.0);
+        // + currentAcceleration * DriveConstants.GLOBAL_kA * state_comp);
 
         if (Robot.isSimulation()) {
             steer_command = steerPID.calculate(getSteerPosition(),

@@ -153,27 +153,33 @@ public class CoralElevator extends SubsystemBase {
     }
 
     public void startZeroElevator() {
-        zeroing = true;
-        leader.getConfigurator().apply(
-                new SoftwareLimitSwitchConfigs().withReverseSoftLimitEnable(false)
-                        .withReverseSoftLimitThreshold(0.03)
-                        .withForwardSoftLimitThreshold(
-                                Constants.Elevator.PhysicalParameters.MAX_TRAVEL
-                                        - Units.inchesToMeters(1.0))
-                        .withForwardSoftLimitEnable(false));
+        if ((getPosition() < 0.25)) {
+            zeroing = true;
+            leader.getConfigurator().apply(
+                    new SoftwareLimitSwitchConfigs().withReverseSoftLimitEnable(false)
+                            .withReverseSoftLimitThreshold(0.03)
+                            .withForwardSoftLimitThreshold(
+                                    Constants.Elevator.PhysicalParameters.MAX_TRAVEL
+                                            - Units.inchesToMeters(1.0))
+                            .withForwardSoftLimitEnable(false));
+        } else {
+            zeroing = false;
+        }
     }
 
     public void endZeroElevator() {
-        leader.getConfigurator().apply(
-                new SoftwareLimitSwitchConfigs().withReverseSoftLimitEnable(true)
-                        .withReverseSoftLimitThreshold(0.03)
-                        .withForwardSoftLimitThreshold(
-                                Constants.Elevator.PhysicalParameters.MAX_TRAVEL
-                                        - Units.inchesToMeters(1.0))
-                        .withForwardSoftLimitEnable(true));
-        leader.setPosition(0.0);
-        follower.setPosition(0.0);
-        zeroing = false;
+        if (zeroing) {
+            leader.getConfigurator().apply(
+                    new SoftwareLimitSwitchConfigs().withReverseSoftLimitEnable(true)
+                            .withReverseSoftLimitThreshold(0.03)
+                            .withForwardSoftLimitThreshold(
+                                    Constants.Elevator.PhysicalParameters.MAX_TRAVEL
+                                            - Units.inchesToMeters(1.0))
+                            .withForwardSoftLimitEnable(true));
+            leader.setPosition(0.0);
+            follower.setPosition(0.0);
+            zeroing = false;
+        }
     }
 
     // TODO: Add zeroing!!!

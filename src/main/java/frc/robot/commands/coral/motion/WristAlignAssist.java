@@ -61,9 +61,14 @@ public class WristAlignAssist extends Command {
         if (vision.hasValidTarget() && coralSubsystem.getMirror() == MirrorPresets.RIGHT
                 && !operatorController.getRightStickButton()) {
             Translation2d error = vision.getSelectedTargetError();
+            double autoAdjustDeg = Units
+                    .radiansToDegrees(Math.atan2(error.getX(), /*-error.getY()*/ +Units.inchesToMeters(15.0)));
+            if (startingPreset == CoralPresets.LEVEL_2) {
+                autoAdjustDeg = Math.max(0.0, autoAdjustDeg);
+            }
+
             coralSubsystem.setCustomRollDegrees(MathUtil.clamp(
-                    90.0 - Units
-                            .radiansToDegrees(Math.atan2(error.getX(), /*-error.getY()*/ +Units.inchesToMeters(15.0)))
+                    90.0 - autoAdjustDeg
                             - Units.radiansToDegrees(Math.atan2(adjustCommandForwardsManual, 2.0)),
                     90 - 30.0,
                     90 + 30.0));
