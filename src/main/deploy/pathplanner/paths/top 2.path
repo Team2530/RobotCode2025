@@ -45,7 +45,7 @@
     },
     {
       "name": "L4 Auto",
-      "waypointRelativePos": 0.7493796526054585,
+      "waypointRelativePos": 0.7017369727047117,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -57,7 +57,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.7,
+    "maxAcceleration": 3.8,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
