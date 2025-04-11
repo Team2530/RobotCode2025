@@ -143,12 +143,6 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Stow"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "top 2"
