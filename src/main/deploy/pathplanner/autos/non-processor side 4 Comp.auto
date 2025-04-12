@@ -134,6 +134,12 @@
                 "data": {
                   "pathName": "NEW top 3"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Wait Intake"
+                }
               }
             ]
           }
