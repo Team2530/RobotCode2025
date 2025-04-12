@@ -197,7 +197,7 @@ public final class Constants {
     public static final double MAX_MODULE_CURRENT = 70;
 
     // (((((65kg×1(m/s^2))/4)×(4in/2))/6.75)/(0.0194Nm/A))×(0.033ohm)
-    public static final double GLOBAL_kA = 0.13; // V/(m/ss)
+    public static final double GLOBAL_kA = 0.135; // V/(m/ss)
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.675);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.675);
