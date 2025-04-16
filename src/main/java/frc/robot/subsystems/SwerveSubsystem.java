@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -93,7 +92,7 @@ public class SwerveSubsystem extends SubsystemBase {
             SwerveModuleConstants.BL_MOTOR_REVERSED,
             SwerveModuleConstants.BL_STEERING_MOTOR_REVERSED);
 
-    public final Pigeon2 pigeon = new Pigeon2(Constants.DriveConstants.PIGEON_ID);
+    public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
     private double navxSim;
 
     private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
@@ -144,7 +143,7 @@ public class SwerveSubsystem extends SubsystemBase {
         previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
                 DriveFeedforwards.zeros(config.numModules));
 
-        // navX.enableLogging(true);
+        navX.enableLogging(true);
     }
 
     public void configurePathplanner() {
@@ -198,10 +197,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         if (DriverStation.isTeleop())
             RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
-                    pigeon);
+                    navX);
         else
             RobotContainer.LLContainer.estimateMT1OdometryAuto(odometry, lastChassisSpeeds,
-                    pigeon);
+                    navX);
 
         odometry.update(getGyroRotation2d(), getModulePositions());
         // SmartDashboard.putString("Odometry current pos",
@@ -214,7 +213,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putData("Field", field);
         swerveStatesPublisher.set(getModuleStates());
 
-        SmartDashboard.putBoolean("Pigeon Connected", pigeon.isConnected());
+        SmartDashboard.putBoolean("NavX Connected", navX.isConnected());
     }
 
     public void setFeedforwards(DriveFeedforwards ffs) {
@@ -243,10 +242,9 @@ public class SwerveSubsystem extends SubsystemBase {
         // navX.reset();
         // navX.setAngleAdjustment(deg);
 
-        // double error = deg - pigeon.getAngle();
-        // double new_adjustment = pigeon.getAngleAdjustment() + error;
-        // pigeon.setAngleAdjustment(new_adjustment);
-        pigeon.setYaw(deg);
+        double error = deg - navX.getAngle();
+        double new_adjustment = navX.getAngleAdjustment() + error;
+        navX.setAngleAdjustment(new_adjustment);
     }
 
     public void setGyroToEstimate() {
@@ -277,8 +275,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getGyroHeading() {
-        return Robot.isSimulation() ? navxSim
-                : Units.degreesToRadians(Math.IEEEremainder(pigeon.getYaw().getValueAsDouble(), 360));
+        return Robot.isSimulation() ? navxSim : Units.degreesToRadians(Math.IEEEremainder(-navX.getAngle(), 360));
     }
 
     public Rotation2d getGyroRotation2d() {
