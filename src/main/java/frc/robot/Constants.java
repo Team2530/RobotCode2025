@@ -196,6 +196,8 @@ public final class Constants {
 
     public static final double MAX_MODULE_CURRENT = 70;
 
+    public static final int PIGEON_ID = 11;
+
     // (((((65kg×1(m/s^2))/4)×(4in/2))/6.75)/(0.0194Nm/A))×(0.033ohm)
     public static final double GLOBAL_kA = 0.135; // V/(m/ss)
 

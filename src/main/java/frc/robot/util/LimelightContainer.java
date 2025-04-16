@@ -6,6 +6,7 @@ package frc.robot.util;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.epilogue.Logged;
@@ -107,7 +108,7 @@ public class LimelightContainer {
         }
     }
 
-    public void estimateMT1Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
+    public void estimateMT1Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, Pigeon2 navx) {
         for (Limelight limelight : limelights) {
             boolean doRejectUpdate = false;
 
@@ -141,7 +142,7 @@ public class LimelightContainer {
         }
     }
 
-    public void estimateMT1OdometryAuto(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
+    public void estimateMT1OdometryAuto(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, Pigeon2 navx) {
         for (Limelight limelight : limelights) {
             boolean doRejectUpdate = false;
 
