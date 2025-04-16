@@ -45,7 +45,7 @@
     },
     {
       "name": "Auto Aim",
-      "waypointRelativePos": 0.7493796526054545,
+      "waypointRelativePos": 0.7994598244429404,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
