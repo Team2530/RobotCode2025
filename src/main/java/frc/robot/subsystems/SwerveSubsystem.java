@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -22,6 +23,7 @@ import com.studica.frc.AHRS;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -94,6 +96,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
     private double navxSim;
+    public final Pigeon2 pigeon = new Pigeon2(11);
 
     private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
 
@@ -214,6 +217,10 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveStatesPublisher.set(getModuleStates());
 
         SmartDashboard.putBoolean("NavX Connected", navX.isConnected());
+        SmartDashboard.putBoolean("Pigeon 2 Connected", pigeon.isConnected());
+
+        SmartDashboard.putNumber("NavX Heading", -navX.getAngle());
+        SmartDashboard.putNumber("Pigeon 2 Heading", pigeon.getYaw().getValueAsDouble());
     }
 
     public void setFeedforwards(DriveFeedforwards ffs) {
@@ -245,6 +252,8 @@ public class SwerveSubsystem extends SubsystemBase {
         double error = deg - navX.getAngle();
         double new_adjustment = navX.getAngleAdjustment() + error;
         navX.setAngleAdjustment(new_adjustment);
+
+        pigeon.setYaw(deg);
     }
 
     public void setGyroToEstimate() {
@@ -276,6 +285,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public double getGyroHeading() {
         return Robot.isSimulation() ? navxSim : Units.degreesToRadians(Math.IEEEremainder(-navX.getAngle(), 360));
+        // return Robot.isSimulation() ? navxSim
+        // :
+        // Units.degreesToRadians(Math.IEEEremainder(pigeon.getYaw().getValueAsDouble(),
+        // 360));
     }
 
     public Rotation2d getGyroRotation2d() {
