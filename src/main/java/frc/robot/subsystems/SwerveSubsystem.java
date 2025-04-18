@@ -253,7 +253,7 @@ public class SwerveSubsystem extends SubsystemBase {
         double new_adjustment = navX.getAngleAdjustment() + error;
         navX.setAngleAdjustment(new_adjustment);
 
-        pigeon.setYaw(deg);
+        pigeon.setYaw(-deg);
     }
 
     public void setGyroToEstimate() {
