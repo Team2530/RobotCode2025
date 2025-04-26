@@ -197,7 +197,7 @@ public final class Constants {
     public static final double MAX_MODULE_CURRENT = 70;
 
     // (((((65kg×1(m/s^2))/4)×(4in/2))/6.75)/(0.0194Nm/A))×(0.033ohm)
-    public static final double GLOBAL_kA = 0.11; // V/(m/ss)
+    public static final double GLOBAL_kA = 0.135; // V/(m/ss)
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.675);
     public static final double WHEEL_BASE = Units.inchesToMeters(19.675);
@@ -510,7 +510,7 @@ public final class Constants {
     // 0.01);
     // public static final PIDConstants ROTATION_PID = new PIDConstants(11.0, 0,
     // 0.02);
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(12.0, 0, 0.005);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(15.0, 0, 0.005);
     public static final PIDConstants ROTATION_PID = new PIDConstants(9.0, 0, 0.03); // was 10 and 9
 
     public static final PPHolonomicDriveController HOLONOMIC_FOLLOWER_CONTROLLER = new PPHolonomicDriveController(
