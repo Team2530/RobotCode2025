@@ -13,6 +13,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         INTAKE(80.0),
         INTAKE_FLOOR(95),
         HOLD(80.0),
+        HOLD_BUMPER(55.0),
         OUT_OF_THE_WAY(30.0),
         BARGE(130.0);
 
@@ -29,7 +30,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         PURGE(-1, 20),
         SHOOT_BARGE(-1, 20),
         SHOOT(-0.5, 20),
-        HOLD(0.8, 12), // Used to be 0.5 percent
+        HOLD(0.8, 14), // Used to be 0.5 percent
         STOP(0, 20);
 
         public double outputPercentage;
