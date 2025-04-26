@@ -1,0 +1,153 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3 bottom 0"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Score"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "3 bottom 1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stow"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Wait Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3 bottom 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Score Waitless"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "3 bottom 3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stow"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Wait Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3 bottom 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Score"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3 bottom algae 1"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3 bottom algae 2"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.471,
-        "y": 4.980499999999999
+        "x": 3.856,
+        "y": 2.84
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7757131147540983,
-        "y": 5.765694672131147
+        "x": 3.6172500000000003,
+        "y": 2.435749999999999
       },
       "isLocked": false,
-      "linkedName": "top 6 end"
+      "linkedName": "bottom 4 end"
     },
     {
       "anchor": {
-        "x": 1.4527499999999998,
-        "y": 7.232749999999999
+        "x": 4.017,
+        "y": 2.7184999999999993
       },
       "prevControl": {
-        "x": 1.8341188524590164,
-        "y": 6.830122950819672
+        "x": 3.6270000000000007,
+        "y": 2.3675
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "High Source"
+      "linkedName": "3 bottom algae 1 end"
     }
   ],
   "rotationTargets": [],
@@ -33,31 +33,20 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow",
-      "waypointRelativePos": 1.925543058334256e-15,
+      "name": "Grab Low",
+      "waypointRelativePos": 0.15085714285714394,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Stow"
-        }
-      }
-    },
-    {
-      "name": "Start Intake L",
-      "waypointRelativePos": 0.24577987846049823,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Start Intake L"
+          "name": "Grab Low"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 3.7,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -65,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": 150.0
   },
   "reversed": false,
-  "folder": "non-processor autos",
+  "folder": "Processor side 3 autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 150.0
   },
   "useDefaultConstraints": false
 }
