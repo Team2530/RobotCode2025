@@ -110,6 +110,9 @@ public class CoralSubsystem extends SubsystemBase {
                 32.0, 90.0, 42.0,
                 false),
 
+        // ALGAE_STOW_BARGE(0.9, -20.0, 90.0, 42.0,
+        // false),
+
         ALGAE_ACQUIRE_LOW(0.452, 33.5, 90.0, 42.0, false),
         ALGAE_ACQUIRE_LOLLIPOP(0.05, 39.0, 90.0, 42.0, false),
         ALGAE_ACQUIRE_FLOOR(0.03, 65.0, 90.0, 25.0, false),
@@ -120,6 +123,8 @@ public class CoralSubsystem extends SubsystemBase {
         ALGAE_BARGE(1.45, -10.0, 90.0, 42.0, false),
         // ALGAE_BARGE(
         // 1.44, -45.0, 90.0, -10.0, false),
+
+        ALGAE_STOW_BUMPER(0.03, 43.0, 90.0, 50.0, false),
 
         CUSTOM(Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 

@@ -49,6 +49,7 @@ import frc.robot.subsystems.Limelight.LimelightType;
 import frc.robot.subsystems.RobotMechanismLogger;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.algae.AlgaeSubsystem;
+import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaeIntakePresets;
 import frc.robot.subsystems.algae.AlgaeSubsystem.AlgaePresets;
 import frc.robot.subsystems.coral.CoralSubsystem;
 import frc.robot.subsystems.coral.CoralSubsystem.CoralPresets;
@@ -261,6 +262,15 @@ public class RobotContainer {
         }).andThen((coralSubsystem
                 .getGoToLockedPresetCommandV2(algaeSubsystem, currentLockedPresetSupplier)
                 .alongWith(new IntakeAlgaeCommand(algaeSubsystem)))));
+
+        NamedCommands.registerCommand("Stow Bumper", new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_STOW_BUMPER);
+        }).andThen((coralSubsystem
+                .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier)
+                .alongWith(new InstantCommand(() -> {
+                    algaeSubsystem.setAlgaeIntakePreset(AlgaeIntakePresets.HOLD);
+                    algaeSubsystem.setAlgaePreset(AlgaePresets.HOLD_BUMPER);
+                })))));
 
         NamedCommands.registerCommand("Intake Algae", new IntakeAlgaeCommand(algaeSubsystem));
 
@@ -719,6 +729,15 @@ public class RobotContainer {
         // RemoveAlgaeCommand(algaeSubsystem));
         // debugXboxController.povRight().whileTrue(new
         // IntakeAlgaeCommand(algaeSubsystem));
+
+        operatorXbox.povUp().onTrue(new InstantCommand(() -> {
+            lockCoralArmPreset(CoralPresets.ALGAE_STOW_BUMPER);
+        }).andThen((coralSubsystem
+                .getGoToLockedPresetAlgaeSafeCommand(algaeSubsystem, currentLockedPresetSupplier)
+                .alongWith(new InstantCommand(() -> {
+                    algaeSubsystem.setAlgaeIntakePreset(AlgaeIntakePresets.STOP);
+                    algaeSubsystem.setAlgaePreset(AlgaePresets.HOLD_BUMPER);
+                }))))).onFalse(getStowCommand());
     }
 
     /**
