@@ -42,6 +42,17 @@
           "name": "Stow"
         }
       }
+    },
+    {
+      "name": "Start Intake L",
+      "waypointRelativePos": 0.35921674544227394,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Start Intake L"
+        }
+      }
     }
   ],
   "globalConstraints": {
