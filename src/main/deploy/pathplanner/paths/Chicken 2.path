@@ -3,54 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6270000000000007,
-        "y": 5.077999999999999
+        "x": 1.4527499999999998,
+        "y": 7.232749999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0615000000000014,
-        "y": 5.7995
+        "x": 2.327852459016393,
+        "y": 6.765229508196721
       },
       "isLocked": false,
-      "linkedName": "top Algae 1 end"
+      "linkedName": "High Source"
     },
     {
       "anchor": {
-        "x": 7.72,
-        "y": 6.2
+        "x": 3.159,
+        "y": 3.9762499999999994
       },
       "prevControl": {
-        "x": 7.472966564282866,
-        "y": 6.1616010203548495
+        "x": 2.4907213114754096,
+        "y": 4.459362704918032
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "top 2 end"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.19470198675496184,
-      "rotationDegrees": 90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow Bumper",
-      "waypointRelativePos": 0.04051316677920362,
+      "name": "L4",
+      "waypointRelativePos": 0.14419551934826969,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Stow Bumper"
+          "name": "L4"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -65,7 +60,7 @@
   "folder": "Chicken",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 35.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -3,54 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6270000000000007,
-        "y": 5.077999999999999
+        "x": 1.4527499999999998,
+        "y": 7.232749999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0615000000000014,
-        "y": 5.7995
+        "x": 1.623322068747944,
+        "y": 7.0499791889741505
       },
       "isLocked": false,
-      "linkedName": "top Algae 1 end"
+      "linkedName": "High Source"
     },
     {
       "anchor": {
-        "x": 7.72,
-        "y": 6.2
+        "x": 3.4961116697126777,
+        "y": 4.966991612650144
       },
       "prevControl": {
-        "x": 7.472966564282866,
-        "y": 6.1616010203548495
+        "x": 3.2563575713520216,
+        "y": 5.2247272683878485
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "top 6 end"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.19470198675496184,
-      "rotationDegrees": 90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow Bumper",
-      "waypointRelativePos": 0.04051316677920362,
+      "name": "L4",
+      "waypointRelativePos": 0.6671168129642098,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Stow Bumper"
+          "name": "L4"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -58,14 +53,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 90.0
+    "velocity": 0.0,
+    "rotation": 29.999999999999996
   },
   "reversed": false,
   "folder": "Chicken",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 35.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

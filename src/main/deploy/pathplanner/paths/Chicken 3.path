@@ -3,55 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6270000000000007,
-        "y": 5.077999999999999
+        "x": 3.4961116697126777,
+        "y": 4.966991612650144
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0615000000000014,
-        "y": 5.7995
+        "x": 2.800824784466776,
+        "y": 5.752186284781292
       },
       "isLocked": false,
-      "linkedName": "top Algae 1 end"
+      "linkedName": "top 6 end"
     },
     {
       "anchor": {
-        "x": 7.72,
-        "y": 6.2
+        "x": 1.4527499999999998,
+        "y": 7.232749999999999
       },
       "prevControl": {
-        "x": 7.472966564282866,
-        "y": 6.1616010203548495
+        "x": 1.8341188524590164,
+        "y": 6.830122950819672
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "High Source"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.19470198675496184,
-      "rotationDegrees": 90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow Bumper",
-      "waypointRelativePos": 0.04051316677920362,
+      "name": "Stow",
+      "waypointRelativePos": 1.925543058334256e-15,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Stow Bumper"
+          "name": "Stow"
+        }
+      }
+    },
+    {
+      "name": "Start Intake L",
+      "waypointRelativePos": 0.24577987846049823,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Start Intake L"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -59,7 +65,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 35.0
   },
   "reversed": false,
   "folder": "Chicken",
@@ -67,5 +73,5 @@
     "velocity": 0,
     "rotation": 29.999999999999996
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
