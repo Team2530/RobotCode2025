@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8531714586051882,
-        "y": 6.390059997435793
+        "x": 1.5813739388568822,
+        "y": 7.018376768571864
       },
       "isLocked": false,
       "linkedName": "High Source"
@@ -20,12 +20,12 @@
         "y": 3.9762499999999994
       },
       "prevControl": {
-        "x": 3.0724549269523256,
-        "y": 4.210792001209106
+        "x": 3.026500264999205,
+        "y": 4.1882495760012715
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "top 2 end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,23 +33,20 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-<<<<<<< HEAD
       "name": "L2",
-      "waypointRelativePos": 0.7222857142857148,
-=======
-      "name": "Stow",
-      "waypointRelativePos": 0.18,
-
-<<<<<<< HEAD
+      "waypointRelativePos": 0.7893333333333296,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
           "name": "L2"
-
         }
       }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.8,
+    "maxAcceleration": 3.9,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
