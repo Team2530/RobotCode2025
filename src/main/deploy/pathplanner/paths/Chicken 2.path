@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4961116697126777,
-        "y": 4.966991612650144
+        "x": 1.4527499999999998,
+        "y": 7.232749999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3986116697141626,
-        "y": 5.317991612649624
+        "x": 2.327852459016393,
+        "y": 6.765229508196721
       },
       "isLocked": false,
-      "linkedName": "top 6 end"
+      "linkedName": "High Source"
     },
     {
       "anchor": {
-        "x": 3.6270000000000007,
-        "y": 5.077999999999999
+        "x": 3.159,
+        "y": 3.9762499999999994
       },
       "prevControl": {
-        "x": 3.451500000000001,
-        "y": 5.321749999999999
+        "x": 2.4907213114754096,
+        "y": 4.459362704918032
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "top Algae 1 end"
+      "linkedName": "top 2 end"
     }
   ],
   "rotationTargets": [],
@@ -33,19 +33,19 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Grab Low",
-      "waypointRelativePos": 0.15085714285714064,
+      "name": "L4",
+      "waypointRelativePos": 0.14419551934826969,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Grab Low"
+          "name": "L4"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -54,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Chicken",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 35.0
   },
   "useDefaultConstraints": false
 }
