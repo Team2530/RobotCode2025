@@ -39,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "Go Barge",
-      "waypointRelativePos": 0.621201890614457,
+      "waypointRelativePos": 0.5881904761904768,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -61,7 +61,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 1.5,
     "maxAcceleration": 1.0,
     "maxAngularVelocity": 400.0,
     "maxAngularAcceleration": 600.0,

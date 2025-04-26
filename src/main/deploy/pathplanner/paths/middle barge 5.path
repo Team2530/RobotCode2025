@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.976749999999999,
-        "y": 5.6435
+        "x": 5.694000000000001,
+        "y": 5.701999999999998
       },
       "isLocked": false,
       "linkedName": "barge shot"
     },
     {
       "anchor": {
-        "x": 6.230250000000001,
-        "y": 2.913499999999999
+        "x": 5.343,
+        "y": 2.962249999999999
       },
       "prevControl": {
-        "x": 6.327750000000001,
-        "y": 3.186499999999999
+        "x": 6.308249999994034,
+        "y": 1.4119999999982225
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,6 +42,17 @@
           "name": "Stow"
         }
       }
+    },
+    {
+      "name": "Grab High",
+      "waypointRelativePos": 0.5470476190476157,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Grab High"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -54,7 +65,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -150.0
   },
   "reversed": false,
   "folder": "middle Barge",
