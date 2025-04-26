@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.694000000000001,
-        "y": 5.701999999999998
+        "x": 7.004093845707395,
+        "y": 4.3093563718741414
       },
       "isLocked": false,
       "linkedName": "barge shot"
     },
     {
       "anchor": {
-        "x": 5.343,
-        "y": 2.962249999999999
+        "x": 5.343658717270384,
+        "y": 2.9994161857734656
       },
       "prevControl": {
-        "x": 6.308249999994034,
-        "y": 1.4119999999982225
+        "x": 5.868705533594152,
+        "y": 2.0780158210760726
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.4213369345037113,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.0,
+        "maxAcceleration": 2.6,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -45,7 +59,7 @@
     },
     {
       "name": "Grab High",
-      "waypointRelativePos": 0.5470476190476157,
+      "waypointRelativePos": 0.4321404456448406,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -56,8 +70,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

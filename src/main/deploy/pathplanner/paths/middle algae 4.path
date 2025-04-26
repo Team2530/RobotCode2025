@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.343,
-        "y": 2.962249999999999
+        "x": 5.343658717270384,
+        "y": 2.9994161857734656
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.343,
-        "y": 2.962249999999999
+        "x": 6.343658717270384,
+        "y": 2.9994161857734656
       },
       "isLocked": false,
       "linkedName": "middle algae 3 end"
