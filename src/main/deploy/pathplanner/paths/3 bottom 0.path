@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.192622950819672,
-        "y": 3.05
+        "x": 6.971,
+        "y": 2.882
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.541592584663156,
-        "y": 3.05
+        "x": 6.721,
+        "y": 2.882
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom start"
     },
     {
       "anchor": {
-        "x": 5.495,
-        "y": 3.05
+        "x": 5.21,
+        "y": 2.91
       },
       "prevControl": {
-        "x": 6.045086413666072,
-        "y": 3.05
+        "x": 5.46,
+        "y": 2.91
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.6049966239027643,
+      "waypointRelativePos": 0.48914285714285854,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -45,7 +45,7 @@
     },
     {
       "name": "Auto Aim",
-      "waypointRelativePos": 0.84723809523809,
+      "waypointRelativePos": 0.7283809523809557,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -70,8 +70,8 @@
   "reversed": false,
   "folder": "Processor side 3 autos",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 0.0,
+    "rotation": -150.0
   },
   "useDefaultConstraints": false
 }
