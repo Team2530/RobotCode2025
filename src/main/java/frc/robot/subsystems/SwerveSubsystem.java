@@ -94,7 +94,7 @@ public class SwerveSubsystem extends SubsystemBase {
             SwerveModuleConstants.BL_MOTOR_REVERSED,
             SwerveModuleConstants.BL_STEERING_MOTOR_REVERSED);
 
-    public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
+    // public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
     private double navxSim;
     public final Pigeon2 pigeon = new Pigeon2(11);
     private double pigeonOffset = 0.0;
@@ -147,7 +147,7 @@ public class SwerveSubsystem extends SubsystemBase {
         previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
                 DriveFeedforwards.zeros(config.numModules));
 
-        navX.enableLogging(true);
+        // navX.enableLogging(true);
     }
 
     public void configurePathplanner() {
@@ -200,11 +200,9 @@ public class SwerveSubsystem extends SubsystemBase {
         // }
 
         if (DriverStation.isTeleop())
-            RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds,
-                    navX);
+            RobotContainer.LLContainer.estimateMT1Odometry(odometry, lastChassisSpeeds);
         else
-            RobotContainer.LLContainer.estimateMT1OdometryAuto(odometry, lastChassisSpeeds,
-                    navX);
+            RobotContainer.LLContainer.estimateMT1OdometryAuto(odometry, lastChassisSpeeds);
 
         odometry.update(getGyroRotation2d(), getModulePositions());
         // SmartDashboard.putString("Odometry current pos",
@@ -217,10 +215,10 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putData("Field", field);
         swerveStatesPublisher.set(getModuleStates());
 
-        SmartDashboard.putBoolean("NavX Connected", navX.isConnected());
+        // SmartDashboard.putBoolean("NavX Connected", navX.isConnected());
         SmartDashboard.putBoolean("Pigeon 2 Connected", pigeon.isConnected());
 
-        SmartDashboard.putNumber("NavX Heading", -navX.getAngle());
+        // SmartDashboard.putNumber("NavX Heading", -navX.getAngle());
         SmartDashboard.putNumber("Pigeon 2 Heading", pigeon.getYaw().getValueAsDouble());
     }
 
@@ -250,9 +248,9 @@ public class SwerveSubsystem extends SubsystemBase {
         // navX.reset();
         // navX.setAngleAdjustment(deg);
 
-        double error = deg - navX.getAngle();
-        double new_adjustment = navX.getAngleAdjustment() + error;
-        navX.setAngleAdjustment(new_adjustment);
+        // double error = deg - navX.getAngle();
+        // double new_adjustment = navX.getAngleAdjustment() + error;
+        // navX.setAngleAdjustment(new_adjustment);
 
         pigeonOffset = deg - pigeon.getYaw().getValueAsDouble();
     }
