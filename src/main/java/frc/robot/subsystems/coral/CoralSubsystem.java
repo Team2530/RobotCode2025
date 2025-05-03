@@ -180,7 +180,7 @@ public class CoralSubsystem extends SubsystemBase {
         HOLD(0.4, 12.5),
         PURGE(-1, 40.0),
         SCORE(-1, 30.0),
-        SCORE_L1(-0.1, 30.0),
+        SCORE_L1(-0.2, 30.0),
         STOP(0, 12.5),
 
         CUSTOM(Double.NaN, 40.0);
