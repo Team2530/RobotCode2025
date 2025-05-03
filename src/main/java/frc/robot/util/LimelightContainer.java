@@ -107,7 +107,7 @@ public class LimelightContainer {
         }
     }
 
-    public void estimateMT1Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
+    public void estimateMT1Odometry(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds) {
         for (Limelight limelight : limelights) {
             boolean doRejectUpdate = false;
 
@@ -141,7 +141,7 @@ public class LimelightContainer {
         }
     }
 
-    public void estimateMT1OdometryAuto(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds, AHRS navx) {
+    public void estimateMT1OdometryAuto(SwerveDrivePoseEstimator odometry, ChassisSpeeds speeds) {
         for (Limelight limelight : limelights) {
             boolean doRejectUpdate = false;
 
