@@ -97,6 +97,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public final AHRS navX = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
     private double navxSim;
     public final Pigeon2 pigeon = new Pigeon2(11);
+    private double pigeonOffset = 0.0;
 
     private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
 
@@ -253,7 +254,7 @@ public class SwerveSubsystem extends SubsystemBase {
         double new_adjustment = navX.getAngleAdjustment() + error;
         navX.setAngleAdjustment(new_adjustment);
 
-        pigeon.setYaw(-deg);
+        pigeonOffset = deg - pigeon.getYaw().getValueAsDouble();
     }
 
     public void setGyroToEstimate() {
@@ -278,17 +279,17 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void resetOdometryAndGyro(Pose2d pose) {
-        setHeading(Units.radiansToDegrees(pose.getRotation().times(-1.0).getRadians()
+        setHeading(Units.radiansToDegrees(pose.getRotation().times(1.0).getRadians()
                 + (FieldConstants.getAlliance() == Alliance.Red ? Math.PI : 0.0)));
         resetOdometry(pose);
     }
 
     public double getGyroHeading() {
-        return Robot.isSimulation() ? navxSim : Units.degreesToRadians(Math.IEEEremainder(-navX.getAngle(), 360));
-        // return Robot.isSimulation() ? navxSim
-        // :
-        // Units.degreesToRadians(Math.IEEEremainder(pigeon.getYaw().getValueAsDouble(),
-        // 360));
+        // return Robot.isSimulation() ? navxSim :
+        // Units.degreesToRadians(Math.IEEEremainder(-navX.getAngle(), 360));
+        return Robot.isSimulation() ? navxSim
+                : Units.degreesToRadians(Math.IEEEremainder(pigeon.getYaw().getValueAsDouble() + pigeonOffset,
+                        360));
     }
 
     public Rotation2d getGyroRotation2d() {
