@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.705,
-        "y": 2.6014999999999997
+        "x": 3.7342500000000003,
+        "y": 2.620999999999999
       },
       "isLocked": false,
       "linkedName": "bottom 4 end"
@@ -20,8 +20,8 @@
         "y": 2.7184999999999993
       },
       "prevControl": {
-        "x": 3.79275,
-        "y": 2.51375
+        "x": 3.8402233047033634,
+        "y": 2.5417233047033627
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Grab Low",
-      "waypointRelativePos": 0.15085714285714394,
+      "waypointRelativePos": 0.13257142857142984,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -45,7 +45,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 1.5,
     "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
