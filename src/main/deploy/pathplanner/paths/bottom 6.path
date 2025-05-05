@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5984366082081551,
-        "y": 1.038479555595495
+        "x": 1.70625,
+        "y": 1.402249999999999
       },
       "isLocked": false,
       "linkedName": "Low Source"
@@ -20,8 +20,8 @@
         "y": 3.6545
       },
       "prevControl": {
-        "x": 3.0287703125569614,
-        "y": 3.4354460228308383
+        "x": 2.40825,
+        "y": 3.6545
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,8 +47,19 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "Stow",
+      "waypointRelativePos": 0.10223325062034208,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow"
+        }
+      }
+    },
+    {
       "name": "L2",
-      "waypointRelativePos": 0.5211428571428578,
+      "waypointRelativePos": 0.6282878411910683,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

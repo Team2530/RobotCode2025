@@ -32,7 +32,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.6674285714285739,
+      "minWaypointRelativePos": 0.5250620347394567,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 4.0,
@@ -47,8 +47,19 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "Stow",
+      "waypointRelativePos": 0.1,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow"
+        }
+      }
+    },
+    {
       "name": "L4",
-      "waypointRelativePos": 0.5424761904761891,
+      "waypointRelativePos": 0.46352357320099075,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
