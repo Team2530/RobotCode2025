@@ -47,6 +47,17 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "Stow",
+      "waypointRelativePos": 0.10223325062034208,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow"
+        }
+      }
+    },
+    {
       "name": "L2",
       "waypointRelativePos": 0.6282878411910683,
       "endWaypointRelativePos": null,

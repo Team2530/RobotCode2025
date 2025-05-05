@@ -45,12 +45,6 @@
                     }
                   ]
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Wait Intake"
-                }
               }
             ]
           }
@@ -95,12 +89,6 @@
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Wait Intake"
                 }
               }
             ]
